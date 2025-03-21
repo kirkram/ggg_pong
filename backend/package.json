@@ -15,6 +15,8 @@
     "typescript": "^5.8.2"
   },
   "dependencies": {
-    "fastify": "^5.2.1"
+    "@fastify/jwt": "^9.1.0",
+    "fastify": "^5.2.1",
+    "fastify-jwt": "^4.1.3"
   }
 }
