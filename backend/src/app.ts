@@ -1,8 +1,9 @@
 import Fastify from 'fastify';
 import jwt from '@fastify/jwt';
-import { Env } from './env'; // Assuming you have env.ts for environment variables
-import auth from './auth'; // Import the auth.ts file
+import { Env } from './env';
 import { initializeDatabase } from './database'; // Import the initializeDatabase function
+import { authRoutes } from './routes/authRoutes';  // Import authRoutes
+import { userRoutes } from './routes/userRoutes';  // Import userRoutes
 
 export const app = Fastify({ logger: Env.Logger });
 
@@ -12,8 +13,9 @@ app.register(jwt, { secret: Env.JwtSecret });
 // Initialize the database (create tables if they don't exist)
 initializeDatabase();
 
-// Register the authentication routes from the auth.ts file
-app.register(auth);
+// Register authentication and user routes
+app.register(authRoutes);
+app.register(userRoutes);
 
 // Info Route (Public)
 app.get('/info', async (request, reply) => {
