@@ -1,25 +1,26 @@
 import Fastify from 'fastify';
-import fastifySqlite from '@fastify/sqlite';
+import { fpSqlitePlugin } from "fastify-sqlite-typed"
 
 // Initialize the Fastify instance
-const db = Fastify();
+const database = Fastify();
 
 // Register the SQLite plugin
-db.register(fastifySqlite, {
-  promiseApi: true, // Enable promise-based API
-  connectionString: 'sqlite://./database.db' // Define the path to the SQLite database file
+database.register(fpSqlitePlugin, {
+  dbFilename: './database.db' // Define the path to the SQLite database file
 });
 
 // Function to initialize the database (creating the table)
 export const initializeDatabase = async () => {
   try {
+    await database.ready()
     // Create table if it doesn't exist already
-    await db.sqlite.exec(`
+    await database.db.exec(`
       CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
+        reset_token TEXT,
         secret TEXT
       )
     `);
@@ -29,5 +30,5 @@ export const initializeDatabase = async () => {
   }
 };
 
-// Export db to interact with it in other parts of the app
-export { db };
+// Export db to interact with it in other parts of the database
+export { database };

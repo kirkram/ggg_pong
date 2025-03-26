@@ -1,32 +1,47 @@
-import { useEffect, useState } from 'react'
-import { AppInfoIface } from './context/app-info/interface'
-import { info } from './service'
-import { AppInfoContext } from './context/app-info/context'
-import { AuthorisedApp } from './components'
+import { useEffect, useState } from 'react';
+import { AxiosError } from "axios"
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AppInfoIface } from './context/app-info/interface';
+import { getAppInfo } from './service';
+import { AppInfoContext } from './context/app-info/context';
+import { authorised, unauthorised } from "./pages"
 
 function App() {
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<Error | undefined>(undefined)
-  const [appInfo, setAppInfo] = useState<AppInfoIface | undefined>(undefined)
+  const [loading, setLoading] = useState(true);
+  const [appInfo, setAppInfo] = useState<AppInfoIface | undefined>(undefined);
 
   useEffect(() => {
-    info()
-    .then(setAppInfo)
-    .catch(setError)
-    .finally(() => setLoading(false))
-  }, [])
+    getAppInfo()
+      .then(setAppInfo)
+      .catch(console.log)
+      .finally(() => setLoading(false));
+  }, []);
 
-  if (loading)
-    return <div>app is loading</div>
+  if (loading) return <div>app is loading</div>;
 
-  if (error)
-    return <div>app errored: {error.message}</div>
 
   return (
     <AppInfoContext.Provider value={appInfo}>
-      <AuthorisedApp />
+      <Router>
+        <Routes>
+          {appInfo ? (
+            <>
+              <Route path="/" element={<authorised.Dashboard />} />
+            </>
+          ) : (
+            <>
+              <Route path="/" element={<unauthorised.LandingPage />} />
+              <Route path="/login" element={<unauthorised.LogInPage />} />
+              <Route path="/register" element={<unauthorised.RegisterPage />} />
+              <Route path="/reset-password" element={<unauthorised.ResetPasswordPage />} />
+              <Route path="/change-password" element={<unauthorised.ChangePasswordPage />} />
+            </>
+          )}
+        </Routes>
+      </Router>
     </AppInfoContext.Provider>
-  )
+  );
 }
 
-export default App
+export default App;
+

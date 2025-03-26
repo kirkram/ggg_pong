@@ -84,19 +84,19 @@ export async function sendPasswordResetEmail(email: string, resetLink: string) {
  * @param email Recipient's email
  * @param username User's name
  */
-export async function sendLoginSuccessEmail(email: string, username: string) {
-  const subject = 'Gang Gang Gang - Login Successful';
-  const text = `Yo ${username}!\n\nJust wanted to let you know that you successfully logged in. 🔥\n\nIf it wasn’t you, change your password right now! 🔐\n\nStay safe,\nThe Gang HQ`;
+export async function sendRegisterSuccessEmail(email: string, username: string) {
+  const subject = 'Gang Gang Gang - Register Successful';
+  // const text = `Yo ${username}!\n\nJust wanted to let you know that you successfully registered. 🔥\n\nIf it wasn’t you, change your password right now! 🔐\n\nStay safe,\nThe Gang HQ`;
   const html = `
     <h2>Yo ${username}!</h2>
-    <p>Just wanted to let you know that you successfully logged in. 🔥</p>
+    <p>Just wanted to let you know that you successfully registered. 🔥</p>
     <p>If it wasn’t you, change your password right now! 🔐</p>
     <br>
     <p>Stay safe,</p>
     <p><b>The Gang HQ</b></p>
   `;
 
-  return sendEmail(email, subject, text, html);
+  return sendEmail(email, subject, '', html);
 }
 
 /**

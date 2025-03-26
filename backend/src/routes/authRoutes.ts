@@ -1,16 +1,61 @@
 import { FastifyInstance } from 'fastify';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
-import { db } from '../database';
-import { send2FACode, sendLoginSuccessEmail, sendPasswordResetEmail } from '../emailService';
+import { database } from '../database';
+import { send2FACode, sendPasswordResetEmail, sendRegisterSuccessEmail } from '../emailService';
+import { Env } from "../env"
+
+interface RegisterInput {
+  username: string
+  password: string
+  email: string
+}
+
+interface LoginInput {
+  username: string
+  password: string
+}
+
+interface VerifyInput {
+  username: string
+  code: string
+}
+
+interface ResetPasswordInput {
+  email: string
+}
+
+interface ChangePasswordInput {
+  token: string
+  password: string
+}
 
 export const authRoutes = async (app: FastifyInstance) => {
+  // User Registration Route
+  app.post('/register', async (request, reply) => {
+    const { username, password, email } = request.body as RegisterInput;
+
+    // Check if user already exists
+    const existingUser = await database.db.get('SELECT * FROM users WHERE username = ? or email = ?', [username, email]);
+    if (existingUser) {
+      return reply.status(400).send({ error: 'User already exists' });
+    }
+
+    // Hash password before saving
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Save user to the database
+    await database.db.run('INSERT INTO users (username, password, email) VALUES (?, ?, ?)', [username, hashedPassword, email]);
+    await sendRegisterSuccessEmail(email, username)
+    return reply.send({ message: 'User registered successfully' });
+  });
+
   // Login Route
   app.post('/login', async (request, reply) => {
-    const { username, password } = request.body as { username: string, password: string };
+    const { username, password } = request.body as LoginInput
 
     // Find user by username
-    const user = await db.sqlite.get('SELECT * FROM users WHERE username = ?', [username]);
+    const user = await database.db.get('SELECT * FROM users WHERE username = ?', [username]);
     if (!user) {
       return reply.status(401).send({ error: 'Invalid credentials' });
     }
@@ -26,31 +71,28 @@ export const authRoutes = async (app: FastifyInstance) => {
     await send2FACode(user.email, twoFACode, user.username);
 
     // Save the 2FA code in the database (this could also be stored in memory for a short time)
-    await db.sqlite.run('UPDATE users SET secret = ? WHERE username = ?', [twoFACode, username]);
-
-    // Send a login success email
-    await sendLoginSuccessEmail(user.email, user.username);
+    await database.db.run('UPDATE users SET secret = ? WHERE username = ?', [twoFACode, username]);
 
     return reply.send({ message: '2FA code sent to email. Please verify your code.' });
   });
 
   // Verify 2FA Route
   app.post('/verify-2fa', async (request, reply) => {
-    const { username, twoFACode } = request.body as { username: string, twoFACode: string };
+    const { username, code } = request.body as VerifyInput;
 
     // Find user by username
-    const user = await db.sqlite.get('SELECT * FROM users WHERE username = ?', [username]);
+    const user = await database.db.get('SELECT * FROM users WHERE username = ?', [username]);
     if (!user) {
       return reply.status(401).send({ error: 'User not found' });
     }
 
     // Check if the 2FA code matches
-    if (user.secret !== twoFACode) {
+    if (user.secret !== code) {
       return reply.status(400).send({ error: 'Invalid 2FA code' });
     }
 
     // Optionally, clear the stored 2FA code after verification
-    await db.sqlite.run('UPDATE users SET secret = NULL WHERE username = ?', [username]);
+    await database.db.run('UPDATE users SET secret = NULL WHERE username = ?', [username]);
 
     // Generate JWT token after 2FA verification
     const token = app.jwt.sign({ username });
@@ -60,10 +102,10 @@ export const authRoutes = async (app: FastifyInstance) => {
 
   // Password Reset Request Route
   app.post('/reset-password', async (request, reply) => {
-    const { email } = request.body as { email: string };
+    const { email } = request.body as ResetPasswordInput;
 
     // Find the user by email
-    const user = await db.sqlite.get('SELECT * FROM users WHERE email = ?', [email]);
+    const user = await database.db.get('SELECT * FROM users WHERE email = ?', [email]);
     if (!user) {
       return reply.status(400).send({ error: 'No user found with this email address.' });
     }
@@ -72,13 +114,33 @@ export const authRoutes = async (app: FastifyInstance) => {
     const resetToken = crypto.randomBytes(20).toString('hex');
 
     // Save the reset token in the database (you should set an expiration time for the token)
-    await db.sqlite.run('UPDATE users SET reset_token = ? WHERE email = ?', [resetToken, email]);
+    await database.db.run('UPDATE users SET reset_token = ? WHERE email = ?', [resetToken, email]);
 
     // Send the reset email with a link
-    const resetLink = `${Env.FrontendBaseUrl}/reset-password?token=${resetToken}`;
-    await sendPasswordResetEmail(email, resetLink);
+    await sendPasswordResetEmail(
+      email, 
+      `${Env.FrontendBaseUrl}/change-password?token=${resetToken}`
+      );
 
     return reply.send({ message: 'Password reset email sent. Please check your inbox.' });
   });
-};
 
+  // Update Password Route (for password reset after clicking the reset link)
+  app.post('/update-password', async (request, reply) => {
+    const { token, password } = request.body as ChangePasswordInput;
+
+    // Find user by reset token
+    const user = await database.db.get('SELECT * FROM users WHERE reset_token = ? AND reset_token IS NOT NULL', [token]);
+    if (!user) {
+      return reply.status(400).send({ error: 'Invalid or expired reset token.' });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Update the user's password and clear the reset token
+    await database.db.run('UPDATE users SET password = ?, reset_token = NULL WHERE reset_token = ?', [hashedPassword, token]);
+
+    return reply.send({ message: 'Password successfully updated!' });
+  });
+};
