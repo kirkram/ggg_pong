@@ -1,11 +1,11 @@
-import { FastifyInstance } from 'fastify';
-import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
-import { database } from '../database';
-import { sendPasswordResetEmail, sendGameAchievementEmail } from '../emailService';
-import { Env } from '../env';
+import { FastifyInstance } from 'fastify'
+import bcrypt from 'bcryptjs'
+import crypto from 'crypto'
+import { database } from '../database'
+import { sendPasswordResetEmail, sendGameAchievementEmail } from '../emailService'
+import { Env } from '../env'
 
-
+// change it completely when you start working on user stuff!!!
 
 
 export const userRoutes = async (app: FastifyInstance) => {

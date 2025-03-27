@@ -38,7 +38,7 @@ export const LogInPage = () => {
             .finally(() => setIsLoading(false))
     }
 
-    console.log(error)
+    console.log(error) // check if we need this
 
     return (
         <div className="flex h-screen">

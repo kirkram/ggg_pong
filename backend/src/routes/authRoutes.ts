@@ -1,8 +1,8 @@
-import { FastifyInstance } from 'fastify';
-import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
-import { database } from '../database';
-import { send2FACode, sendPasswordResetEmail, sendRegisterSuccessEmail } from '../emailService';
+import { FastifyInstance } from 'fastify'
+import bcrypt from 'bcryptjs'
+import crypto from 'crypto'
+import { database } from '../database'
+import { send2FACode, sendPasswordResetEmail, sendRegisterSuccessEmail } from '../emailService'
 import { Env } from "../env"
 
 interface RegisterInput {
@@ -137,6 +137,12 @@ export const authRoutes = async (app: FastifyInstance) => {
 
     // Hash the new password
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Compare password with stored hash !!!FIX THIS!!!!
+    // const passwordMatch = await bcrypt.compare(hashedPassword, user.password);
+    // if (passwordMatch) {
+    //   return reply.status(401).send({ error: 'Same password' });
+    // }
 
     // Update the user's password and clear the reset token
     await database.db.run('UPDATE users SET password = ?, reset_token = NULL WHERE reset_token = ?', [hashedPassword, token]);
