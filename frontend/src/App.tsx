@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AxiosError } from "axios"
+import { Navigate } from "react-router-dom";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AppInfoIface } from './context/app-info/interface';
 import { getAppInfo } from './service';
@@ -26,7 +27,8 @@ function App() {
         <Routes>
           {appInfo ? (
             <>
-              <Route path="/" element={<authorised.Dashboard />} />
+              <Route path="/" element={<Navigate to="/menu" replace />} />
+              <Route path="/menu" element={<authorised.MenuPage />} />
             </>
           ) : (
             <>

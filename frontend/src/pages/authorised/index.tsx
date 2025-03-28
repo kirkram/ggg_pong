@@ -1,4 +1,5 @@
 import { useAppInfo } from "../../context"
+export { MenuPage } from "./menu"
 
 export const Dashboard = () => {
     const appInfo = useAppInfo()

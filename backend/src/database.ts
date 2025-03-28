@@ -14,6 +14,8 @@ export const initializeDatabase = async () => {
   try {
     await database.ready()
     // Create table if it doesn't exist already
+    // profilePic - URL or file path for the picture
+    // dateOfBirth - ISO date format e.g. "YYYY-MM-DD"
     await database.db.exec(`
       CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -21,7 +23,15 @@ export const initializeDatabase = async () => {
         password TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
         reset_token TEXT,
-        secret TEXT
+        secret TEXT,
+        firstName TEXT,
+        lastName TEXT,
+        dateOfBirth TEXT,
+        gender TEXT CHECK(gender IN ('male', 'female', 'other')) DEFAULT 'other',
+        language TEXT DEFAULT 'english',
+        wins INTEGER DEFAULT 0,
+        losses INTEGER DEFAULT 0,
+        profilePic TEXT DEFAULT '/default-profile.jpg'
       )
     `);
     console.log('Database and table are ready');
