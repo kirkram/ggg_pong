@@ -29,6 +29,8 @@ function App() {
             <>
               <Route path="/" element={<Navigate to="/menu" replace />} />
               <Route path="/menu" element={<authorised.MenuPage />} />
+              <Route path="/profile" element={<authorised.ProfilePage />} />
+              <Route path="/connections" element={<authorised.ConnectionsPage />} />
             </>
           ) : (
             <>
