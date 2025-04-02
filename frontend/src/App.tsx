@@ -4,6 +4,7 @@ import { Navigate } from "react-router-dom";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AppInfoIface } from './context/app-info/interface';
 import { getAppInfo } from './service';
+import { getUserProfile, updateProfileField, uploadProfilePicture } from './service/userService'
 import { AppInfoContext } from './context/app-info/context';
 import { authorised, unauthorised } from "./pages"
 

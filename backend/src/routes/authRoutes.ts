@@ -32,23 +32,56 @@ interface ChangePasswordInput {
 
 export const authRoutes = async (app: FastifyInstance) => {
   // User Registration Route
+  // app.post('/register', async (request, reply) => {
+  //   const { username, password, email } = request.body as RegisterInput;
+
+  //   // Check if user already exists
+  //   const existingUser = await database.db.get('SELECT * FROM users WHERE username = ? or email = ?', [username, email]);
+  //   if (existingUser) {
+  //     return reply.status(400).send({ error: 'User already exists' });
+  //   }
+
+  //   // Hash password before saving
+  //   const hashedPassword = await bcrypt.hash(password, 10);
+
+  //   // Save user to the database
+  //   await database.db.run(`INSERT INTO users 
+  //   (username, password, email, gender, favAvatar, language, wins, losses, profilePic)
+  //  VALUES (?, ?, ?, 'other', 'None', 'english', 0, 0, '/default-profile.jpg')`, [username, hashedPassword, email]);
+  //   await sendRegisterSuccessEmail(email, username)
+  //   return reply.send({ message: 'User registered successfully' });
+  // });
+
   app.post('/register', async (request, reply) => {
-    const { username, password, email } = request.body as RegisterInput;
-
-    // Check if user already exists
-    const existingUser = await database.db.get('SELECT * FROM users WHERE username = ? or email = ?', [username, email]);
-    if (existingUser) {
-      return reply.status(400).send({ error: 'User already exists' });
+    try {
+      const { username, password, email } = request.body as RegisterInput;
+  
+      const existingUser = await database.db.get(
+        'SELECT * FROM users WHERE username = ? OR email = ?',
+        [username, email]
+      );
+      if (existingUser) {
+        return reply.status(400).send({ error: 'User already exists' });
+      }
+  
+      const hashedPassword = await bcrypt.hash(password, 10);
+  
+      await database.db.run(
+        `INSERT INTO users 
+          (username, password, email, gender, favAvatar, language, wins, losses, profilePic)
+         VALUES (?, ?, ?, 'other', 'None', 'english', 0, 0, '/default-profile.jpg')`,
+        [username, hashedPassword, email]
+      );
+  
+      await sendRegisterSuccessEmail(email, username);
+      return reply.send({ message: 'User registered successfully' });
+  
+    } catch (err) {
+      console.error("🔥 Registration error:", err); // Look for this in your terminal
+      return reply.code(500).send({ error: 'Internal Server Error' });
     }
-
-    // Hash password before saving
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Save user to the database
-    await database.db.run('INSERT INTO users (username, password, email) VALUES (?, ?, ?)', [username, hashedPassword, email]);
-    await sendRegisterSuccessEmail(email, username)
-    return reply.send({ message: 'User registered successfully' });
   });
+  
 
   // Login Route
   app.post('/login', async (request, reply) => {
@@ -95,7 +128,7 @@ export const authRoutes = async (app: FastifyInstance) => {
     await database.db.run('UPDATE users SET secret = NULL WHERE username = ?', [username]);
 
     // Generate JWT token after 2FA verification
-    const token = app.jwt.sign({ username });
+    const token = app.jwt.sign({ id: user.id, username: user.username });
 
     return reply.send({ token });
   });

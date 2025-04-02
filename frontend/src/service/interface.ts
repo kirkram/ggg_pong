@@ -1,6 +1,7 @@
 export interface AppInfo {
     user: {
         username: string
+        id: number
     }
 }
 
@@ -58,3 +59,22 @@ export interface UpdateProfileField {
 export interface ProfileProps {
     userId: string
 }
+
+export interface UserProfile {
+    username: string;
+    email: string;
+    profilePic: string | null;
+    firstName: string;
+    lastName: string;
+    gender: string;
+    dateOfBirth: string;
+    wins: number;
+    losses: number;
+    language: string;
+    favAvatar: string;
+  }
+  
+  export interface UpdateFieldInput {
+    field: string;
+    value: string;
+  }

@@ -28,10 +28,11 @@ export const initializeDatabase = async () => {
         lastName TEXT,
         dateOfBirth TEXT,
         gender TEXT CHECK(gender IN ('male', 'female', 'other')) DEFAULT 'other',
-        language TEXT DEFAULT 'english',
+        favAvatar TEXT CHECK(favAvatar IN ('None', 'QueenOfTheSpoons', 'JustBorn', 'Maslina', 'BossLady', 'Inka', 'Burek', 'Fish', 'WarMachine', 'Finn', 'GangGanger', 'StabIlity', 'VampBoy')) DEFAULT 'None',
+        language TEXT CHECK(language IN ('english', 'serbian', 'finnish', 'russian')) DEFAULT 'english',
         wins INTEGER DEFAULT 0,
         losses INTEGER DEFAULT 0,
-        profilePic TEXT DEFAULT '/default-profile.jpg'
+        profilePic TEXT
       )
     `);
     console.log('Database and table are ready');
