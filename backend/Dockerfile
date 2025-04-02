@@ -1,22 +1,16 @@
+# backend/Dockerfile
 FROM node:18
 
-# Create app directory
 WORKDIR /app
 
-# Copy both package.json and package-lock.json
+# Copy only package.json and package-lock.json first
 COPY package*.json ./
 
-# Install all dependencies (including dev)
+# Install both dependencies and devDependencies
 RUN npm install
 
-# Install ts-node globally
-RUN npm install -g ts-node
-
-# Copy the rest of the app code
+# Copy rest of the backend code
 COPY . .
 
-# Expose port if needed
-EXPOSE 3000
-
-# Start using ts-node and your dev script
+# Run the local ts-node (installed in node_modules)
 CMD ["npm", "run", "dev"]
