@@ -6,7 +6,7 @@ import { AppInfoIface } from './context/app-info/interface';
 import { getAppInfo } from './service';
 import { getUserProfile, updateProfileField, uploadProfilePicture } from './service/userService'
 import { AppInfoContext } from './context/app-info/context';
-import { authorised, unauthorised } from "./pages"
+import { authorised, unauthorised, general } from "./pages"
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -32,6 +32,8 @@ function App() {
               <Route path="/menu" element={<authorised.MenuPage />} />
               <Route path="/profile" element={<authorised.ProfilePage />} />
               <Route path="/connections" element={<authorised.ConnectionsPage />} />
+              <Route path="/user/:username" element={<general.UserProfilePage />} />
+
             </>
           ) : (
             <>

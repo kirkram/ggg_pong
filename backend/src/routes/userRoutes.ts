@@ -122,6 +122,26 @@ export const userRoutes = async (app: FastifyInstance) => {
     return reply.send({ success: true, profilePic: filePath });
   });
 
+  // Getting public profile's information based on username
+  app.get('/get-public-profile/:username', async (request, reply) => {
+    const { username } = request.params as { username: string };
+    try {
+      const profile = await database.db.get(`
+        SELECT username, email, profilePic, firstName, lastName, dateOfBirth, gender, wins, losses, language, favAvatar
+        FROM users WHERE username = ?
+      `, [username]);
+  
+      if (!profile) {
+        return reply.code(404).send({ error: 'User not found' });
+      }
+  
+      return reply.send(profile);
+    } catch (error) {
+      console.error("Error fetching public profile:", error);
+      return reply.code(500).send({ error: 'Failed to load profile' });
+    }
+  });  
+
   // Game Achievement Route
   app.post('/game-achievement', async (request, reply) => {
     const { username, email, position } = request.body as { username: string, email: string, position: number };
@@ -134,3 +154,4 @@ export const userRoutes = async (app: FastifyInstance) => {
     return reply.send({ message: `Game result: ${username} finished in position ${position}` });
   });
 };
+
