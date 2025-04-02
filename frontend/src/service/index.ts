@@ -1,5 +1,5 @@
 import axios from "axios"
-import { AppInfo, AppLoginInput, AppResponse, AppLoginCodeInput, AppLoginToken, AppRegisterInput, AppResetPassword, AppChangePassword } from "./interface";
+import { AppInfo, AppLoginInput, AppResponse, AppLoginCodeInput, AppLoginToken, AppRegisterInput, AppResetPassword, AppChangePassword } from "./interface"
 
 export const appClient = axios.create({
     baseURL: '/app',

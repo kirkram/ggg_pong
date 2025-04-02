@@ -1,0 +1,52 @@
+import { appClient } from "./index"
+import { UserProfile } from "./interface"
+
+export const getUserProfile = () => {
+  const token = localStorage.getItem("ping-pong-jwt");
+  if (!token) throw new Error("User not authenticated");
+  const payload = JSON.parse(atob(token.split(".")[1]));
+  const userId = payload.id;
+  return appClient.get<UserProfile>(`/get-profile/${userId}`).then((res) => res.data);
+};
+
+// export const updateProfileField = (field: string, value: string) => {
+//   const token = localStorage.getItem("ping-pong-jwt");
+//   if (!token) throw new Error("User not authenticated");
+//   const payload = JSON.parse(atob(token.split(".")[1]));
+//   const userId = payload.id;
+//   return appClient.patch(`/update-field/${userId}`, { field, value }).then((res) => res.data);
+// };
+export const updateProfileField = (field: string, value: string) => {
+  const token = localStorage.getItem("ping-pong-jwt");
+  if (!token) throw new Error("User not authenticated");
+
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    const userId = payload.id;
+
+    if (!userId) throw new Error("User ID not found in token");
+
+    return appClient
+      .patch(`/update-field/${userId}`, { field, value })
+      .then((res) => res.data);
+  } catch (error) {
+    console.error("Failed to decode token or send patch request:", error);
+    throw error;
+  }
+};
+
+
+export const uploadProfilePicture = async (file: File) => {
+  const token = localStorage.getItem("ping-pong-jwt");
+  if (!token) throw new Error("User not authenticated");
+  const payload = JSON.parse(atob(token.split(".")[1]));
+  const userId = payload.id;
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("id", userId.toString());
+
+  return appClient.post(`/upload-profile-pic/${userId}`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  }).then((res) => res.data);
+};
