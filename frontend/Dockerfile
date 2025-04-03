@@ -1,20 +1,14 @@
-# Build stage
-FROM node:18 AS build
+# frontend/Dockerfile
+FROM node:20
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN npm install --include=dev
 
 COPY . .
 
-# Attempt to build, fallback to dummy dist if build fails
-RUN VITE_IGNORE_TS=true vite build || mkdir -p dist && echo '<h1>Build failed</h1>' > dist/index.html
+# Expose Vite dev server port (default is 5173)
+EXPOSE 5173
 
-# Serve stage
-FROM nginx:alpine
-
-COPY --from=build /app/dist /usr/share/nginx/html
-
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["npm", "run", "dev"]

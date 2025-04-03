@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node -e 'import { start } from \"./src\"; start()'",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "test": "jest --coverage",
     "test:watch": "jest --watch"
   },

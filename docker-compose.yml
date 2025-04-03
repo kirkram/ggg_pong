@@ -1,19 +1,26 @@
 version: "3.8"
+
 services:
   backend:
     build: ./backend
-    ports:
-      - "3000:3000"
+    container_name: backend
     volumes:
       - ./backend:/app
+      - /app/node_modules  # Avoid overwriting node_modules with host
+    ports:
+      - "8080:8080"
     environment:
       - NODE_ENV=development
-    restart: unless-stopped
 
   frontend:
     build: ./frontend
-    ports:
-      - "8080:80"
+    container_name: frontend
     depends_on:
       - backend
-    restart: unless-stopped
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=development

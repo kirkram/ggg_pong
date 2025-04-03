@@ -3,14 +3,16 @@ FROM node:18
 
 WORKDIR /app
 
-# Copy only package.json and package-lock.json first
+# Install ts-node-dev globally (or use npx if preferred)
+RUN npm install -g ts-node-dev
+
 COPY package*.json ./
+RUN npm install --include=dev
 
-# Install both dependencies and devDependencies
-RUN npm install
-
-# Copy rest of the backend code
 COPY . .
 
-# Run the local ts-node (installed in node_modules)
+# Expose backend port
+EXPOSE 8080
+
+# Run dev script
 CMD ["npm", "run", "dev"]
