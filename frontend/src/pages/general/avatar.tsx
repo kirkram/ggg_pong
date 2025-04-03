@@ -1,0 +1,66 @@
+import { useNavigate, useLocation } from "react-router-dom";
+
+interface Avatar {
+  name: string;
+  image: string;
+  description: string;
+}
+
+const avatars: Avatar[] = [
+  {
+    name: "QueenOfTheSpoons",
+    image: "/avatars/queen_of_spoons/6f6e1f9c-7ea1-4902-a844-a3292cc6954d.png",
+    description: "A sweet athletic girl... until she grabs her spoon. Then she turns into a seductive ping pong sorceress. 🍨",
+  },
+  {
+    name: "BossLady",
+    image: "/avatars/boss_lady/0d87db21-5aa8-4550-81cf-29bf82a76217.png",
+    description: "Curvy. Bossy. Unapologetic. Just pray she misses. 💅",
+  },
+  {
+    name: "TheFinn",
+    image: "/avatars/finn/8e4bdfe8-8fbb-4244-8f93-8c15c31408ee.png",
+    description: "Glasses. Hoodie. Code by day, pong by night. 👓🧠",
+  },
+];
+
+export const AvatarPage = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const target = (location.state as { target: "user" | "guest" })?.target || "user";
+
+  const handleSelect = (avatar: Avatar) => {
+    navigate("/customization", {
+      state: { selectedAvatar: { name: avatar.name, image: avatar.image }, target },
+    });
+  };
+
+  return (
+    <div
+      className="w-full min-h-screen bg-cover bg-center text-white p-8 flex flex-col items-center"
+      style={{ backgroundImage: "url('/background/gray_background.jpg')" }}
+    >
+      <h1 className="text-4xl font-bold text-center mb-10">🎨 Pick Your Fighter</h1>
+
+      <div className="w-full max-w-2xl flex flex-col gap-10">
+        {avatars.map((avatar) => (
+          <div
+            key={avatar.name}
+            onClick={() => handleSelect(avatar)}
+            className="bg-gray-800 rounded-xl p-6 shadow-lg hover:scale-105 transition-transform cursor-pointer text-center"
+          >
+            <img
+              src={avatar.image}
+              alt={avatar.name}
+              className="w-full max-h-[400px] object-contain mb-4 rounded-md border-4 border-gray-700"
+            />
+            <h2 className="text-2xl font-bold mb-2">{avatar.name}</h2>
+            <p className="text-gray-300 text-sm">{avatar.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default AvatarPage;

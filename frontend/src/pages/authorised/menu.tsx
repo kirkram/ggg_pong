@@ -57,7 +57,7 @@ export const MenuPage = () => {
 
                 <div className="flex flex-col md:flex-row gap-6 justify-center">
                     <button
-                        onClick={() => navigate("/game")}
+                        onClick={() => navigate("/customization")}
                         className="bg-green-500 hover:bg-green-600 text-xl font-bold px-6 py-3 rounded-lg shadow-md w-60"
                     >
                         Ping Pong Duel 💥

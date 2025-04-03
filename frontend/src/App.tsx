@@ -32,6 +32,8 @@ function App() {
               <Route path="/menu" element={<authorised.MenuPage />} />
               <Route path="/profile" element={<authorised.ProfilePage />} />
               <Route path="/connections" element={<authorised.ConnectionsPage />} />
+              <Route path="/customization" element={<authorised.CustomazationPage />} />
+              <Route path="/avatar" element={<general.AvatarPage />} />
               <Route path="/user/:username" element={<general.UserProfilePage />} />
 
             </>

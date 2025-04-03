@@ -2,6 +2,7 @@ import { useAppInfo } from "../../context"
 export { MenuPage } from "./menu"
 export { ProfilePage } from "./profile"
 export { ConnectionsPage } from "./connections"
+export { CustomazationPage } from "./customization"
 
 export const Dashboard = () => {
     const appInfo = useAppInfo()
