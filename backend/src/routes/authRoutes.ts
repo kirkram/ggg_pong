@@ -31,27 +31,6 @@ interface ChangePasswordInput {
 }
 
 export const authRoutes = async (app: FastifyInstance) => {
-  // User Registration Route
-  // app.post('/register', async (request, reply) => {
-  //   const { username, password, email } = request.body as RegisterInput;
-
-  //   // Check if user already exists
-  //   const existingUser = await database.db.get('SELECT * FROM users WHERE username = ? or email = ?', [username, email]);
-  //   if (existingUser) {
-  //     return reply.status(400).send({ error: 'User already exists' });
-  //   }
-
-  //   // Hash password before saving
-  //   const hashedPassword = await bcrypt.hash(password, 10);
-
-  //   // Save user to the database
-  //   await database.db.run(`INSERT INTO users 
-  //   (username, password, email, gender, favAvatar, language, wins, losses, profilePic)
-  //  VALUES (?, ?, ?, 'other', 'None', 'english', 0, 0, '/default-profile.jpg')`, [username, hashedPassword, email]);
-  //   await sendRegisterSuccessEmail(email, username)
-  //   return reply.send({ message: 'User registered successfully' });
-  // });
-
   app.post('/register', async (request, reply) => {
     try {
       const { username, password, email } = request.body as RegisterInput;
@@ -69,7 +48,7 @@ export const authRoutes = async (app: FastifyInstance) => {
       await database.db.run(
         `INSERT INTO users 
           (username, password, email, gender, favAvatar, language, wins, losses, profilePic)
-         VALUES (?, ?, ?, 'other', 'None', 'english', 0, 0, '/default-profile.jpg')`,
+         VALUES (?, ?, ?, 'other', 'None', 'english', 0, 0, '/profile-pics/default-profile.jpg')`,
         [username, hashedPassword, email]
       );
   

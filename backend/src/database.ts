@@ -32,7 +32,7 @@ export const initializeDatabase = async () => {
         language TEXT CHECK(language IN ('english', 'serbian', 'finnish', 'russian')) DEFAULT 'english',
         wins INTEGER DEFAULT 0,
         losses INTEGER DEFAULT 0,
-        profilePic TEXT
+        profilePic TEXT 
       )
     `);
     console.log('Database and table are ready');
