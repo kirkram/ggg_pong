@@ -4,6 +4,7 @@ import { Env } from './env';
 import { initializeDatabase } from './database'; // Import the initializeDatabase function
 import { authRoutes } from './routes/authRoutes';  // Import authRoutes
 import { userRoutes } from './routes/userRoutes';  // Import userRoutes
+import { friendshipRoutes } from './routes/friendshipRoutes';
 
 // Augmenting the FastifyRequest type to include the user property
 // declare module '@fastify/jwt' {
@@ -65,6 +66,8 @@ initializeDatabase();
 // Register authentication and user routes
 app.register(authRoutes);
 app.register(userRoutes);
+app.register(friendshipRoutes);
+
 
 // Root Route
 app.get('/', async (request, reply) => {

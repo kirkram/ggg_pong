@@ -35,6 +35,19 @@ export const initializeDatabase = async () => {
         profilePic TEXT
       )
     `);
+
+    // Create friendships table (if it doesn't exist)
+    await database.db.exec(`
+      CREATE TABLE IF NOT EXISTS friendships (
+        sender_id INTEGER NOT NULL,
+        receiver_id INTEGER NOT NULL,
+        status TEXT NOT NULL CHECK (status IN ('Not Friend', 'Pending', 'Friend')),
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (sender_id, receiver_id),
+        FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);    
     console.log('Database and table are ready');
   } catch (error) {
     console.error('Error creating database table:', error);
