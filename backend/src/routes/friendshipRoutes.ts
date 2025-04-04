@@ -12,12 +12,19 @@ export async function friendshipRoutes(app: FastifyInstance) {
     }
 
     try {
+      console.log("Inserting friendship into database...");
+      console.log('Request body:', request.body);  
+      console.log(`Sender ID: ${sender_id}, Receiver ID: ${receiver_id}`);
+
       await database.db.run(
         `INSERT INTO friendships (sender_id, receiver_id, status) VALUES (?, ?, 'Pending')`,
         [sender_id, receiver_id]
       );
+      console.log("Friend request sent very successfully");
+
       return reply.send({ message: "Friend request sent" });
     } catch (error) {
+      console.error('Error inserting friendship:', error);
       return reply.status(500).send({ error: "Failed to send friend request" });
     }
   });
@@ -86,4 +93,50 @@ export async function friendshipRoutes(app: FastifyInstance) {
       return reply.status(500).send({ error: "Failed to fetch friends" });
     }
   });
+
+  // Add friendships for all users except the current user
+  app.post('/friendships/add-all', { preHandler: [app.authenticate] }, async (request: FastifyRequest, reply: FastifyReply) => {
+    const currentUserId = request.user.id;
+
+    try {
+      // Get all users except the current user
+      const users = await database.db.all(
+        `SELECT id FROM users WHERE id != ?`,
+        [currentUserId]
+      );
+
+      // Insert friendships for each user (with status 'Pending')
+      const friendshipPromises = users.map((user: { id: number }) =>
+        database.db.run(
+          `INSERT OR IGNORE INTO friendships (sender_id, receiver_id, status) VALUES (?, ?, 'Pending')`,
+          [currentUserId, user.id]
+        )
+      );
+
+      // Wait for all insertions to complete
+      await Promise.all(friendshipPromises);
+
+      return reply.send({ message: 'Friendships added successfully for all users except yourself' });
+    } catch (error) {
+      console.error('Error creating friendships:', error);
+      return reply.status(500).send({ error: 'Failed to add friendships for all users' });
+    }
+  });
+
+// Get all users except the current one
+app.get('/users', { preHandler: [app.authenticate] }, async (request: FastifyRequest, reply: FastifyReply) => {
+    const currentUserId = request.user.id;
+  
+    try {
+      const users = await database.db.all(
+        `SELECT id, username FROM users WHERE id != ?`,  // Adjust query as needed
+        [currentUserId]
+      );
+  
+      return reply.send(users);
+    } catch (error) {
+      return reply.status(500).send({ error: "Failed to fetch users" });
+    }
+  });  
 }
+

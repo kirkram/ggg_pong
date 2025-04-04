@@ -30,37 +30,90 @@ interface ChangePasswordInput {
   password: string
 }
 
+// In authRoutes.ts
 export const authRoutes = async (app: FastifyInstance) => {
-  app.post('/register', async (request, reply) => {
-    try {
-      const { username, password, email } = request.body as RegisterInput;
-  
-      const existingUser = await database.db.get(
-        'SELECT * FROM users WHERE username = ? OR email = ?',
-        [username, email]
-      );
-      if (existingUser) {
-        return reply.status(400).send({ error: 'User already exists' });
-      }
-  
-      const hashedPassword = await bcrypt.hash(password, 10);
-  
-      await database.db.run(
-        `INSERT INTO users 
-          (username, password, email, gender, favAvatar, language, wins, losses, profilePic)
-         VALUES (?, ?, ?, 'other', 'None', 'english', 0, 0, '/profile-pics/default-profile.jpg')`,
-        [username, hashedPassword, email]
-      );
-  
-      await sendRegisterSuccessEmail(email, username);
-      return reply.send({ message: 'User registered successfully' });
-  
-    } catch (err) {
-      console.error("🔥 Registration error:", err); // Look for this in your terminal
-      return reply.code(500).send({ error: 'Internal Server Error' });
+app.post('/register', async (request, reply) => {
+  try {
+    const { username, password, email } = request.body as RegisterInput;
+
+    const existingUser = await database.db.get(
+      'SELECT * FROM users WHERE username = ? OR email = ?',
+      [username, email]
+    );
+    if (existingUser) {
+      return reply.status(400).send({ error: 'User already exists' });
     }
-  });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Insert new user into the database
+    await database.db.run(
+      `INSERT INTO users 
+         (username, password, email, gender, favAvatar, language, wins, losses, profilePic)
+         VALUES (?, ?, ?, 'other', 'None', 'english', 0, 0, '/profile-pics/default-profile.jpg')`,
+      [username, hashedPassword, email]
+    );
+
+    // Get the new user's ID
+    const newUser = await database.db.get('SELECT * FROM users WHERE username = ?', [username]);
+    const newUserId = newUser.id;
+
+    // Initialize friendships with "Not Friend" status for all other users
+    const users = await database.db.all('SELECT id FROM users WHERE id != ?', [newUserId]);
+    
+    const friendshipPromises = users.map((user: { id: number }) =>
+      database.db.run(
+        `INSERT OR IGNORE INTO friendships (sender_id, receiver_id, status) VALUES (?, ?, 'Not Friend')`,
+        [newUserId, user.id]
+      )
+    );
+
+    // Wait for all friendship insertions to complete
+    await Promise.all(friendshipPromises);
+
+    // Send a registration success email
+    await sendRegisterSuccessEmail(email, username);
+
+    return reply.send({ message: 'User registered successfully' });
+
+  } catch (err) {
+    console.error("🔥 Registration error:", err);
+    return reply.code(500).send({ error: 'Internal Server Error' });
+  }
+});
+
+
+// export const authRoutes = async (app: FastifyInstance) => {
+//   app.post('/register', async (request, reply) => {
+//     try {
+//       const { username, password, email } = request.body as RegisterInput;
   
+//       const existingUser = await database.db.get(
+//         'SELECT * FROM users WHERE username = ? OR email = ?',
+//         [username, email]
+//       );
+//       if (existingUser) {
+//         return reply.status(400).send({ error: 'User already exists' });
+//       }
+  
+//       const hashedPassword = await bcrypt.hash(password, 10);
+  
+//       await database.db.run(
+//         `INSERT INTO users 
+//           (username, password, email, gender, favAvatar, language, wins, losses, profilePic)
+//          VALUES (?, ?, ?, 'other', 'None', 'english', 0, 0, '/profile-pics/default-profile.jpg')`,
+//         [username, hashedPassword, email]
+//       );
+  
+//       await sendRegisterSuccessEmail(email, username);
+//       return reply.send({ message: 'User registered successfully' });
+  
+//     } catch (err) {
+//       console.error("🔥 Registration error:", err); // Look for this in your terminal
+//       return reply.code(500).send({ error: 'Internal Server Error' });
+//     }
+//   });
+
 
   // Login Route
   app.post('/login', async (request, reply) => {
