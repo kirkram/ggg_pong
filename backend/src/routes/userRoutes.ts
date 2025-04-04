@@ -19,22 +19,13 @@ interface UpdateField {
 
 export const userRoutes = async (app: FastifyInstance) => {
   // Retrieving Profile Data
-  // app.get('/get-profile/:id', async (request, reply) => {
-  //   const { id } = request.params as { id: string };
-  //   const profile = await database.db.get(
-  //     'SELECT username, email, profilePic, firstName, lastName, gender, dateOfBirth, wins, losses, language, favAvatar FROM users WHERE id = ?'
-  //     , [id]);
-  //     return reply.send(profile);
-  // })
-
-
   app.get('/get-profile/:id', async (request, reply) => {
     const { id } = request.params as { id: string };
     console.log("Fetching profile for ID:", id); // 👈 Add this line
   
     try {
       const profile = await database.db.get(
-        `SELECT username, email, profilePic, firstName, lastName, gender, dateOfBirth, wins, losses, language 
+        `SELECT username, email, profilePic, firstName, lastName, gender, dateOfBirth, wins, losses, language, favAvatar 
          FROM users WHERE id = ?`,
         [id]
       );
@@ -51,20 +42,6 @@ export const userRoutes = async (app: FastifyInstance) => {
   });
   
   // Profile Update
-  // app.patch('/update-field/:id', async (request, reply) => {
-  //   const { id } = request.params as { id: string };
-  //   const { field, value } = request.body as UpdateField;
-
-  //   const allowedFields = ['firstNAme', 'lastName', 'gender', 'dateOfBirth', 'language'];
-  //   if (!allowedFields.includes(field)) {
-  //     return reply.code(400).send({error: 'Field not allowed to update'});
-  //   }
-
-  //   const query = 'UPDATE users SET ${field} = ? WHERE id = ?';
-  //   await database.db.run(query, [value, id]);
-
-  //   return reply.send({ success: true });
-  // });
   app.patch('/update-field/:id', async (request, reply) => {
     const { id } = request.params as { id: string };
     const { field, value } = request.body as { field: string; value: string };
