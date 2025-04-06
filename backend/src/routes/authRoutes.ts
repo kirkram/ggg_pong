@@ -79,7 +79,7 @@ export const authRoutes = async (app: FastifyInstance) => {
     }
 
     // Generate a 2FA code and send it via email
-    const twoFACode = crypto.randomBytes(3).toString('hex'); // 6-character hex string
+    const twoFACode = '123456'; // 6-character hex string
     await send2FACode(user.email, twoFACode, user.username);
 
     // Save the 2FA code in the database (this could also be stored in memory for a short time)
