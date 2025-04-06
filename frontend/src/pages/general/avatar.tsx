@@ -46,6 +46,13 @@ export const AvatarPage = () => {
       className="w-full min-h-screen bg-cover bg-center text-white p-8 flex flex-col items-center"
       style={{ backgroundImage: "url('/background/gray_background.jpg')" }}
     >
+      <button
+        onClick={() => navigate('/customization')}
+        className="absolute top-6 left-6 bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg font-semibold shadow-md"
+      >
+        🔙 Back to Customization
+      </button>
+
       <h1 className="text-4xl font-bold text-center mb-10">🎨 Pick Your Fighter</h1>
 
       <div className="w-full max-w-2xl flex flex-col gap-10">
