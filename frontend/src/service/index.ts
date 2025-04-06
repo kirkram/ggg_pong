@@ -1,5 +1,5 @@
 import axios from "axios"
-import { AppInfo, AppLoginInput, AppResponse, AppLoginCodeInput, AppLoginToken, AppRegisterInput, AppResetPassword, AppChangePassword } from "./interface"
+import { AppInfo, AppLoginInput, AppResponse, AppLoginCodeInput, AppLoginToken, AppRegisterInput, AppResetPassword, AppChangePassword, GameData } from "./interface"
 
 export const appClient = axios.create({
     baseURL: '/app',
@@ -30,3 +30,6 @@ export const appRegister = (data: AppRegisterInput) => appClient.post<AppRespons
 export const appResetPass = (data: AppResetPassword) => appClient.post<AppResponse>("/reset-password", data).then(data => data.data)
 
 export const appChangePass = (data: AppChangePassword) => appClient.post<AppResponse>("/update-password", data).then(data => data.data)
+
+export const startGame = (data: GameData) => appClient.post("/start-game", data).then(res => res.data);
+  

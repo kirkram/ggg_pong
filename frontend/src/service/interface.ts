@@ -78,3 +78,10 @@ export interface UserProfile {
     field: string;
     value: string;
   }
+
+  export interface GameData {
+    user: string
+    userAvatar: string
+    guest: string
+    guestAvatar: string
+  }

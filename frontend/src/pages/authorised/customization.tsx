@@ -1,36 +1,96 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { startGame } from "../../service";
 
 export const CustomazationPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [guestName, setGuestName] = useState("");
-  const [userAvatar, setUserAvatar] = useState<{ name: string, image: string } | null>(null);
-  const [guestAvatar, setGuestAvatar] = useState<{ name: string, image: string } | null>(null);
+  const [guestName, setGuestName] = useState(() => localStorage.getItem("guestName") || "");
 
-  const loggedInUsername = "pongMaster69"; // Replace with actual username logic
+  const [userAvatar, setUserAvatar] = useState<{ name: string; image: string } | null>(() => {
+    const saved = localStorage.getItem("userAvatar");
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  const [guestAvatar, setGuestAvatar] = useState<{ name: string; image: string } | null>(() => {
+    const saved = localStorage.getItem("guestAvatar");
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  const [loggedInUsername, setLoggedInUsername] = useState("");
+
+  useEffect(() => {
+    const token = localStorage.getItem("ping-pong-jwt");
+    if (token) {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      setLoggedInUsername(payload.username);
+    }
+  }, []);
 
   useEffect(() => {
     const state = location.state as {
       selectedAvatar?: { name: string; image: string };
       target?: "user" | "guest";
     };
+  
     if (state?.selectedAvatar && state.target) {
-      if (state.target === "user") setUserAvatar(state.selectedAvatar);
-      else setGuestAvatar(state.selectedAvatar);
+      if (state.target === "user") {
+        setUserAvatar(state.selectedAvatar);
+        localStorage.setItem("userAvatar", JSON.stringify(state.selectedAvatar));
+      } else {
+        setGuestAvatar(state.selectedAvatar);
+        localStorage.setItem("guestAvatar", JSON.stringify(state.selectedAvatar));
+      }
     }
   }, [location.state]);
+  
+  useEffect(() => {
+    localStorage.setItem("guestName", guestName);
+  }, [guestName]);  
 
   const chooseAvatar = (target: "user" | "guest") => {
-    navigate("/avatar", { state: { target } });
+    navigate("/avatar", {
+      state: { target },
+      replace: false,
+    });
   };
 
+  const startGameHandler = () => {
+    if (!userAvatar || !guestAvatar || !guestName) return;
+  
+    startGame({
+      user: loggedInUsername,
+      userAvatar: userAvatar.name,
+      guest: guestName,
+      guestAvatar: guestAvatar.name
+    })
+      .then(() => {
+        // ✅ Redirect to game page
+        navigate("/game", {
+          state: {
+            user: loggedInUsername,
+            guest: guestName,
+            userAvatar,
+            guestAvatar
+          }
+        });
+      })
+      .catch((err) => alert("Failed to start game: " + err.message));
+  };
+  
   return (
     <div
       className="w-full min-h-screen bg-cover bg-center text-white p-8 flex flex-col items-center"
       style={{ backgroundImage: "url('/background/gray_background.jpg')" }}
     >
+      <button
+        onClick={() => navigate('/menu')}
+        className="absolute top-6 left-6 bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg font-semibold shadow-md"
+      >
+        🔙 Back to Menu
+      </button>
+      
       <h1 className="text-4xl font-bold text-center mb-10">🧑‍🤝‍🧑 Choose Your Avatars</h1>
 
       <div className="w-full max-w-2xl flex flex-col gap-8 items-center">
@@ -80,14 +140,13 @@ export const CustomazationPage = () => {
         </div>
 
         {/* Start Game Button */}
-        {userAvatar && guestAvatar && guestName && (
-          <button
-            className="bg-green-600 hover:bg-green-700 px-8 py-4 rounded-xl text-2xl font-bold shadow-xl mt-4"
-            onClick={() => alert(`Starting game with ${loggedInUsername} vs ${guestName}`)}
-          >
-            LET’S GOOOO 🏓🔥
-          </button>
-        )}
+        <button
+          className="bg-green-600 hover:bg-green-700 px-8 py-4 rounded-xl text-2xl font-bold shadow-xl mt-4"
+          onClick={startGameHandler}
+        >
+          LET’S GOOOO 🏓🔥
+        </button>
+
       </div>
     </div>
   );

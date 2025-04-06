@@ -29,6 +29,12 @@ export const AvatarPage = () => {
   const location = useLocation();
   const target = (location.state as { target: "user" | "guest" })?.target || "user";
 
+  // Get previously selected avatars
+  const selectedUserAvatar = JSON.parse(localStorage.getItem("userAvatar") || "null");
+  const selectedGuestAvatar = JSON.parse(localStorage.getItem("guestAvatar") || "null");
+
+  const takenAvatar = target === "user" ? selectedGuestAvatar?.name : selectedUserAvatar?.name;
+
   const handleSelect = (avatar: Avatar) => {
     navigate("/customization", {
       state: { selectedAvatar: { name: avatar.name, image: avatar.image }, target },
@@ -43,21 +49,28 @@ export const AvatarPage = () => {
       <h1 className="text-4xl font-bold text-center mb-10">🎨 Pick Your Fighter</h1>
 
       <div className="w-full max-w-2xl flex flex-col gap-10">
-        {avatars.map((avatar) => (
-          <div
-            key={avatar.name}
-            onClick={() => handleSelect(avatar)}
-            className="bg-gray-800 rounded-xl p-6 shadow-lg hover:scale-105 transition-transform cursor-pointer text-center"
-          >
-            <img
-              src={avatar.image}
-              alt={avatar.name}
-              className="w-full max-h-[400px] object-contain mb-4 rounded-md border-4 border-gray-700"
-            />
-            <h2 className="text-2xl font-bold mb-2">{avatar.name}</h2>
-            <p className="text-gray-300 text-sm">{avatar.description}</p>
-          </div>
-        ))}
+        {avatars.map((avatar) => {
+          const isTaken = avatar.name === takenAvatar;
+
+          return (
+            <div
+              key={avatar.name}
+              onClick={() => !isTaken && handleSelect(avatar)}
+              className={`bg-gray-800 rounded-xl p-6 shadow-lg text-center transition-transform ${
+                isTaken ? "opacity-40 pointer-events-none" : "cursor-pointer hover:scale-105"
+              }`}
+            >
+              <img
+                src={avatar.image}
+                alt={avatar.name}
+                className="w-full max-h-[400px] object-contain mb-4 rounded-md border-4 border-gray-700"
+              />
+              <h2 className="text-2xl font-bold mb-2">{avatar.name}</h2>
+              <p className="text-gray-300 text-sm">{avatar.description}</p>
+              {isTaken && <p className="mt-2 text-red-400 text-sm font-semibold">Already taken</p>}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
