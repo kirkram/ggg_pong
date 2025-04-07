@@ -2,8 +2,8 @@ import { FastifyInstance } from "fastify";
 import { database } from "../database";
 
 export const gameRoutes = async (app: FastifyInstance) => {
-  // Save avatar selection session
-  app.post("/start-game", async (request, reply) => {
+  // Duel Game Route (unchanged)
+  app.post("/start-duel-game", async (request, reply) => {
     const { user, userAvatar, guest, guestAvatar } = request.body as {
       user: string;
       userAvatar: string;
@@ -20,12 +20,33 @@ export const gameRoutes = async (app: FastifyInstance) => {
       [user, userAvatar, guest, guestAvatar]
     );
 
-    return reply.send({ message: "Game session created successfully" });
+    return reply.send({ message: "Duel game session created successfully" });
   });
 
-  // Optional: fetch all sessions
-  app.get("/game-sessions", async (_, reply) => {
-    const sessions = await database.db.all(`SELECT * FROM game_sessions`);
+  // 🆕 Tournament Game Route
+  app.post("/start-tournament-game", async (request, reply) => {
+    const { user, userAvatar, guests } = request.body as {
+      user: string;
+      userAvatar: string;
+      guests: { username: string; avatar: string }[];
+    };
+
+    if (!user || !userAvatar || !Array.isArray(guests) || guests.length === 0) {
+      return reply.status(400).send({ error: "Missing or invalid fields" });
+    }
+
+    // Save session in tournament_sessions table
+    await database.db.run(
+      `INSERT INTO tournament_sessions (user, user_avatar, guests_json) VALUES (?, ?, ?)`,
+      [user, userAvatar, JSON.stringify(guests)]
+    );
+
+    return reply.send({ message: "Tournament session created successfully" });
+  });
+
+  // Fetch all tournament sessions
+  app.get("/tournament-sessions", async (_, reply) => {
+    const sessions = await database.db.all(`SELECT * FROM tournament_sessions`);
     return reply.send(sessions);
   });
 };

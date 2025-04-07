@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { startGame } from "../../service";
+import { startDuelGame } from "../../service";
 
 export const CustomazationPage = () => {
   const navigate = useNavigate();
@@ -29,6 +29,20 @@ export const CustomazationPage = () => {
   }, []);
 
   useEffect(() => {
+    const fromAvatar = location.state?.fromAvatar === true;
+  
+    if (!fromAvatar) {
+      // 🧹 Clear all stored customization state
+      localStorage.removeItem("userAvatar");
+      localStorage.removeItem("guestAvatar");
+      localStorage.removeItem("guestName");
+      localStorage.removeItem("guests");
+      localStorage.removeItem("guestCount");
+    }
+  }, []);
+  
+
+  useEffect(() => {
     const state = location.state as {
       selectedAvatar?: { name: string; image: string };
       target?: "user" | "guest";
@@ -51,15 +65,15 @@ export const CustomazationPage = () => {
 
   const chooseAvatar = (target: "user" | "guest") => {
     navigate("/avatar", {
-      state: { target },
+      state: { target, returnTo: "/customization" },
       replace: false,
     });
   };
-
+  
   const startGameHandler = () => {
     if (!userAvatar || !guestAvatar || !guestName) return;
   
-    startGame({
+    startDuelGame({
       user: loggedInUsername,
       userAvatar: userAvatar.name,
       guest: guestName,
@@ -67,7 +81,7 @@ export const CustomazationPage = () => {
     })
       .then(() => {
         // ✅ Redirect to game page
-        navigate("/game", {
+        navigate("/start-duel-game", {
           state: {
             user: loggedInUsername,
             guest: guestName,

@@ -79,9 +79,26 @@ export interface UserProfile {
     value: string;
   }
 
-  export interface GameData {
-    user: string
-    userAvatar: string
-    guest: string
-    guestAvatar: string
+//   export interface GameData {
+//     user: string
+//     userAvatar: string
+//     guest: string
+//     guestAvatar: string
+//   }
+
+export interface GameData {
+    user: string;
+    userAvatar: string;
+    guests: {
+      username: string;
+      avatar: string;
+    }[];
   }
+
+  export interface DuelGameData {
+    user: string;
+    userAvatar: string;
+    guest: string;
+    guestAvatar: string;
+  }
+  

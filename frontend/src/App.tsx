@@ -33,6 +33,7 @@ function App() {
               <Route path="/profile" element={<authorised.ProfilePage />} />
               <Route path="/connections" element={<authorised.ConnectionsPage />} />
               <Route path="/customization" element={<authorised.CustomazationPage />} />
+              <Route path="/customization-tournament" element={<authorised.CustomazationTournamentPage />} />
               <Route path="/avatar" element={<general.AvatarPage />} />
               <Route path="/user/:username" element={<general.UserProfilePage />} />
 

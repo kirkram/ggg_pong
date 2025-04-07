@@ -63,7 +63,7 @@ export const MenuPage = () => {
                         Ping Pong Duel 💥
                     </button>
                     <button
-                        onClick={() => navigate("/tournament")}
+                        onClick={() => navigate("/customization-tournament")}
                         className="bg-red-500 hover:bg-red-600 text-xl font-bold px-6 py-3 rounded-lg shadow-md w-60"
                     >
                         Tournament
