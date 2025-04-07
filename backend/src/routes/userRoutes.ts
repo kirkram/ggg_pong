@@ -49,6 +49,26 @@ export const userRoutes = async (app: FastifyInstance) => {
       return reply.code(500).send({ error: "Internal Server Error" });
     }
   });
+
+  app.get('/get-all-profiles', async (request, reply) => {
+    try {
+      const profiles = await database.db.all(
+        `SELECT username, wins, losses FROM users`
+      );
+  
+      if (!profiles || profiles.length === 0) {
+        console.debug("error fetching profiles:", profiles);
+        return reply.code(404).send({ error: "No profiles found" });
+      }
+      
+      console.debug("Fetched profiles:", profiles);
+  
+      return reply.send(profiles);
+    } catch (err) {
+      console.error("Error fetching profiles:", err);
+      return reply.code(500).send({ error: "Internal Server Error" });
+    }
+  });
   
   // Profile Update
   // app.patch('/update-field/:id', async (request, reply) => {

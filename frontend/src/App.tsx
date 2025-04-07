@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { AxiosError } from "axios"
+// import { AxiosError } from "axios"
 import { Navigate } from "react-router-dom";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AppInfoIface } from './context/app-info/interface';
 import { getAppInfo } from './service';
-import { getUserProfile, updateProfileField, uploadProfilePicture } from './service/userService'
+// import { getUserProfile, updateProfileField, uploadProfilePicture } from './service/userService'
 import { AppInfoContext } from './context/app-info/context';
 import { authorised, unauthorised, general } from "./pages"
 
@@ -19,8 +19,7 @@ function App() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div>app is loading</div>;
-
+  if (loading) return <div> <p className="text-4xl font-bold mb-6">App is loading</p></div>;
 
   return (
     <AppInfoContext.Provider value={appInfo}>
@@ -33,9 +32,9 @@ function App() {
               <Route path="/profile" element={<authorised.ProfilePage />} />
               <Route path="/connections" element={<authorised.ConnectionsPage />} />
               <Route path="/customization" element={<authorised.CustomazationPage />} />
+              <Route path="/gamestats" element={<authorised.GameStats />} />
               <Route path="/avatar" element={<general.AvatarPage />} />
               <Route path="/user/:username" element={<general.UserProfilePage />} />
-
             </>
           ) : (
             <>
