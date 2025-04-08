@@ -51,15 +51,30 @@ export async function friendshipRoutes(app: FastifyInstance) {
     const currentUserId = request.user.id;
   
     try {
+      // const friendships = await database.db.all(
+      //   `
+      //   SELECT *
+      //   FROM friendships
+      //   WHERE sender_id = ?
+      //   `,
+      //   [currentUserId]
+      // );
       const friendships = await database.db.all(
-        `
-        SELECT *
-        FROM friendships
-        WHERE sender_id = ?
-        `,
-        [currentUserId]
-      );
-  
+          `
+          SELECT
+            f.sender_id,
+            f.receiver_id,
+            f.receiver_username,
+            u.online_status,
+            f.status
+          FROM friendships f
+          JOIN users u ON u.id = f.receiver_id
+          WHERE f.sender_id = ?
+          `,
+          [currentUserId]
+        );
+
+
       return reply.send(friendships);
     } catch (error) {
       console.error("Error fetching friendships:", error);

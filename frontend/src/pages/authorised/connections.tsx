@@ -17,14 +17,24 @@ export const ConnectionsPage = () => {
 
         // Fetch the list of friendships (for this user) from the backend
         const response = await appClient.get('/friendships');
-        const friendships: { sender_id: number; receiver_id: number; receiver_username: string; status: string }[] = response.data;  // Explicitly type the friendships array
+        const friendships: {  sender_id: number; 
+                              receiver_id: number;
+                              receiver_username: string; 
+                              online_status: string;
+                              status: string }[] = response.data;  // Explicitly type the friendships array
   
         // Map to player objects from the friendships
         const players = friendships.map((f) => ({
-          id: f.receiver_id, // Receiver is the friend in this case
           self_id: f.sender_id,
+          id: f.receiver_id,
           username: f.receiver_username,
-          friendStatus: f.status,
+          online_status: f.online_status,
+          friendStatus: f.status
+          
+          // id: f.receiver_id, // Receiver is the friend in this case
+          // self_id: f.sender_id,
+          // username: f.receiver_username,
+          // friendStatus: f.status,
         }));
   
         setPlayers(players);
@@ -240,7 +250,17 @@ export const ConnectionsPage = () => {
             {players.map((player, index) => (
               <tr key={index} className="bg-gray-800">
                 <td className="px-4 py-2">{player.username}</td>
-                <td className="px-4 py-2">{player.online ? 'Online' : 'Offline'}</td>
+                {/* <td className="px-4 py-2">{player.online_status}</td>  */}
+                  <td className="px-4 py-2">
+                    <span
+                      className={`font-bold ${player.online_status === 'online' ? 'text-green-500' : ''}`}
+                    >
+                      {player.online_status}
+                    </span>
+                  </td>
+                {/* <td className="px-4 py-2">{player.online_status}</td> */}
+                {/* <td className="px-4 py-2">{player.online ? 'Online' : 'Offline'}</td> */}
+
                 <td className="px-4 py-2">
                   {player.friendStatus === 'Not Friend' && (
                     <button
