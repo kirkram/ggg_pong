@@ -9,6 +9,16 @@ export const getUserProfile = () => {
   return appClient.get<UserProfile>(`/get-profile/${userId}`).then((res) => res.data);
 };
 
+export const getUsernameFromToken = () => {
+  const token = localStorage.getItem('ping-pong-jwt');
+  if (token) {
+      const decoded: any = JSON.parse(atob(token.split('.')[1])); // Decode JWT payload
+      return decoded.username;
+  }
+  return '';
+};
+
+
 export const updateProfileField = (field: string, value: string) => {
   const token = localStorage.getItem("ping-pong-jwt");
   if (!token) throw new Error("User not authenticated");

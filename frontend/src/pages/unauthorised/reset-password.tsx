@@ -71,7 +71,7 @@ export const ResetPasswordPage = () => {
             )}
 
             {/* Right Section */}
-            <div className="w-1/2 bg-cover bg-center" style={{ backgroundImage: "url('/background/group-happy.webp')" }}></div>
+            <div className="w-1/2 bg-cover bg-center" style={{ backgroundImage: "url('/background/login.png')" }}></div>
         </div>
     );
 };

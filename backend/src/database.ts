@@ -52,6 +52,28 @@ export const initializeDatabase = async () => {
       )
     `);
 
+    await database.db.exec(`
+      CREATE TABLE IF NOT EXISTS game_sessions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user TEXT NOT NULL,
+        user_avatar TEXT NOT NULL,
+        guest TEXT NOT NULL,
+        guest_avatar TEXT NOT NULL,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        user_wins INTEGER DEFAULT 0,
+        guest_wins INTEGER DEFAULT 0
+      )
+    `);
+
+    await database.db.exec(`
+      CREATE TABLE IF NOT EXISTS tournament_sessions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user TEXT NOT NULL,
+        user_avatar TEXT NOT NULL,
+        guests_json TEXT NOT NULL
+      )
+    `);
+
     console.log('Database and table are ready');
   } catch (error) {
     console.error('Error creating database table:', error);
