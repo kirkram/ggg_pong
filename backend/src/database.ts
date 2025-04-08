@@ -28,12 +28,52 @@ export const initializeDatabase = async () => {
         lastName TEXT,
         dateOfBirth TEXT,
         gender TEXT CHECK(gender IN ('male', 'female', 'other')) DEFAULT 'other',
-        language TEXT DEFAULT 'english',
+        favAvatar TEXT CHECK(favAvatar IN ('None', 'QueenOfTheSpoons', 'JustBorn', 'Maslina', 'BossLady', 'Inka', 'Burek', 'Fish', 'WarMachine', 'Finn', 'GangGanger', 'StabIlity', 'VampBoy')) DEFAULT 'None',
+        language TEXT CHECK(language IN ('english', 'serbian', 'finnish', 'russian')) DEFAULT 'english',
         wins INTEGER DEFAULT 0,
         losses INTEGER DEFAULT 0,
-        profilePic TEXT DEFAULT '/default-profile.jpg'
+        profilePic TEXT,
+        online_status TEXT CHECK(online_status IN ('offline', 'online')) DEFAULT 'offline',
+        last_activity number DEFAULT 0
       )
     `);
+
+    // Create friendships table (if it doesn't exist)
+    await database.db.exec(`
+      CREATE TABLE IF NOT EXISTS friendships (
+        sender_id INTEGER NOT NULL,
+        receiver_id INTEGER NOT NULL,
+        sender_username TEXT NOT NULL,
+        receiver_username TEXT NOT NULL,
+        status TEXT NOT NULL CHECK (status IN ('Not Friend', 'Pending', 'Friend')),
+        PRIMARY KEY (sender_id, receiver_id),
+        FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    await database.db.exec(`
+      CREATE TABLE IF NOT EXISTS game_sessions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user TEXT NOT NULL,
+        user_avatar TEXT NOT NULL,
+        guest TEXT NOT NULL,
+        guest_avatar TEXT NOT NULL,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        user_wins INTEGER DEFAULT 0,
+        guest_wins INTEGER DEFAULT 0
+      )
+    `);
+
+    await database.db.exec(`
+      CREATE TABLE IF NOT EXISTS tournament_sessions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user TEXT NOT NULL,
+        user_avatar TEXT NOT NULL,
+        guests_json TEXT NOT NULL
+      )
+    `);
+
     console.log('Database and table are ready');
   } catch (error) {
     console.error('Error creating database table:', error);

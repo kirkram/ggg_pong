@@ -1,20 +1,26 @@
 import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
 import jwt from '@fastify/jwt';
 import { Env } from './env';
-import { initializeDatabase } from './database'; // Import the initializeDatabase function
-import { authRoutes } from './routes/authRoutes';  // Import authRoutes
-import { userRoutes } from './routes/userRoutes';  // Import userRoutes
+import { initializeDatabase } from './database'; 
+import { authRoutes } from './routes/authRoutes';
+import { userRoutes } from './routes/userRoutes';
+import { friendshipRoutes } from './routes/friendshipRoutes';
+import { startUserStatusUpdater } from './routes/userStatusUpdater';
+import { gameRoutes } from './routes/gameRoutes';
 
-// Augmenting the FastifyRequest type to include the user property
+
+
 declare module '@fastify/jwt' {
   interface FastifyJWT {
-    user: { username: string };
+    payload: { id: number; username: string }; // this is what you sign
+    user: { id: number; username: string };    // this is what you get on request.user
   }
 }
 
 declare module 'fastify' {
   interface FastifyRequest {
-    user: { username: string }
+    payload: { id: number; username: string };
+    user: { id: number; username: string }
   }
 
   interface FastifyInstance {
@@ -29,13 +35,12 @@ export const app = Fastify({ logger: Env.Logger });
 app.register(jwt, { secret: Env.JwtSecret });
 
 // Define the 'authenticate' decorator with proper types
-app.decorate('authenticate', async (request: FastifyRequest, reply: FastifyReply) => {
+app.decorate('authenticate', async function (request: FastifyRequest, reply: FastifyReply) {
   try {
-    // Verify the JWT token and attach the user data to request.user
-    const decoded = await request.jwtVerify() as { username: string };
-    request.user = { username: decoded.username }; // Safely cast the decoded token to the correct type
+    await request.jwtVerify();
+    // No need to reassign request.user manually here — Fastify JWT does it for you
   } catch (err) {
-    reply.status(401).send({ error: 'Unauthorized access' });
+    reply.status(401).send({ error: 'Unauthorized' });
   }
 });
 
@@ -45,6 +50,11 @@ initializeDatabase();
 // Register authentication and user routes
 app.register(authRoutes);
 app.register(userRoutes);
+app.register(friendshipRoutes);
+app.register(gameRoutes);
+
+// Start user status updater
+startUserStatusUpdater();  // Start the interval for updating user statuses
 
 // Root Route
 app.get('/', async (request, reply) => {
@@ -54,6 +64,10 @@ app.get('/', async (request, reply) => {
 
 // Protected Route Example (Use authenticate for JWT verification)
 app.get('/info', { preHandler: [app.authenticate] }, async (request, reply) => {
-  return reply.send({ user: request.user });
+  return reply.send({
+    user: request.user.username,
+    id: request.user.id
+  });
 });
+
 
