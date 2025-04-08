@@ -5,6 +5,8 @@ import { initializeDatabase } from './database'; // Import the initializeDatabas
 import { authRoutes } from './routes/authRoutes';  // Import authRoutes
 import { userRoutes } from './routes/userRoutes';  // Import userRoutes
 import { friendshipRoutes } from './routes/friendshipRoutes';
+import { startUserStatusUpdater } from './routes/userStatusUpdater';  // Import the user status updater
+
 
 // Augmenting the FastifyRequest type to include the user property
 // declare module '@fastify/jwt' {
@@ -68,6 +70,8 @@ app.register(authRoutes);
 app.register(userRoutes);
 app.register(friendshipRoutes);
 
+// Start user status updater
+startUserStatusUpdater();  // Start the interval for updating user statuses
 
 // Root Route
 app.get('/', async (request, reply) => {

@@ -49,28 +49,37 @@ app.post('/register', async (request, reply) => {
     // Insert new user into the database
     await database.db.run(
       `INSERT INTO users 
-         (username, password, email, gender, favAvatar, language, wins, losses, profilePic)
-         VALUES (?, ?, ?, 'other', 'None', 'english', 0, 0, '/profile-pics/default-profile.jpg')`,
+         (username, password, email, gender, favAvatar, language, wins, losses, profilePic, online_status, last_activity)
+         VALUES (?, ?, ?, 'other', 'None', 'english', 0, 0, '/profile-pics/default-profile.jpg', 'offline', 0)`,
       [username, hashedPassword, email]
     );
 
-    // Get the new user's ID
-    const newUser = await database.db.get('SELECT * FROM users WHERE username = ?', [username]);
+    // Get the new user's info
+    const newUser = await database.db.get('SELECT id, username FROM users WHERE username = ?', [username]);
     const newUserId = newUser.id;
+    const newUsername = newUser.username;
 
-    // Initialize friendships with "Not Friend" status for all other users
-    const users = await database.db.all('SELECT id FROM users WHERE id != ?', [newUserId]);
-    
-    const friendshipPromises = users.map((user: { id: number }) =>
+    // Get all existing users except the new user
+    const users = await database.db.all('SELECT id, username FROM users WHERE id != ?', [newUserId]);
+
+    // Create "Not Friend" entries in both directions
+    const friendshipPromises = users.flatMap((user: { id: number; username: string }) => [
       database.db.run(
-        `INSERT OR IGNORE INTO friendships (sender_id, receiver_id, status) VALUES (?, ?, 'Not Friend')`,
-        [newUserId, user.id]
+        `INSERT OR IGNORE INTO friendships 
+          (sender_id, receiver_id, sender_username, receiver_username, status) 
+        VALUES (?, ?, ?, ?, 'Not Friend')`,
+        [newUserId, user.id, newUsername, user.username]
+      ),
+      database.db.run(
+        `INSERT OR IGNORE INTO friendships 
+          (sender_id, receiver_id, sender_username, receiver_username, status) 
+        VALUES (?, ?, ?, ?, 'Not Friend')`,
+        [user.id, newUserId, user.username, newUsername]
       )
-    );
+    ]);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
 
-    // Wait for all friendship insertions to complete
     await Promise.all(friendshipPromises);
-
+  
     // Send a registration success email
     await sendRegisterSuccessEmail(email, username);
 
@@ -137,6 +146,8 @@ app.post('/register', async (request, reply) => {
 
     // Save the 2FA code in the database (this could also be stored in memory for a short time)
     await database.db.run('UPDATE users SET secret = ? WHERE username = ?', [twoFACode, username]);
+
+    await database.db.run(`UPDATE users SET online_status = 'online' WHERE username = ?`, [username]);
 
     return reply.send({ message: '2FA code sent to email. Please verify your code.' });
   });

@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { getUserProfile } from '../../service/UserService'; // Import your service
 import { appClient } from '../../service'; // Import appClient
 
 export const ConnectionsPage = () => {
@@ -12,91 +11,60 @@ export const ConnectionsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
- useEffect(() => {
+  useEffect(() => {
+    const fetchFriendships = async () => {
+      try {
 
-  const fetchUsers = async () => {
-    try {
-      // Get the current user's profile
-      const currentUser = await getUserProfile();
+        // Fetch the list of friendships (for this user) from the backend
+        const response = await appClient.get('/friendships');
+        const friendships: { sender_id: number; receiver_id: number; receiver_username: string; status: string }[] = response.data;  // Explicitly type the friendships array
   
-      // Fetch the list of all users from the backend
-      const response = await appClient.get('/users'); // This should now match the new endpoint
-      const allUsers = response.data;
+        // Map to player objects from the friendships
+        const players = friendships.map((f) => ({
+          id: f.receiver_id, // Receiver is the friend in this case
+          self_id: f.sender_id,
+          username: f.receiver_username,
+          friendStatus: f.status,
+        }));
+  
+        setPlayers(players);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching friendships:", err);
+        setError('Failed to load friendships');
+        setLoading(false);
+      }
+    };
+  
+    fetchFriendships();
+  }, []);
 
-      // Exclude the current user from the list of players
-      //const filteredUsers = allUsers.filter((user) => user.id !== currentUser.id);
 
-      const filteredUsers = allUsers.filter((user) => user.id !== currentUser.id).map((user) => ({
-        ...user,
-        friendStatus: user.friendStatus || 'Add Friend', // Ensure default value
-        showUnfriend: false,
-      }));
-    
-    console.log("filteredUsers:", filteredUsers);
-    setPlayers(filteredUsers);
-    
+  useEffect(() => {
+    const fetchFriendRequests = async () => {
+      try {
+        const response = await appClient.get('/friendships/requests');
+        setFriendRequests(response.data);
+      } catch (error) {
+        console.error("Error fetching friend requests:", error);
+      }
+    };
 
-      setPlayers(filteredUsers);
-      setLoading(false);
-    } catch (err) {
-      console.error("Error fetching users:", err);
-      setError('Failed to load users');
-      setLoading(false);
-    }
-  };
+    fetchFriendRequests(); // Initial fetch
+    const interval = setInterval(fetchFriendRequests, 5000); // Poll every 5 seconds
 
-    fetchUsers();
-  }, []);  
+    return () => clearInterval(interval); // Clean up on unmount
+  }, []); 
 
-//   // Fetch users from the backend
-//   useEffect(() => {
-//     const fetchUsers = async () => {
-//       try {
-//         // Get the current user's profile
-//         const currentUser = await getUserProfile();
-
-//         // Fetch the list of all users from the backend
-//         const response = await appClient.get('/users'); // Adjust the endpoint as needed
-//         const allUsers = response.data;
-
-//         // Exclude the current user from the list of players
-//         const filteredUsers = allUsers.filter((user) => user.id !== currentUser.id);
-//         setPlayers(filteredUsers);
-//         setLoading(false);
-//       } catch (err) {
-//         console.error("Error fetching users:", err);  // Log the error
-//         setError('Failed to load users');
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchUsers();
-//   }, []);
-
-  // Handle adding friends, unfriending, etc.
-  // const handleAddFriend = (index) => {
-  //   const newPlayers = [...players];
-  //   const player = newPlayers[index];
-
-  //   if (player.friendStatus === 'Add Friend') {
-  //     player.friendStatus = 'Pending';
-  //   } else if (player.friendStatus === 'Friend' || player.friendStatus === 'Pending') {
-  //     return;
-  //   }
-  //   setPlayers(newPlayers);
-  // };
 
   const handleAddFriend = async (index) => {
     const newPlayers = [...players];
     const player = newPlayers[index];
   
-    if (player.friendStatus === 'Add Friend') {
+    if (player.friendStatus === 'Not Friend') {
       try {
         // Send request to backend
-        console.log("FWendship Request...");
-
         await appClient.post('/friendships/request', { receiver_id: player.id });
-        console.log("FWendship Request DONE...");
 
         // Update frontend state only if request succeeds
         player.friendStatus = 'Pending';
@@ -107,17 +75,25 @@ export const ConnectionsPage = () => {
     }
   };
 
-  const handleUnfriend = (index) => {
+  const handleUnfriend = async (index) => {
     const newPlayers = [...players];
     const player = newPlayers[index];
 
-    if (player.friendStatus === 'Friend') {
-      player.friendStatus = 'Add Friend';
-      player.showUnfriend = false;
-    }
+    // Unfriend in backend
+    await appClient.put('/friendships/unfriend', {
+      sender_id: player.self_id,
+      receiver_id: player.id,
+    });
+  
+    // Unfriend in Frontend
+    player.friendStatus = 'Not Friend';
+    player.showUnfriend = false;
+  
+    // Save in Frontend state
     setPlayers(newPlayers);
   };
 
+  // Clicking "Friend" button will reveal an "unfriend" button
   const handleFriendClick = (index) => {
     const newPlayers = [...players];
     const player = newPlayers[index];
@@ -129,16 +105,68 @@ export const ConnectionsPage = () => {
   };
 
   // Handle friend request accept or decline
-  const handleRequestAction = (index, action) => {
+  const handleRequestAction = async (index, action) => {
     const newRequests = [...friendRequests];
+    const Request = newRequests[index]; 
+  
     if (action === 'accept') {
-      const acceptedUser = newRequests.splice(index, 1)[0];
-      const newPlayers = [...players, { username: acceptedUser.username, online: true, friendStatus: 'Friend', showUnfriend: false }];
-      setPlayers(newPlayers);
+      try {
+        // Send a request to the backend to update both friendship statuses
+        await appClient.put('/friendships/accept', {
+          sender_id: Request.sender_id,       // The sender of the request
+          receiver_id: Request.receiver_id,   // The receiver (current user)
+        });
+  
+        // Remove the accepted request from the list
+        newRequests.splice(index, 1);
+  
+        // Update the players' friend statuses
+        const newPlayers = players.map(player => {
+          if (player.id === Request.sender_id) {
+            return {
+              ...player,
+              friendStatus: 'Friend',  // Update sender's friend status
+            };
+          }
+          return player;
+        });
+  
+        // Update state after accepting the request
+        setPlayers(newPlayers);
+        setFriendRequests(newRequests);
+      } catch (error) {
+        console.error("Error accepting friend request:", error);
+      }
     } else if (action === 'decline') {
+      await appClient.put('/friendships/decline', {
+        sender_id: Request.sender_id,
+        receiver_id: Request.receiver_id,
+      }); 
+
+      // Remove the declined request from the list
       newRequests.splice(index, 1);
+      setFriendRequests(newRequests);
+
+        // Update the players' friend statuses
+        const newPlayers = players.map(player => {
+          if (player.id === Request.sender_id) {
+            return {
+              ...player,
+              friendStatus: 'Not Friend',  // Update sender's friend status
+            };
+          }
+          if (player.id === Request.receiver_id) {
+            return {
+              ...player,
+              friendStatus: 'Friend',  // Update receiver's friend status
+            };
+          }
+          return player;
+        });
+
+
+        setPlayers(newPlayers);
     }
-    setFriendRequests(newRequests);
   };
 
   // Render the page
@@ -180,7 +208,7 @@ export const ConnectionsPage = () => {
             ) : (
               friendRequests.map((request, index) => (
                 <div key={index} className="flex justify-center items-center bg-gray-800 p-4 my-2 rounded-lg">
-                  <span className="text-white mr-4">{request.username}</span>
+                  <span className="text-white mr-4">{request.sender_username}</span>
                   <button
                     onClick={() => handleRequestAction(index, 'accept')}
                     className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg text-white mx-2"
@@ -214,7 +242,7 @@ export const ConnectionsPage = () => {
                 <td className="px-4 py-2">{player.username}</td>
                 <td className="px-4 py-2">{player.online ? 'Online' : 'Offline'}</td>
                 <td className="px-4 py-2">
-                  {player.friendStatus === 'Add Friend' && (
+                  {player.friendStatus === 'Not Friend' && (
                     <button
                       onClick={() => handleAddFriend(index)}
                       className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-white inline-block mx-2"

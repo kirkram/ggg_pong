@@ -32,7 +32,9 @@ export const initializeDatabase = async () => {
         language TEXT CHECK(language IN ('english', 'serbian', 'finnish', 'russian')) DEFAULT 'english',
         wins INTEGER DEFAULT 0,
         losses INTEGER DEFAULT 0,
-        profilePic TEXT 
+        profilePic TEXT,
+        online_status TEXT CHECK(online_status IN ('offline', 'online')) DEFAULT 'offline',
+        last_activity number DEFAULT 0
       )
     `);
 
@@ -41,13 +43,15 @@ export const initializeDatabase = async () => {
       CREATE TABLE IF NOT EXISTS friendships (
         sender_id INTEGER NOT NULL,
         receiver_id INTEGER NOT NULL,
+        sender_username TEXT NOT NULL,
+        receiver_username TEXT NOT NULL,
         status TEXT NOT NULL CHECK (status IN ('Not Friend', 'Pending', 'Friend')),
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (sender_id, receiver_id),
         FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
         FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
       )
-    `);    
+    `);
+
     console.log('Database and table are ready');
   } catch (error) {
     console.error('Error creating database table:', error);

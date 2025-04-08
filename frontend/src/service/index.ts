@@ -30,3 +30,5 @@ export const appRegister = (data: AppRegisterInput) => appClient.post<AppRespons
 export const appResetPass = (data: AppResetPassword) => appClient.post<AppResponse>("/reset-password", data).then(data => data.data)
 
 export const appChangePass = (data: AppChangePassword) => appClient.post<AppResponse>("/update-password", data).then(data => data.data)
+
+export const appLogout = () => appClient.put<{ message: string }>('/logout').then(data => data.data);

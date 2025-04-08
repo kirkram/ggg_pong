@@ -1,12 +1,26 @@
 import { useNavigate } from 'react-router-dom';
+import { appLogout } from "../../service"
 
 export const MenuPage = () => {
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-        localStorage.removeItem("ping-pong-jwt");
-        navigate("/"); // Redirect to Landing Page after logout
-        window.location.reload(); // Ensures state is reset
+    // const handleLogout = () => {
+    //     localStorage.removeItem("ping-pong-jwt");
+    //     navigate("/"); // Redirect to Landing Page after logout
+    //     window.location.reload(); // Ensures state is reset
+    // };
+
+    const handleLogout = async () => {
+        try {
+            const response = await appLogout();
+            console.log(response.message); // 'Logged out and status set to offline'
+
+            localStorage.removeItem("ping-pong-jwt");
+            navigate("/"); // Redirect to Landing Page after logout
+            window.location.reload(); // Ensures state is reset
+        } catch (error) {
+            console.error('Error logging out:', error);
+        }
     };
 
     return (
