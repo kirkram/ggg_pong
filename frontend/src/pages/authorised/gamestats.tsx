@@ -17,12 +17,9 @@ export const GameStats: React.FC = () => {
   useEffect(() => {
     const fetchProfiles = async () => {
       try {
-        const response = await getGamestatsProfile();
-        if (!response.ok) {
-          throw new Error(`Error: ${response.statusText}`);
-        }
-        const data: UserProfile[] = await response.json();
+        const data: UserProfile[] = await getGamestatsProfile();
         setProfiles(data);
+        console.debug(data);
       } catch (err) {
         if (err instanceof Error) {
           setError(err.message); // Safely access 'message'
@@ -41,22 +38,12 @@ export const GameStats: React.FC = () => {
     } catch (err) {
       console.error('Error during data fetching:', err);
     } finally {
-      checkProfiles();
       setLoading(false); // Set loading to false after both are finished
     }
   };
 
   fetchData();
   }, []);
-
-  const checkProfiles = () => {
-    console.log('cehcking profiles');
-    console.log(profiles.length);
-
-    profiles.forEach((profile) => {
-      console.log(profile.wins);
-    })
-  }
 
 
   if (loading || !profile) {return <div className="text-white p-44">Loading...</div>;}

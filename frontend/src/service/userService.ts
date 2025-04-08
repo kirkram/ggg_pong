@@ -1,13 +1,24 @@
 import { appClient } from "./index"
 import { UserProfile } from "./interface"
 
-export const getUserProfile = () => {
+export const getUserProfile = async () => {
   const token = localStorage.getItem("ping-pong-jwt");
   if (!token) throw new Error("User not authenticated");
   const payload = JSON.parse(atob(token.split(".")[1]));
   const userId = payload.id;
   
-  return appClient.get<UserProfile>(`/get-profile/${userId}`).then((res) => res.data);
+  try {
+    const response = await appClient.get<UserProfile>(`/get-profile/${userId}`);
+    
+    if (response.status >= 200 && response.status < 300) {
+      return response.data; 
+    } else {
+      throw new Error(`Error: ${response.status} - ${response.statusText}`);
+    }
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    throw error; 
+  }
 };
 
 export const getGamestatsProfile = () => {
