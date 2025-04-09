@@ -16,7 +16,7 @@ export function loadGameAssets(): Promise<GameAssets>
 			const music = new Audio();
 
 			table.src = '/game_assets/table.png'
-			paddle1.src = '/gase_assets/paddle1.png'
+			paddle1.src = '/game_assets/paddle1.png'
 			paddle2.src = '/game_assets/paddle2.png'
 			music.src = '/game_assets/ponging.wav'
 

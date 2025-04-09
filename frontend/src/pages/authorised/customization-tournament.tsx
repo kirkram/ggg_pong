@@ -148,7 +148,7 @@ export const CustomazationTournamentPage = () => {
 
         startGame(payload)
             .then(() =>
-                navigate("/start-tournament-game", {
+                navigate("/game/play?mode=tournament", {
                     state: {
                         user: loggedInUsername,
                         userAvatar,

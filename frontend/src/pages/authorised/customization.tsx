@@ -81,7 +81,7 @@ export const CustomazationPage = () => {
     })
       .then(() => {
         // ✅ Redirect to game page
-        navigate("/start-duel-game", {
+        navigate("/game/play?mode=duel", {
           state: {
             user: loggedInUsername,
             guest: guestName,

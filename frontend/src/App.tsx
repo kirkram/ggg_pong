@@ -8,6 +8,9 @@ import { getUserProfile, updateProfileField, uploadProfilePicture } from './serv
 import { AppInfoContext } from './context/app-info/context';
 import { authorised, unauthorised, general } from "./pages"
 
+// Pong
+import PongGame from './pages/game/PongGame';
+
 function App() {
   const [loading, setLoading] = useState(true);
   const [appInfo, setAppInfo] = useState<AppInfoIface | undefined>(undefined);
@@ -36,6 +39,7 @@ function App() {
               <Route path="/customization-tournament" element={<authorised.CustomazationTournamentPage />} />
               <Route path="/avatar" element={<general.AvatarPage />} />
               <Route path="/user/:username" element={<general.UserProfilePage />} />
+			  <Route path="/game/play" element={<PongGame />} />
 
             </>
           ) : (
