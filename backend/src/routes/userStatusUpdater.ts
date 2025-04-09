@@ -18,5 +18,5 @@ export const updateUserStatuses = async () => {
 
 // Set an interval to update user statuses every 5 minutes
 export const startUserStatusUpdater = () => {
-  setInterval(updateUserStatuses, 5 * 60 * 1000);  // 5 minutes interval
+  setInterval(updateUserStatuses, 5 * 60 * 1000);  // 5 minutes interval //5 * 60 * 1000
 };
