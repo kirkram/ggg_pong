@@ -4,6 +4,7 @@ export { ProfilePage } from "./profile"
 export { ConnectionsPage } from "./connections"
 export { CustomazationPage } from "./customization"
 export { CustomazationTournamentPage } from "./customization-tournament"
+export { GameStats } from "./gamestats"
 
 export const Dashboard = () => {
     const appInfo = useAppInfo()

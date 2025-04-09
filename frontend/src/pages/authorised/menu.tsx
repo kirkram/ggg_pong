@@ -118,6 +118,13 @@ export const MenuPage = () => {
                 >
                     Check out the Gang! 👊
                 </button>
+              
+                <button
+                    onClick={() => navigate("/gamestats")}
+                    className="absolute top-34 right-6 bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-white font-semibold shadow-md"
+                >
+                    Game Stats 🏆
+                </button>
             </div>
         </div>
     );

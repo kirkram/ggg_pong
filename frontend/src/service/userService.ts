@@ -1,12 +1,24 @@
 import { appClient } from "./index";
-import { UserProfile } from "./interface";
+import { UserProfile, Game } from "./interface";
 
-export const getUserProfile = () => {
+export const getUserProfile = async () => {
   const token = localStorage.getItem("ping-pong-jwt");
   if (!token) throw new Error("User not authenticated");
   const payload = JSON.parse(atob(token.split(".")[1]));
   const userId = payload.id;
-  return appClient.get<UserProfile>(`/get-profile/${userId}`).then((res) => res.data);
+
+  try {
+    const response = await appClient.get<UserProfile>(`/get-profile/${userId}`);
+
+    if (response.status >= 200 && response.status < 300) {
+      return response.data;
+    } else {
+      throw new Error(`Error: ${response.status} - ${response.statusText}`);
+    }
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    throw error;
+  }
 };
 
 export const getUsernameFromToken = () => {
@@ -55,6 +67,7 @@ export const uploadProfilePicture = async (file: File) => {
     .then((res) => res.data);
 };
 
+
 export const getFriends = () => {
   const token = localStorage.getItem("ping-pong-jwt");
   if (!token) throw new Error("User not authenticated");
@@ -92,4 +105,29 @@ export const declineFriendRequest = (friendshipId: number) => {
 
 export const removeFriend = (friendshipId: number) => {
   return appClient.delete(`/friendships/${friendshipId}`);
+
+export const getGamestatsProfile = () => {
+  const token = localStorage.getItem("ping-pong-jwt");
+  if (!token) throw new Error("User not authenticated");
+
+  return appClient
+    .get<UserProfile[]>("/get-all-profiles", {
+      headers: {
+        Authorization: `Bearer ${token}`, //TODO
+      },
+    })
+    .then((res) => res.data);
+};
+
+export const addGameToTable = async (file: Game) => {
+  const token = localStorage.getItem("ping-pong-jwt");
+  if (!token) throw new Error("User not authenticated");
+
+  return appClient
+    .post<Game>("/post-game", file, {
+      headers: {
+        Authorization: `Bearer ${token}`, //TODO
+      },
+    })
+    .then((res) => res.data);
 };
