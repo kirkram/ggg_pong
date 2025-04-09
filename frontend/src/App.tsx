@@ -15,7 +15,11 @@ function App() {
   useEffect(() => {
     getAppInfo()
       .then(setAppInfo)
-      .catch(console.log)
+      .catch(err => {
+        if (err.response?.status !== 401) {
+          console.error(err); // only log if not 401
+        }
+      })
       .finally(() => setLoading(false));
   }, []);
 

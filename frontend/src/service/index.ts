@@ -19,7 +19,20 @@ appClient.interceptors.request.use(
     }
 );
 
-export const getAppInfo = () => appClient.get<AppInfo>('/info').then(data => data.data)
+// export const getAppInfo = () => appClient.get<AppInfo>('/info').then(data => data.data)
+
+export const getAppInfo = async (): Promise<AppInfo | undefined> => {
+    try {
+      const res = await appClient.get<AppInfo>('/info');
+      return res.data;
+    } catch (err: any) {
+      if (err.response?.status === 401) {
+        return undefined; // silently fail for unauthorized
+      }
+      throw err; // propagate other errors
+    }
+  };
+
 
 export const appLogin = (data: AppLoginInput) => appClient.post<AppResponse>("/login", data).then(data => data.data)
 
