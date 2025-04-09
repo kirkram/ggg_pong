@@ -29,7 +29,7 @@ const avatars: Avatar[] = [
   },
   {
     name: "JustBorn",
-    image: "/avatars/just_born/f4bcae28-4391-4bd0-a032-d673a9068e28.png",
+    image: "/avatars/just_born/15f073e5-ef4d-409c-81d6-dba100a94bd0.png",
     description: "Sweet, cheerful, and totally clueless... until he finds himself in a ping pong match, where his Irresistable Vibes becomes his Secret Weapon! 🏓😂",
   },
   {
