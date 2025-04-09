@@ -3,6 +3,7 @@ export { MenuPage } from "./menu"
 export { ProfilePage } from "./profile"
 export { ConnectionsPage } from "./connections"
 export { CustomazationPage } from "./customization"
+export { CustomazationTournamentPage } from "./customization-tournament"
 export { GameStats } from "./gamestats"
 
 export const Dashboard = () => {

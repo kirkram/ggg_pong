@@ -30,37 +30,99 @@ interface ChangePasswordInput {
   password: string
 }
 
+// In authRoutes.ts
 export const authRoutes = async (app: FastifyInstance) => {
-  app.post('/register', async (request, reply) => {
-    try {
-      const { username, password, email } = request.body as RegisterInput;
-  
-      const existingUser = await database.db.get(
-        'SELECT * FROM users WHERE username = ? OR email = ?',
-        [username, email]
-      );
-      if (existingUser) {
-        return reply.status(400).send({ error: 'User already exists' });
-      }
-  
-      const hashedPassword = await bcrypt.hash(password, 10);
-  
-      await database.db.run(
-        `INSERT INTO users 
-          (username, password, email, gender, favAvatar, language, wins, losses, profilePic)
-         VALUES (?, ?, ?, 'other', 'None', 'english', 0, 0, '/profile-pics/default-profile.jpg')`,
-        [username, hashedPassword, email]
-      );
-  
-      await sendRegisterSuccessEmail(email, username);
-      return reply.send({ message: 'User registered successfully' });
-  
-    } catch (err) {
-      console.error("🔥 Registration error:", err); // Look for this in your terminal
-      return reply.code(500).send({ error: 'Internal Server Error' });
+app.post('/register', async (request, reply) => {
+  try {
+    const { username, password, email } = request.body as RegisterInput;
+
+    const existingUser = await database.db.get(
+      'SELECT * FROM users WHERE username = ? OR email = ?',
+      [username, email]
+    );
+    if (existingUser) {
+      return reply.status(400).send({ error: 'User already exists' });
     }
-  });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Insert new user into the database
+    await database.db.run(
+      `INSERT INTO users 
+         (username, password, email, gender, favAvatar, language, wins, losses, profilePic, online_status, last_activity)
+         VALUES (?, ?, ?, 'other', 'None', 'english', 0, 0, '/profile-pics/default-profile.jpg', 'offline', 0)`,
+      [username, hashedPassword, email]
+    );
+
+    // Get the new user's info
+    const newUser = await database.db.get('SELECT id, username FROM users WHERE username = ?', [username]);
+    const newUserId = newUser.id;
+    const newUsername = newUser.username;
+
+    // Get all existing users except the new user
+    const users = await database.db.all('SELECT id, username FROM users WHERE id != ?', [newUserId]);
+
+    // Create "Not Friend" entries in both directions
+    const friendshipPromises = users.flatMap((user: { id: number; username: string }) => [
+      database.db.run(
+        `INSERT OR IGNORE INTO friendships 
+          (sender_id, receiver_id, sender_username, receiver_username, status) 
+        VALUES (?, ?, ?, ?, 'Not Friend')`,
+        [newUserId, user.id, newUsername, user.username]
+      ),
+      database.db.run(
+        `INSERT OR IGNORE INTO friendships 
+          (sender_id, receiver_id, sender_username, receiver_username, status) 
+        VALUES (?, ?, ?, ?, 'Not Friend')`,
+        [user.id, newUserId, user.username, newUsername]
+      )
+    ]);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+
+    await Promise.all(friendshipPromises);
   
+    // Send a registration success email
+    await sendRegisterSuccessEmail(email, username);
+
+    return reply.send({ message: 'User registered successfully' });
+
+  } catch (err) {
+    console.error("🔥 Registration error:", err);
+    return reply.code(500).send({ error: 'Internal Server Error' });
+  }
+});
+
+
+// export const authRoutes = async (app: FastifyInstance) => {
+//   app.post('/register', async (request, reply) => {
+//     try {
+//       const { username, password, email } = request.body as RegisterInput;
+  
+//       const existingUser = await database.db.get(
+//         'SELECT * FROM users WHERE username = ? OR email = ?',
+//         [username, email]
+//       );
+//       if (existingUser) {
+//         return reply.status(400).send({ error: 'User already exists' });
+//       }
+  
+//       const hashedPassword = await bcrypt.hash(password, 10);
+  
+//       await database.db.run(
+//         `INSERT INTO users 
+//           (username, password, email, gender, favAvatar, language, wins, losses, profilePic)
+//          VALUES (?, ?, ?, 'other', 'None', 'english', 0, 0, '/profile-pics/default-profile.jpg')`,
+//         [username, hashedPassword, email]
+//       );
+  
+//       await sendRegisterSuccessEmail(email, username);
+//       return reply.send({ message: 'User registered successfully' });
+  
+//     } catch (err) {
+//       console.error("🔥 Registration error:", err); // Look for this in your terminal
+//       return reply.code(500).send({ error: 'Internal Server Error' });
+//     }
+//   });
+
 
   // Login Route
   app.post('/login', async (request, reply) => {
@@ -84,6 +146,8 @@ export const authRoutes = async (app: FastifyInstance) => {
 
     // Save the 2FA code in the database (this could also be stored in memory for a short time)
     await database.db.run('UPDATE users SET secret = ? WHERE username = ?', [twoFACode, username]);
+
+    await database.db.run(`UPDATE users SET online_status = 'online' WHERE username = ?`, [username]);
 
     return reply.send({ message: '2FA code sent to email. Please verify your code.' });
   });

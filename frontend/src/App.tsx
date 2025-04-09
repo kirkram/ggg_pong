@@ -4,7 +4,7 @@ import { Navigate } from "react-router-dom";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AppInfoIface } from './context/app-info/interface';
 import { getAppInfo } from './service';
-// import { getUserProfile, updateProfileField, uploadProfilePicture } from './service/userService'
+import { getUserProfile, getUsernameFromToken, updateProfileField, uploadProfilePicture } from './service/userService'
 import { AppInfoContext } from './context/app-info/context';
 import { authorised, unauthorised, general } from "./pages"
 
@@ -15,7 +15,11 @@ function App() {
   useEffect(() => {
     getAppInfo()
       .then(setAppInfo)
-      .catch(console.log)
+      .catch(err => {
+        if (err.response?.status !== 401) {
+          console.error(err); // only log if not 401
+        }
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -32,6 +36,7 @@ function App() {
               <Route path="/profile" element={<authorised.ProfilePage />} />
               <Route path="/connections" element={<authorised.ConnectionsPage />} />
               <Route path="/customization" element={<authorised.CustomazationPage />} />
+              <Route path="/customization-tournament" element={<authorised.CustomazationTournamentPage />} />
               <Route path="/gamestats" element={<authorised.GameStats />} />
               <Route path="/avatar" element={<general.AvatarPage />} />
               <Route path="/user/:username" element={<general.UserProfilePage />} />

@@ -3,14 +3,13 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { database } from "../database";
 import { Env } from "../env";
-import { useResolvedPath } from "react-router-dom";
+//import { useResolvedPath } from 'react-router-dom'
 import { fdatasync } from "fs";
 import fastifyMultipart from "@fastify/multipart";
 import fs from "fs";
 import { dirname } from "path";
 import { pipeline } from "stream/promises";
 import { sendGameAchievementEmail } from "../emailService";
-// import { Game } from '../../../frontend/src/service/interface'
 
 // change it completely when you start working on user stuff!!!
 interface UpdateField {
@@ -18,23 +17,19 @@ interface UpdateField {
   value: any;
 }
 
+interface LogoutInput {
+  username: string;
+}
+
 export const userRoutes = async (app: FastifyInstance) => {
   // Retrieving Profile Data
-  // app.get('/get-profile/:id', async (request, reply) => {
-  //   const { id } = request.params as { id: string };
-  //   const profile = await database.db.get(
-  //     'SELECT username, email, profilePic, firstName, lastName, gender, dateOfBirth, wins, losses, language, favAvatar FROM users WHERE id = ?'
-  //     , [id]);
-  //     return reply.send(profile);
-  // })
-
   app.get("/get-profile/:id", async (request, reply) => {
     const { id } = request.params as { id: string };
     console.log("Fetching profile for ID:", id); // 👈 Add this line
 
     try {
       const profile = await database.db.get(
-        `SELECT username, email, profilePic, firstName, lastName, gender, dateOfBirth, wins, losses, language 
+        `SELECT username, email, profilePic, firstName, lastName, gender, dateOfBirth, wins, losses, language, favAvatar 
          FROM users WHERE id = ?`,
         [id]
       );
@@ -71,20 +66,6 @@ export const userRoutes = async (app: FastifyInstance) => {
   });
 
   // Profile Update
-  // app.patch('/update-field/:id', async (request, reply) => {
-  //   const { id } = request.params as { id: string };
-  //   const { field, value } = request.body as UpdateField;
-
-  //   const allowedFields = ['firstNAme', 'lastName', 'gender', 'dateOfBirth', 'language'];
-  //   if (!allowedFields.includes(field)) {
-  //     return reply.code(400).send({error: 'Field not allowed to update'});
-  //   }
-
-  //   const query = 'UPDATE users SET ${field} = ? WHERE id = ?';
-  //   await database.db.run(query, [value, id]);
-
-  //   return reply.send({ success: true });
-  // });
   app.patch("/update-field/:id", async (request, reply) => {
     const { id } = request.params as { id: string };
     const { field, value } = request.body as { field: string; value: string };
@@ -195,6 +176,23 @@ export const userRoutes = async (app: FastifyInstance) => {
     return reply.send({
       message: `Game result: ${username} finished in position ${position}`,
     });
+  });
+
+  app.put("/logout", async (request, reply) => {
+    const { username } = request.body as LogoutInput;
+
+    try {
+      // Set the user status to offline when logging out
+      await database.db.run(
+        `UPDATE users SET online_status = 'offline' WHERE username = ?`,
+        [username]
+      );
+
+      return reply.send({ message: "Logged out and status set to offline" });
+    } catch (error) {
+      console.error("Error updating status:", error);
+      return reply.status(500).send({ error: "Failed to log out" });
+    }
   });
 
   app.post("/post-game", async (request, reply) => {

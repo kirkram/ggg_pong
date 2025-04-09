@@ -32,5 +32,9 @@ cd frontend
 npm i 
 npm run dev
 ```
-## Docker (later):
+# Run the app in Docker:
 docker compose up --build
+
+## Clean the Docker:
+docker compose down --volumes --remove-orphans
+docker system prune -a --volumes -f

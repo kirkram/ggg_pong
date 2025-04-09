@@ -21,13 +21,15 @@ export const getUserProfile = async () => {
   }
 };
 
-// export const updateProfileField = (field: string, value: string) => {
-//   const token = localStorage.getItem("ping-pong-jwt");
-//   if (!token) throw new Error("User not authenticated");
-//   const payload = JSON.parse(atob(token.split(".")[1]));
-//   const userId = payload.id;
-//   return appClient.patch(`/update-field/${userId}`, { field, value }).then((res) => res.data);
-// };
+export const getUsernameFromToken = () => {
+  const token = localStorage.getItem("ping-pong-jwt");
+  if (token) {
+    const decoded: any = JSON.parse(atob(token.split(".")[1])); // Decode JWT payload
+    return decoded.username;
+  }
+  return "";
+};
+
 export const updateProfileField = (field: string, value: string) => {
   const token = localStorage.getItem("ping-pong-jwt");
   if (!token) throw new Error("User not authenticated");
@@ -62,6 +64,52 @@ export const uploadProfilePicture = async (file: File) => {
       headers: { "Content-Type": "multipart/form-data" },
     })
     .then((res) => res.data);
+};
+
+export const getFriends = () => {
+  const token = localStorage.getItem("ping-pong-jwt");
+  if (!token) throw new Error("User not authenticated");
+  const payload = JSON.parse(atob(token.split(".")[1]));
+  const userId = payload.id;
+
+  return appClient
+    .get(`/friendships?user_id=${userId}&status=Friend`)
+    .then((res) => res.data);
+};
+
+export const getFriendRequests = () => {
+  const token = localStorage.getItem("ping-pong-jwt");
+  if (!token) throw new Error("User not authenticated");
+  const payload = JSON.parse(atob(token.split(".")[1]));
+  const userId = payload.id;
+
+  return appClient
+    .get(`/friendships?user_id=${userId}&status=Pending`)
+    .then((res) => res.data);
+};
+
+export const sendFriendRequest = (receiverId: number) => {
+  const token = localStorage.getItem("ping-pong-jwt");
+  if (!token) throw new Error("User not authenticated");
+  const payload = JSON.parse(atob(token.split(".")[1]));
+  const senderId = payload.id;
+
+  return appClient.post(`/friendships/request`, {
+    sender_id: senderId,
+    receiver_id: receiverId,
+  });
+};
+
+export const acceptFriendRequest = (friendshipId: number) => {
+  return appClient.patch(`/friendships/${friendshipId}`, { status: "Friend" });
+};
+
+export const declineFriendRequest = (friendshipId: number) => {
+  return appClient.delete(`/friendships/${friendshipId}`);
+};
+
+export const removeFriend = (friendshipId: number) => {
+  return appClient.delete(`/friendships/${friendshipId}`);
 };
 
 export const getGamestatsProfile = () => {
