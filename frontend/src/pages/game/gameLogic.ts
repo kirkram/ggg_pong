@@ -3,15 +3,25 @@
 import { RefObject } from 'react'
 import { loadGameAssets } from './loadAssets'
 
-export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>)
+export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>, mode?: string, sessionData?: any)
 {
 	const canvas = canvasRef.current
 	if (!canvas) return
 	const ctx = canvas.getContext('2d')
 	if (!ctx) return
 
-	loadGameAssets().then(({ table, paddle1, paddle2, music }) =>
+	//music
+	let animationId: number
+	let music: HTMLAudioElement
+	let keydownHandler: (e: KeyboardEvent) => void;
+	let stopped = false;
+
+	loadGameAssets().then(({ table, paddle1, paddle2, music: loadedMusic }) =>
 	{
+		if (stopped) return
+
+		music = loadedMusic
+
 		let paddleY = 250
 		let paddleY2 = 250
 		let paddleProgress = 0.5
@@ -41,6 +51,7 @@ export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>)
 
 		const draw = () => 
 		{
+			
 			//draw background
 			ctx.fillStyle = '#87CEEB'
 			ctx.fillRect(0, 0, canvas.width, canvas.height)
@@ -149,13 +160,13 @@ export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>)
 		const update = () => 
 		{
 			draw()
-			requestAnimationFrame(update)
+			animationId = requestAnimationFrame(update)
 		}
 
 		// THE KEYS ARE HERE!!
-		document.addEventListener('keydown', (e) =>
+		keydownHandler = (e: KeyboardEvent) =>
 		{
-			if (music.paused)
+			if (music && music.paused)
 			{
 				music.loop = true
 				music.volume = 0.6
@@ -164,26 +175,41 @@ export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>)
 					console.log("Audio failed to play:", e)
 				})
 			}
-			if (e.key === 'd')
-			{
+			if (e.key === 'd') {
 				paddleProgress = Math.min(1, paddleProgress + 0.02)
 			}
-			if (e.key === 'a') 
-			{
+			if (e.key === 'a') {
 				paddleProgress = Math.max(0, paddleProgress - 0.02)
 			}
 
-			if (e.key === 'ArrowRight')
-			{
+			if (e.key === 'ArrowRight') {
 				paddle2Progress = Math.max(0, paddle2Progress - 0.02)
 			}
-			if (e.key === 'ArrowLeft')
-			{
+			if (e.key === 'ArrowLeft') {
 				paddle2Progress = Math.min(1, paddle2Progress + 0.02)
 			}
 
-		})
+		}
+
+		document.addEventListener('keydown', keydownHandler)
 
 		update()
 	})
+
+	//CLEANING!
+	return () =>
+	{
+		stopped = true
+		console.log("🧹 Cleaning up game loop and music ")
+
+		if (animationId) cancelAnimationFrame(animationId)
+		if (music)
+		{
+			music.pause()
+			music.currentTime = 0
+		}
+		if (keydownHandler) {
+			document.removeEventListener('keydown', keydownHandler)
+		}
+	}
 }

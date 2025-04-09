@@ -41,6 +41,7 @@ function App() {
               <Route path="/user/:username" element={<general.UserProfilePage />} />
 			  <Route path="/game/play" element={<PongGame />} />
 
+
             </>
           ) : (
             <>
