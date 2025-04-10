@@ -2,6 +2,24 @@
 
 import { RefObject } from 'react'
 import { loadGameAssets } from './loadAssets'
+import { drawOpening, drawEnding } from "./startAndEnding"
+
+enum GamePhase
+{
+	Opening,
+	Playing,
+	Ending
+}
+
+const gameState =
+{
+	phase: GamePhase.Opening,
+	round: 1,
+	pl1Name: "PL1", //sessionData?.player1?.name || "PL1",
+	pl2Name: "PL2", //sessionData?.player2?.name || "PL2",
+	winnerName: "winnerIsnotLoser"
+}
+
 
 export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>, mode?: string, sessionData?: any)
 {
@@ -51,6 +69,33 @@ export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>, mode?: string
 
 		const draw = () => 
 		{
+			ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+			switch (gameState.phase)
+			{
+				case GamePhase.Opening:
+					drawOpening(ctx, {
+						round: gameState.round,
+						pl1Name: gameState.pl1Name,
+						pl2Name: gameState.pl2Name,
+						pl1Avatar: paddle1,
+						pl2Avatar: paddle2,
+					})
+					return
+				case GamePhase.Playing:
+					break
+				case GamePhase.Ending:
+					drawEnding(ctx, {
+						round: gameState.round,
+						pl1Name: gameState.pl1Name,
+						pl2Name: gameState.pl2Name,
+						pl1Avatar: paddle1,
+						pl2Avatar: paddle2,
+						winnerName: p1Score > p2Score ? gameState.pl1Name : gameState.pl2Name,
+
+					})
+					return
+			} 
 			
 			//draw background
 			ctx.fillStyle = '#87CEEB'
@@ -101,10 +146,7 @@ export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>, mode?: string
 			if (ball.y <= 0 || ball.y >= canvas.height) ball.dy *= -1
 
 		//collision
-
 			const speedUp = 1.05
-//			ball.dx *= speedUp
-//			ball.dy *= speedUp
 
 			if 
 			(
@@ -148,6 +190,9 @@ export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>, mode?: string
 				ball.dx = 2 * (Math.random() > 0.5 ? 1 : -1)
 				ball.dy = 1.5 * (Math.random() > 0.5 ? 1 : -1)
 			}
+			if (p1Score === 2 || p2Score === 2) {
+				gameState.phase = GamePhase.Ending
+			}
 			// draw score
 			ctx.fillStyle = 'white'
 			ctx.font = '40px monospace'
@@ -175,6 +220,22 @@ export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>, mode?: string
 					console.log("Audio failed to play:", e)
 				})
 			}
+			if (e.code == 'Space')
+			{
+				if (gameState.phase === GamePhase.Opening) {
+					gameState.phase = GamePhase.Playing
+				}
+				else if (gameState.phase === GamePhase.Ending)
+				{
+					gameState.round += 1
+					p1Score = 0
+					p2Score = 0
+					gameState.phase = GamePhase.Opening
+				}
+				return
+			}
+			if (gameState.phase !== GamePhase.Playing)
+
 			if (e.key === 'd') {
 				paddleProgress = Math.min(1, paddleProgress + 0.02)
 			}
@@ -188,7 +249,6 @@ export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>, mode?: string
 			if (e.key === 'ArrowLeft') {
 				paddle2Progress = Math.min(1, paddle2Progress + 0.02)
 			}
-
 		}
 
 		document.addEventListener('keydown', keydownHandler)
