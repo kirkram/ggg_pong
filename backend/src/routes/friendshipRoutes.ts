@@ -223,5 +223,27 @@ app.get('/users', { preHandler: [app.authenticate] }, async (request: FastifyReq
     }
   });  
 
+// Updates last_activity and online_status of user
+  app.post('/update-activity', { preHandler: [app.authenticate] }, async (request: FastifyRequest, reply: FastifyReply) => {
+    const userId = request.user.id;
+
+    try {
+      const now = Date.now();
+      await database.db.run(
+        `
+        UPDATE users
+        SET online_status = 'online', last_activity = ?
+        WHERE id = ?
+        `,
+        [now, userId]
+      );
+
+      return reply.send({ success: true });
+    } catch (err) {
+      console.error("Failed to update user activity", err);
+      return reply.status(500).send({ error: "Activity update failed" });
+    }
+  });
+
 }
 

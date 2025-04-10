@@ -7,10 +7,14 @@ import { getAppInfo } from './service';
 import { getUserProfile, getUsernameFromToken, updateProfileField, uploadProfilePicture } from './service/userService'
 import { AppInfoContext } from './context/app-info/context';
 import { authorised, unauthorised, general } from "./pages"
+import { useUserActivityTracker } from "./service/useUserActivityTracker";
+
 
 function App() {
   const [loading, setLoading] = useState(true);
   const [appInfo, setAppInfo] = useState<AppInfoIface | undefined>(undefined);
+
+  useUserActivityTracker(!!appInfo); // Only track if user is logged in 
 
   useEffect(() => {
     getAppInfo()

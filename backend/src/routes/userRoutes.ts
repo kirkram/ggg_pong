@@ -150,6 +150,9 @@ export const userRoutes = async (app: FastifyInstance) => {
       console.error('Error updating status:', error);
       return reply.status(500).send({ error: 'Failed to log out' });
     }
-  });  
+  });
+
+
 };
+
 
