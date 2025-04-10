@@ -40,12 +40,15 @@ export const CustomazationPage = () => {
     const fromAvatar = location.state?.fromAvatar === true;
 
     if (!fromAvatar) {
-      // 🧹 Clear all stored customization state
+      // 🧹 Clear all stored customization state (including guest name)
       localStorage.removeItem("userAvatar");
       localStorage.removeItem("guestAvatar");
       localStorage.removeItem("guestName");
       localStorage.removeItem("guests");
       localStorage.removeItem("guestCount");
+
+      // Reset guest name to empty string as well
+      setGuestName("");
     }
   }, []);
 
