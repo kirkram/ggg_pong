@@ -15,6 +15,7 @@ export const GameStats: React.FC = () => {
   const [profiles, setProfiles] = useState<UserProfile[]>([]);
   const [userGames, setUserGames] = useState<Game[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [expandedGameId, setExpandedGameId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,6 +61,13 @@ export const GameStats: React.FC = () => {
   if (loading || !profile) {
     return <div className="text-white p-44">Loading...</div>;
   }
+
+  const toggleGameDetails = (id: number) => {
+    if (!userGames) console.debug("no user Games defined");
+    else console.debug(userGames + "11111111111111111");
+
+    setExpandedGameId(expandedGameId === id ? null : id);
+  };
 
   const sortedPlayers = profiles.sort((a, b) => {
     if (b.wins === a.wins) {
@@ -121,7 +129,7 @@ export const GameStats: React.FC = () => {
 
           <hr className="my-6 border-gray-600" />
 
-          <div className="w-full h-full min-h-screen bg-cover bg-center text-white relative p-8">
+          <div className=" bg-cover bg-center text-white relative p-8">
             <div className="bg-stone-900 bg-opacity-50 backdrop-blur-md p-8 rounded-xl max-w-5xl mx-auto mt-20 shadow-2xl">
               <h1 className="text-3xl font-semibold mb-4 text-center">
                 Game Leaderboard
@@ -155,6 +163,34 @@ export const GameStats: React.FC = () => {
                   ))}
                 </tbody>
               </table>
+            </div>
+          </div>
+
+          <hr className="my-6 border-gray-600" />
+
+          <div className="bg-stone-900 bg-opacity-50 backdrop-blur-md p-8 rounded-xl max-w-5xl mx-auto mt-20 shadow-2xl">
+            <h1 className="text-3xl text-white font-semibold mb-4 text-center">
+              Game History
+            </h1>
+            <div>
+              {userGames.map((game) => (
+                <div key={game.id_game} className="mb-4">
+                  <button
+                    onClick={() => toggleGameDetails(game.id_game)}
+                    className="w-full text-left bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
+                  >
+                    {game.date} - {game.game_name}
+                  </button>
+                  {expandedGameId === game.id_game && (
+                    <div className="bg-gray-700 text-white p-4 mt-2 rounded-lg">
+                      <h2 className="text-xl font-bold mb-2">Game Details</h2>
+                      <pre className="text-sm">
+                        {JSON.stringify(game.rounds_json, null, 2)}
+                      </pre>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         </div>

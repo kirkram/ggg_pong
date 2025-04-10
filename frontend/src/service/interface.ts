@@ -117,5 +117,8 @@ export interface Match {
 
 export interface Game {
   id_user: string | undefined;
-  rounds: Match[][];
+  id_game: number;
+  date: string;
+  game_name: string;
+  rounds_json: Match[][];
 }

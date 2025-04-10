@@ -212,10 +212,27 @@ export const userRoutes = async (app: FastifyInstance) => {
     reply.send({ status: "ok" });
   });
 
+  interface Match {
+    p1_username: string;
+    p2_username: string;
+    p1_avatar: string;
+    p2_avatar: string;
+    p1_wins: number;
+    p2_wins: number;
+  }
+
+  interface Game {
+    id_user: string | undefined;
+    id_game: number;
+    date: string;
+    game_name: string;
+    rounds: Match[][];
+  }
+
   app.get("/get-games/:username", async (request, reply) => {
     const { username } = request.params as { username: string };
     try {
-      const userGames = await database.db.all(
+      const userGames: Game[] = await database.db.all(
         `
         SELECT id_game, id_user, date, rounds_json, game_name
         FROM games WHERE id_user = ?
