@@ -96,10 +96,16 @@ export const CustomazationTournamentPage = () => {
         typeof state.guestIndex === "number"
       ) {
         setGuests((prev) => {
+          if (state.guestIndex === undefined) {
+            return prev; // Or handle the case where guestIndex is undefined
+          }
+          // Ensure selectedAvatar is either AvatarInfo or null
+          const avatarToUpdate = state.selectedAvatar ?? null; // Fallback to null if undefined
+
           const updated = [...prev];
           updated[state.guestIndex] = {
             ...updated[state.guestIndex],
-            avatar: state.selectedAvatar,
+            avatar: avatarToUpdate,
           };
           localStorage.setItem("tournamentGuests", JSON.stringify(updated));
           return updated;

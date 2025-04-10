@@ -40,7 +40,7 @@ function App() {
               <Route path="/customization-tournament" element={<authorised.CustomazationTournamentPage />} />
               <Route path="/avatar" element={<general.AvatarPage />} />
               <Route path="/user/:username" element={<general.UserProfilePage />} />
-
+              <Route path="/tic-tac-toe-duel" element={<authorised.TicTacToeDuel />} />
             </>
           ) : (
             <>
