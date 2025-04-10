@@ -136,7 +136,36 @@ export const CustomazationTournamentPage = () => {
     ...guests.filter((g) => g.avatar).map((g) => g.avatar!.name),
   ];
 
-  const startGameHandler = () => {
+  // const startGameHandler = () => {
+  //   const guestNames = guests.map((g) => g.username.trim().toLowerCase());
+  //   const hasDuplicates = new Set(guestNames).size !== guestNames.length;
+  //   if (hasDuplicates) return alert("Guest usernames must be unique!");
+
+  //   if (!userAvatar || guests.some((g) => !g.avatar || !g.username)) return;
+
+  //   const payload = {
+  //     user: loggedInUsername,
+  //     userAvatar: userAvatar.name,
+  //     guests: guests.map((g) => ({
+  //       username: g.username,
+  //       avatar: g.avatar!.name,
+  //     })),
+  //   };
+
+  //   startGame(payload)
+  //     .then(() =>
+  //       navigate("/start-tournament-game", {
+  //         state: {
+  //           user: loggedInUsername,
+  //           userAvatar,
+  //           guests,
+  //         },
+  //       })
+  //     )
+  //     .catch((err) => alert("Failed to start game: " + err.message));
+  // };
+
+  const startGameHandler = (targetRoute: string) => {
     const guestNames = guests.map((g) => g.username.trim().toLowerCase());
     const hasDuplicates = new Set(guestNames).size !== guestNames.length;
     if (hasDuplicates) return alert("Guest usernames must be unique!");
@@ -153,15 +182,15 @@ export const CustomazationTournamentPage = () => {
     };
 
     startGame(payload)
-      .then(() =>
-        navigate("/start-tournament-game", {
+      .then(() => {
+        navigate(targetRoute, {
           state: {
             user: loggedInUsername,
             userAvatar,
             guests,
           },
-        })
-      )
+        });
+      })
       .catch((err) => alert("Failed to start game: " + err.message));
   };
 
@@ -264,10 +293,17 @@ export const CustomazationTournamentPage = () => {
       ))}
 
       <button
-        onClick={startGameHandler}
+        onClick={() => startGameHandler("/start-tournament-game")}
         className="bg-green-600 hover:bg-green-700 px-8 py-4 rounded-xl text-2xl font-bold shadow-xl"
       >
-        LET’S GOOOO 🏓🔥
+        Ping Pong Madness 🏓
+      </button>
+
+      <button
+        onClick={() => startGameHandler("/tic-tac-toe-tournament")}
+        className="bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-xl text-2xl font-bold shadow-xl"
+      >
+        X’s & O’s Showdown ✖️⭕️
       </button>
     </div>
   );
