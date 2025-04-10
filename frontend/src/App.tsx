@@ -1,12 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 // import { AxiosError } from "axios"
 import { Navigate } from "react-router-dom";
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AppInfoIface } from './context/app-info/interface';
-import { getAppInfo } from './service';
-import { getUserProfile, getUsernameFromToken, updateProfileField, uploadProfilePicture } from './service/userService'
-import { AppInfoContext } from './context/app-info/context';
-import { authorised, unauthorised, general } from "./pages"
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AppInfoIface } from "./context/app-info/interface";
+import { getAppInfo } from "./service";
+import {
+  getUserProfile,
+  getUsernameFromToken,
+  updateProfileField,
+  uploadProfilePicture,
+} from "./service/userService";
+import { AppInfoContext } from "./context/app-info/context";
+import { authorised, unauthorised, general } from "./pages";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -15,7 +20,7 @@ function App() {
   useEffect(() => {
     getAppInfo()
       .then(setAppInfo)
-      .catch(err => {
+      .catch((err) => {
         if (err.response?.status !== 401) {
           console.error(err); // only log if not 401
         }
@@ -23,7 +28,13 @@ function App() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div> <p className="text-4xl font-bold mb-6">App is loading</p></div>;
+  if (loading)
+    return (
+      <div>
+        {" "}
+        <p className="text-4xl font-bold mb-6">App is loading</p>
+      </div>
+    );
 
   return (
     <AppInfoContext.Provider value={appInfo}>
@@ -34,20 +45,38 @@ function App() {
               <Route path="/" element={<Navigate to="/menu" replace />} />
               <Route path="/menu" element={<authorised.MenuPage />} />
               <Route path="/profile" element={<authorised.ProfilePage />} />
-              <Route path="/connections" element={<authorised.ConnectionsPage />} />
-              <Route path="/customization" element={<authorised.CustomazationPage />} />
-              <Route path="/customization-tournament" element={<authorised.CustomazationTournamentPage />} />
+              <Route
+                path="/connections"
+                element={<authorised.ConnectionsPage />}
+              />
+              <Route
+                path="/customization"
+                element={<authorised.CustomazationPage />}
+              />
+              <Route
+                path="/customization-tournament"
+                element={<authorised.CustomazationTournamentPage />}
+              />
               <Route path="/gamestats" element={<authorised.GameStats />} />
               <Route path="/avatar" element={<general.AvatarPage />} />
-              <Route path="/user/:username" element={<general.UserProfilePage />} />
+              <Route
+                path="/user/:username"
+                element={<general.UserProfilePage />}
+              />
             </>
           ) : (
             <>
               <Route path="/" element={<unauthorised.LandingPage />} />
               <Route path="/login" element={<unauthorised.LogInPage />} />
               <Route path="/register" element={<unauthorised.RegisterPage />} />
-              <Route path="/reset-password" element={<unauthorised.ResetPasswordPage />} />
-              <Route path="/change-password" element={<unauthorised.ChangePasswordPage />} />
+              <Route
+                path="/reset-password"
+                element={<unauthorised.ResetPasswordPage />}
+              />
+              <Route
+                path="/change-password"
+                element={<unauthorised.ChangePasswordPage />}
+              />
             </>
           )}
         </Routes>
@@ -57,4 +86,3 @@ function App() {
 }
 
 export default App;
-

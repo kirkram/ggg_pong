@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   getUserProfile,
   updateProfileField,
   uploadProfilePicture,
-} from '../../service/userService';
-import { UserProfile } from '../../service/interface'
+} from "../../service/userService";
+import { UserProfile } from "../../service/interface";
 
 export const ProfilePage = () => {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ export const ProfilePage = () => {
   useEffect(() => {
     getUserProfile()
       .then(setProfile)
-      .catch((err) => console.error('Failed to load profile:', err))
+      .catch((err) => console.error("Failed to load profile:", err))
       .finally(() => setLoading(false));
   }, []);
 
@@ -25,7 +25,8 @@ export const ProfilePage = () => {
       .catch(() => alert(`Failed to update ${field}`));
   };
 
-  if (loading || !profile) return <div className="text-white p-8">Loading...</div>;
+  if (loading || !profile)
+    return <div className="text-white p-8">Loading...</div>;
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -36,9 +37,9 @@ export const ProfilePage = () => {
       // TODO: fix timeout
       setTimeout(() => {
         setProfile({ ...profile, profilePic: result.profilePic });
-      }, 500)
+      }, 500);
     } catch (err) {
-      console.error('Failed to upload avatar', err);
+      console.error("Failed to upload avatar", err);
     }
   };
 
@@ -48,14 +49,16 @@ export const ProfilePage = () => {
       style={{ backgroundImage: "url('/background/gray_background.jpg')" }}
     >
       <button
-        onClick={() => navigate('/menu')}
+        onClick={() => navigate("/menu")}
         className="absolute top-6 left-6 bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg font-semibold shadow-md"
       >
         🔙 Back to Menu
       </button>
 
       <div className="bg-black bg-opacity-70 backdrop-blur-md p-8 rounded-xl max-w-5xl mx-auto mt-20">
-        <h1 className="text-4xl font-bold mb-6 text-center">Mugshot & Street Cred 📸</h1>
+        <h1 className="text-4xl font-bold mb-6 text-center">
+          Mugshot & Street Cred 📸
+        </h1>
 
         <div className="flex flex-col md:flex-row gap-8 items-center">
           <div className="text-center">
@@ -64,37 +67,93 @@ export const ProfilePage = () => {
               alt="avatar"
               className="w-40 h-40 rounded-full border-4 border-white object-cover mx-auto"
             />
-            <input type="file" onChange={handleAvatarChange} className="mt-4 text-sm" />
+            <input
+              type="file"
+              onChange={handleAvatarChange}
+              className="mt-4 text-sm"
+            />
           </div>
 
           <div className="text-left">
-            <p className="text-xl"><strong>Username:</strong> {profile.username}</p>
-            <p className="text-xl mt-2"><strong>Email:</strong> {profile.email}</p>
-            <p className="text-xl mt-2"><strong>Wins:</strong> {profile.wins}</p>
-            <p className="text-xl mt-2"><strong>Losses:</strong> {profile.losses}</p>
+            <p className="text-xl">
+              <strong>Username:</strong> {profile.username}
+            </p>
+            <p className="text-xl mt-2">
+              <strong>Email:</strong> {profile.email}
+            </p>
+            <p className="text-xl mt-2">
+              <strong>Wins:</strong> {profile.wins}
+            </p>
+            <p className="text-xl mt-2">
+              <strong>Losses:</strong> {profile.losses}
+            </p>
           </div>
         </div>
 
         <hr className="my-6 border-gray-600" />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-black">
-          <EditableField label="firstName" value={profile.firstName || ''} onUpdate={handleUpdate} />
-          <EditableField label="lastName" value={profile.lastName || ''} onUpdate={handleUpdate} />
-          <EditableField label="dateOfBirth" value={profile.dateOfBirth || ''} onUpdate={handleUpdate} type="date" />
+          <EditableField
+            label="firstName"
+            value={profile.firstName || ""}
+            onUpdate={handleUpdate}
+          />
+          <EditableField
+            label="lastName"
+            value={profile.lastName || ""}
+            onUpdate={handleUpdate}
+          />
+          <EditableField
+            label="dateOfBirth"
+            value={profile.dateOfBirth || ""}
+            onUpdate={handleUpdate}
+            type="date"
+          />
 
-          <SelectField label="gender" value={profile.gender} options={["male", "female", "other"]} onUpdate={handleUpdate} />
-          <SelectField label="language" value={profile.language} options={["english", "finnish", "serbian", "russian"]} onUpdate={handleUpdate} />
-          <SelectField label="favAvatar" value={profile.favAvatar} options={[
-            "None", "QueenOfTheSpoons", "JustBorn", "Maslina", "BossLady", "Inka",
-            "Burek", "Fish", "WarMachine", "Finn", "GangGanger", "StabIlity", "VampBoy"
-          ]} onUpdate={handleUpdate} />
+          <SelectField
+            label="gender"
+            value={profile.gender}
+            options={["male", "female", "other"]}
+            onUpdate={handleUpdate}
+          />
+          <SelectField
+            label="language"
+            value={profile.language}
+            options={["english", "finnish", "serbian", "russian"]}
+            onUpdate={handleUpdate}
+          />
+          <SelectField
+            label="favAvatar"
+            value={profile.favAvatar}
+            options={[
+              "None",
+              "QueenOfTheSpoons",
+              "JustBorn",
+              "Maslina",
+              "BossLady",
+              "Inka",
+              "Burek",
+              "Fish",
+              "WarMachine",
+              "Finn",
+              "GangGanger",
+              "StabIlity",
+              "VampBoy",
+            ]}
+            onUpdate={handleUpdate}
+          />
         </div>
       </div>
     </div>
   );
 };
 
-const EditableField = ({ label, value, onUpdate, type = "text" }: {
+const EditableField = ({
+  label,
+  value,
+  onUpdate,
+  type = "text",
+}: {
   label: string;
   value: string;
   onUpdate: (field: string, value: string) => void;
@@ -104,7 +163,9 @@ const EditableField = ({ label, value, onUpdate, type = "text" }: {
 
   return (
     <div>
-      <label className="block text-white mb-1 capitalize">{label.replace(/([A-Z])/g, ' $1')}</label>
+      <label className="block text-white mb-1 capitalize">
+        {label.replace(/([A-Z])/g, " $1")}
+      </label>
       <div className="flex gap-2">
         <input
           type={type}
@@ -123,7 +184,12 @@ const EditableField = ({ label, value, onUpdate, type = "text" }: {
   );
 };
 
-const SelectField = ({ label, value, options, onUpdate }: {
+const SelectField = ({
+  label,
+  value,
+  options,
+  onUpdate,
+}: {
   label: string;
   value: string;
   options: string[];
@@ -133,7 +199,9 @@ const SelectField = ({ label, value, options, onUpdate }: {
 
   return (
     <div>
-      <label className="block text-white mb-1 capitalize">{label.replace(/([A-Z])/g, ' $1')}</label>
+      <label className="block text-white mb-1 capitalize">
+        {label.replace(/([A-Z])/g, " $1")}
+      </label>
       <div className="flex gap-2">
         <select
           value={selected}
@@ -141,7 +209,9 @@ const SelectField = ({ label, value, options, onUpdate }: {
           className="w-full p-2 rounded bg-white text-black"
         >
           {options.map((opt) => (
-            <option key={opt} value={opt}>{opt}</option>
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
           ))}
         </select>
         <button

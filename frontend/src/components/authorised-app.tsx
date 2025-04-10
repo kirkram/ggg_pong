@@ -1,3 +1,3 @@
 export const AuthorisedApp = () => {
-    return <div>Authorized app</div>
-}
+  return <div>Authorized app</div>;
+};
