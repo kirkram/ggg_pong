@@ -2,13 +2,14 @@
 
 import { RefObject } from 'react'
 import { loadGameAssets } from './loadAssets'
-import { drawOpening, drawEnding } from "./startAndEnding"
+import { drawOpening, drawEnding, drawFinalScreen } from "./startAndEnding"
 
 enum GamePhase
 {
 	Opening,
 	Playing,
-	Ending
+	Ending,
+	Final
 }
 
 const gameState =
@@ -17,7 +18,8 @@ const gameState =
 	round: 1,
 	pl1Name: "PL1", //sessionData?.player1?.name || "PL1",
 	pl2Name: "PL2", //sessionData?.player2?.name || "PL2",
-	winnerName: "winnerIsnotLoser"
+	winnerName: "winnerIsnotLoser",
+	winnerAvatar: new Image()
 }
 
 
@@ -38,6 +40,12 @@ export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>, mode?: string
 	{
 		if (stopped) return
 
+		const player1Avatar = new Image();
+		player1Avatar.src = sessionData?.userAvatar?.image || "/fallback1.png";
+		
+		const player2Avatar = new Image();
+		player2Avatar.src = sessionData?.guestAvatar?.image || "/fallback2.png";
+
 		music = loadedMusic
 
 		let paddleY = 250
@@ -46,8 +54,10 @@ export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>, mode?: string
 		let paddle2Progress = 0.5
 		const paddleSpeed = 23
 
-		let p1Score = 0;
-		let p2Score = 0;
+		let p1Score = 0
+		let p2Score = 0
+		let p1Wins = 0
+		let p2Wins = 0
 
 		// the values to 3D the paddles
 		const minX = -80
@@ -82,8 +92,6 @@ export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>, mode?: string
 						pl2Avatar: paddle2,
 					})
 					return
-				case GamePhase.Playing:
-					break
 				case GamePhase.Ending:
 					drawEnding(ctx, {
 						round: gameState.round,
@@ -92,9 +100,18 @@ export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>, mode?: string
 						pl1Avatar: paddle1,
 						pl2Avatar: paddle2,
 						winnerName: p1Score > p2Score ? gameState.pl1Name : gameState.pl2Name,
-
 					})
 					return
+				
+				case GamePhase.Final:
+					drawFinalScreen(ctx, {
+						winnerName: gameState.winnerName,
+						winnerAvatar: gameState.winnerAvatar
+					})
+					return
+	
+				case GamePhase.Playing:
+						break
 			} 
 			
 			//draw background
@@ -184,6 +201,9 @@ export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>, mode?: string
 				else if (ball.x > canvas.width + ball.radius) {
 					p1Score++
 				}
+				if (p1Score === 2 || p2Score === 2) {
+					gameState.phase = GamePhase.Ending
+				}
 				ball.x = canvas.width / 2
 				ball.y = canvas.height / 2
 				//BALL SPEED!!!!
@@ -220,21 +240,42 @@ export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>, mode?: string
 					console.log("Audio failed to play:", e)
 				})
 			}
-			if (e.code == 'Space')
+			if (e.code === 'Space')
 			{
 				if (gameState.phase === GamePhase.Opening) {
 					gameState.phase = GamePhase.Playing
 				}
 				else if (gameState.phase === GamePhase.Ending)
 				{
+					if (p1Score > p2Score) p1Wins++
+					else if (p2Score > p1Score) p2Wins++
+
 					gameState.round += 1
+
+					if (gameState.round > 3) 
+					{
+						gameState.phase = GamePhase.Final
+						gameState.winnerName = p1Wins > p2Wins ? gameState.pl1Name : gameState.pl2Name
+						gameState.winnerAvatar = p1Wins > p2Wins ? player1Avatar : player2Avatar
+					}
+					else {
+						gameState.phase = GamePhase.Opening
+					}
 					p1Score = 0
 					p2Score = 0
+				}
+				else if (gameState.phase === GamePhase.Final)
+				{
 					gameState.phase = GamePhase.Opening
+					gameState.round = 1
+					p1Score = 0
+					p2Score = 0
+					p1Wins = 0
+					p2Wins = 0
 				}
 				return
 			}
-			if (gameState.phase !== GamePhase.Playing)
+			if (gameState.phase !== GamePhase.Playing) return
 
 			if (e.key === 'd') {
 				paddleProgress = Math.min(1, paddleProgress + 0.02)

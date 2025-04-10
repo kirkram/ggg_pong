@@ -6,6 +6,7 @@ export interface ScreenInfo
 	pl1Avatar: HTMLImageElement;
 	pl2Avatar: HTMLImageElement;
 	winnerName?: string;
+	winnerAvatar: HTMLImageElement;
 }
 
 export function drawOpening(ctx: CanvasRenderingContext2D, info: Screen) 
@@ -43,4 +44,39 @@ export function drawEnding(ctx: CanvasRenderingContext2D, info: ScreenInfo)
 	ctx.font = "28px Arial"
 	ctx.fillStyle = "white"
 	ctx.fillText("Press Space to Continue", ctx.canvas.width / 2, ctx.canvas.height / 2 + 50)
+}
+
+export function drawFinalScreen(ctx: CanvasRenderingContext2D, info: FinalScreenInfo) 
+{
+	ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  
+	// Background
+	ctx.fillStyle = "#000";
+	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  
+	// WINNER! Text
+	ctx.font = "64px Impact";
+	ctx.fillStyle = "gold";
+	ctx.textAlign = "center";
+	ctx.fillText("🏆 WINNER! 🏆", ctx.canvas.width / 2, 100);
+  
+	// Avatar
+	const size = 200;
+	ctx.drawImage(
+	  info.winnerAvatar,
+	  ctx.canvas.width / 2 - size / 2,
+	  ctx.canvas.height / 2 - size / 2,
+	  size,
+	  size
+	);
+  
+	// Name
+	ctx.font = "48px Arial";
+	ctx.fillStyle = "white";
+	ctx.fillText(info.winnerName, ctx.canvas.width / 2, ctx.canvas.height / 2 + size);
+  
+	// Prompt
+	ctx.font = "28px Arial";
+	ctx.fillStyle = "lightgray";
+	ctx.fillText("Press Space to return to menu", ctx.canvas.width / 2, ctx.canvas.height - 80);
   }

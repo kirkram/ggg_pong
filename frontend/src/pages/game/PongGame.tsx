@@ -74,6 +74,5 @@ export default function PongGame()
 				
 			)}
 		</div>
-	)
-	
+	)	
 }
