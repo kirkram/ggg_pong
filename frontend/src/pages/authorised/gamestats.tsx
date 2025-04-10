@@ -6,7 +6,7 @@ import {
   addGameToTable,
   getUserGames,
 } from "../../service/userService";
-import { UserProfile, Game } from "../../service/interface";
+import { UserProfile, Game, Match } from "../../service/interface";
 
 export const GameStats: React.FC = () => {
   const navigate = useNavigate();
@@ -29,7 +29,19 @@ export const GameStats: React.FC = () => {
         setProfiles(fetchedProfiles);
 
         const fetchedGames = await getUserGames(fetchedProfile.username);
-        setUserGames(fetchedGames);
+        // console.debug("Fetched Games:", fetchedGames);
+        // console.debug(
+        //   "fecthed games rounds type: ",
+        //   typeof fetchedGames[0].rounds_json
+        // );
+        const parsedGames = fetchedGames.map((game) => ({
+          ...game,
+          rounds_json:
+            typeof game.rounds_json === "string"
+              ? JSON.parse(game.rounds_json as string) // Explicitly assert as string
+              : game.rounds_json, // If already parsed, use as is
+        }));
+        setUserGames(parsedGames);
 
         if (!fetchedProfile || !fetchedProfile.username) {
           throw new Error(
@@ -45,7 +57,7 @@ export const GameStats: React.FC = () => {
         //update the game as the Game goes
         // const newGame = await updateGameToTable(user);
         // setUserGames((prevGames) => [...prevGames, newGame]);
-        console.log(fetchedGames);
+        // console.log(fetchedGames);
       } catch (err) {
         console.error("Error during data fetching:", err);
         setError("Failed to fetch data. Please try again later.");
@@ -57,6 +69,51 @@ export const GameStats: React.FC = () => {
     fetchData();
     // calcPoints();
   }, []);
+
+  const renderTournamentBracket = (rounds_json: Match[][]) => {
+    console.log("rounds_json:", rounds_json);
+    console.log(typeof rounds_json, rounds_json);
+    // if (!Array.isArray(rounds_json)) {
+    //   console.error("Invalid rounds_json:", rounds_json);
+    //   return <div className="text-red-500">Invalid tournament data</div>;
+    // } // Debugging output
+    return (
+      <div className="tournament-bracket grid grid-cols-4 gap-4">
+        {rounds_json.map((round: any, index: number) => (
+          <div key={index} className="round bg-gray-800 p-4 rounded-lg">
+            <h3 className="text-white text-center mb-2">Round {index + 1}</h3>
+            {round.map((match: any, matchIndex: number) => (
+              <div
+                key={matchIndex}
+                className="match bg-gray-700 p-2 rounded-lg mb-2"
+              >
+                <div className="player flex items-center mb-2">
+                  <img
+                    src={"/profile-pics/default-profile.jpg"}
+                    alt={match.p1_username}
+                    className="w-10 h-10 rounded-full mr-2"
+                  />
+                  <span className="text-white">
+                    {match.p1_username} {match.p1_wins || 0}
+                  </span>
+                </div>
+                <div className="player flex items-center">
+                  <img
+                    src={"/profile-pics/default-profile.jpg"}
+                    alt={match.p2_username}
+                    className="w-10 h-10 rounded-full mr-2"
+                  />
+                  <span className="text-white">
+                    {match.p2_username} {match.p2_wins || 0}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   if (loading || !profile) {
     return <div className="text-white p-44">Loading...</div>;
@@ -98,7 +155,7 @@ export const GameStats: React.FC = () => {
             Game Stats
           </h1>
 
-          <div className="flex flex-col md:flex-row gap-10 items-center">
+          <div className="flex flex-col md:flex-row gap-10 items-center ">
             <div className="text-center">
               <div className="w-45 h-45 bg-gray-700 rounded-full flex items-center ">
                 <img
@@ -169,7 +226,7 @@ export const GameStats: React.FC = () => {
           <hr className="my-6 border-gray-600" />
 
           <div className="bg-stone-900 bg-opacity-50 backdrop-blur-md p-8 rounded-xl max-w-5xl mx-auto mt-20 shadow-2xl">
-            <h1 className="text-3xl text-white font-semibold mb-4 text-center">
+            <h1 className="text-3xl text-white font-semibold mb-4 text-center ">
               Game History
             </h1>
             <div>
@@ -184,9 +241,7 @@ export const GameStats: React.FC = () => {
                   {expandedGameId === game.id_game && (
                     <div className="bg-gray-700 text-white p-4 mt-2 rounded-lg">
                       <h2 className="text-xl font-bold mb-2">Game Details</h2>
-                      <pre className="text-sm">
-                        {JSON.stringify(game.rounds_json, null, 2)}
-                      </pre>
+                      {renderTournamentBracket(game.rounds_json)}
                     </div>
                   )}
                 </div>

@@ -244,6 +244,8 @@ export const userRoutes = async (app: FastifyInstance) => {
         return reply.code(404).send({ error: "Games not found" });
       }
 
+      console.debug("userGames: ", userGames);
+
       return reply.send(userGames);
     } catch (error) {
       console.error("Error fetching user games:", error);
