@@ -195,53 +195,42 @@ export const userRoutes = async (app: FastifyInstance) => {
     }
   });
 
-  app.post("/post-game", async (request, reply) => {
+  app.post("/post-games", async (request, reply) => {
     const { id_user, rounds } = request.body as {
       id_user: string | undefined;
       rounds: any[];
     };
 
-    console.debug(`got into post game with id_user=${id_user}`);
-
-    const roundsTest = [
-      [
-        {
-          p1_username: "Alice",
-          p2_username: "Bob",
-          p1_avatar: "avatar1.png",
-          p2_avatar: "avatar2.png",
-          p1_wins: 2,
-          p2_wins: 1,
-        },
-        {
-          p1_username: "Carol",
-          p2_username: "Dave",
-          p1_avatar: "avatar3.png",
-          p2_avatar: "avatar4.png",
-          p1_wins: 3,
-          p2_wins: 0,
-        },
-      ],
-      [
-        {
-          p1_username: "Alice",
-          p2_username: "Carol",
-          p1_avatar: "avatar1.png",
-          p2_avatar: "avatar3.png",
-          p1_wins: 1,
-          p2_wins: 2,
-        },
-      ],
-    ];
-
     await database.db.run(
       `INSERT INTO games (id_user, rounds_json) VALUES (?, ?)`,
-      [id_user, JSON.stringify(roundsTest)]
+      [id_user, JSON.stringify(rounds)]
     );
 
     console.debug(
-      `inserted into games new row with id_user=${id_user}, rounds_json =${roundsTest}`
+      `inserted into games new row with id_user=${id_user}, rounds_json =${rounds}`
     );
     reply.send({ status: "ok" });
+  });
+
+  app.get("/get-games/:username", async (request, reply) => {
+    const { username } = request.params as { username: string };
+    try {
+      const userGames = await database.db.all(
+        `
+        SELECT id_game, id_user, date, rounds_json, game_name
+        FROM games WHERE id_user = ?
+      `,
+        [username]
+      );
+
+      if (!userGames) {
+        return reply.code(404).send({ error: "Games not found" });
+      }
+
+      return reply.send(userGames);
+    } catch (error) {
+      console.error("Error fetching user games:", error);
+      return reply.code(500).send({ error: "Failed to fetch user games" });
+    }
   });
 };

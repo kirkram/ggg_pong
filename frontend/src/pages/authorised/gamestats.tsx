@@ -4,6 +4,7 @@ import {
   getUserProfile,
   getGamestatsProfile,
   addGameToTable,
+  getUserGames,
 } from "../../service/userService";
 import { UserProfile, Game } from "../../service/interface";
 
@@ -17,12 +18,6 @@ export const GameStats: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      // const testGame: Game = {
-      //   id_user: profile.username,
-      //   date: string;
-      //   rounds: Rounds;
-      // };
-
       try {
         const [fetchedProfile, fetchedProfiles] = await Promise.all([
           getUserProfile(),
@@ -32,22 +27,24 @@ export const GameStats: React.FC = () => {
         setProfile(fetchedProfile);
         setProfiles(fetchedProfiles);
 
+        const fetchedGames = await getUserGames(fetchedProfile.username);
+        setUserGames(fetchedGames);
+
         if (!fetchedProfile || !fetchedProfile.username) {
           throw new Error(
             "Gamestats.tsx: User profile or username is undefined"
           );
         }
 
-        const testBs: Game = {
-          id_user: fetchedProfile.username,
-          rounds: [],
-        };
+        //fetch all previous games
 
-        if (!testBs.id_user)
-          throw new Error("Gamestats.tsx: No user defined in testBs");
+        //adding newGame to table
+        // const newGame = await addGameToTable(user);
 
-        const newGame = await addGameToTable(testBs);
-        setUserGames((prevGames) => [...prevGames, newGame]);
+        //update the game as the Game goes
+        // const newGame = await updateGameToTable(user);
+        // setUserGames((prevGames) => [...prevGames, newGame]);
+        console.log(fetchedGames);
       } catch (err) {
         console.error("Error during data fetching:", err);
         setError("Failed to fetch data. Please try again later.");

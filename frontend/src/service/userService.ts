@@ -130,7 +130,19 @@ export const addGameToTable = async (file: Game) => {
   if (!token) throw new Error("User not authenticated");
 
   return appClient
-    .post<Game>("/post-game", file, {
+    .post<Game>("/post-games", file, {
+      headers: {
+        Authorization: `Bearer ${token}`, //TODO
+      },
+    })
+    .then((res) => res.data);
+};
+
+export const getUserGames = async (username: string) => {
+  const token = localStorage.getItem("ping-pong-jwt");
+  if (!token) throw new Error("User not authenticated");
+  return appClient
+    .get<Game[]>(`/get-games/${username}`, {
       headers: {
         Authorization: `Bearer ${token}`, //TODO
       },
