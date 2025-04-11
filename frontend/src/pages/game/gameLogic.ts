@@ -3,6 +3,9 @@
 import { RefObject } from 'react'
 import { loadGameAssets } from './loadAssets'
 import { drawOpening, drawEnding, drawFinalScreen } from "./startAndEnding"
+import { forgottenItemsInit, drawForgotten, clearForgottenItems } from "./forgottenItems"
+
+//import { gameOptions } from './gameOptions'
 
 enum GamePhase
 {
@@ -22,6 +25,12 @@ const gameState =
 	winnerAvatar: new Image()
 }
 
+/*
+//this needs to be added on the prvious page
+export const gameOptions = {
+	enableMadness: true,
+}
+*/
 
 export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>, mode?: string, sessionData?: any)
 {
@@ -142,6 +151,10 @@ export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>, mode?: string
 		// draw the table after the paddles to make paddles go under it
 			ctx.drawImage(table, 0, 0, canvas.width, canvas.height)
 
+			//if (gameOptions.enableMadness) {
+				drawForgotten(ctx)
+			//}
+
 		//ball
 			const maxBallScale = 1.5
 			const minBallScale = 0.5
@@ -164,7 +177,6 @@ export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>, mode?: string
 
 		//collision
 			const speedUp = 1.05
-
 			if 
 			(
 				ball.x - ball.radius <= x + paddleWidth &&
@@ -252,6 +264,10 @@ export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>, mode?: string
 
 					gameState.round += 1
 
+					if (gameState.round > 1) { // && gameOptions.enableMadness) {
+						forgottenItemsInit(ctx, canvas)
+					}
+
 					if (gameState.round > 3) 
 					{
 						gameState.phase = GamePhase.Final
@@ -311,6 +327,10 @@ export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>, mode?: string
 		}
 		if (keydownHandler) {
 			document.removeEventListener('keydown', keydownHandler)
+		}
+		if (gameState.phase === GamePhase.Final)
+		{
+			clearForgottenItems()
 		}
 	}
 }
