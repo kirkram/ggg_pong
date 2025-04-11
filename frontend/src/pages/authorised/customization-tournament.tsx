@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { startGame } from "../../service";
+import { startDuelGame } from "../../service";
 
 interface AvatarInfo {
   name: string;
@@ -15,8 +15,6 @@ interface Guest {
 export const CustomazationTournamentPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
-  // const fromAvatar = (location.state as any)?.fromAvatar === true;
 
   const [guestCount, setGuestCount] = useState<number>(() => {
     const stored = localStorage.getItem("guestCount");
@@ -136,7 +134,7 @@ export const CustomazationTournamentPage = () => {
     ...guests.filter((g) => g.avatar).map((g) => g.avatar!.name),
   ];
 
-  const startGameHandler = () => {
+  const startGameHandler = (targetRoute: string) => {
     const guestNames = guests.map((g) => g.username.trim().toLowerCase());
     const hasDuplicates = new Set(guestNames).size !== guestNames.length;
     if (hasDuplicates) return alert("Guest usernames must be unique!");
@@ -152,16 +150,16 @@ export const CustomazationTournamentPage = () => {
       })),
     };
 
-    startGame(payload)
-      .then(() =>
-        navigate("/start-tournament-game", {
+    startDuelGame(payload)
+      .then(() => {
+        navigate(targetRoute, {
           state: {
             user: loggedInUsername,
             userAvatar,
             guests,
           },
-        })
-      )
+        });
+      })
       .catch((err) => alert("Failed to start game: " + err.message));
   };
 
@@ -208,7 +206,7 @@ export const CustomazationTournamentPage = () => {
             <img
               src={userAvatar.image}
               alt={userAvatar.name}
-              className="w-32 h-32 rounded-full border-4 border-blue-400 mb-2 object-cover"
+              className="w-48 h-48 rounded-full border-4 border-blue-400 mb-2 object-contain"
             />
             <p className="capitalize mb-4">{userAvatar.name}</p>
           </>
@@ -245,7 +243,7 @@ export const CustomazationTournamentPage = () => {
               <img
                 src={guest.avatar.image}
                 alt={guest.avatar.name}
-                className="w-32 h-32 rounded-full border-4 border-pink-400 mb-2 object-cover"
+                className="w-48 h-48 rounded-full border-4 border-pink-400 mb-2 object-contain"
               />
               <p className="capitalize mb-4">{guest.avatar.name}</p>
             </>
@@ -263,12 +261,22 @@ export const CustomazationTournamentPage = () => {
         </div>
       ))}
 
-      <button
-        onClick={startGameHandler}
-        className="bg-green-600 hover:bg-green-700 px-8 py-4 rounded-xl text-2xl font-bold shadow-xl"
-      >
-        LET’S GOOOO 🏓🔥
-      </button>
+      {/* Start Game Button */}
+      <div className="flex flex-col gap-6">
+        <button
+          onClick={() => startGameHandler("/start-tournament-game")}
+          className="bg-green-600 hover:bg-green-700 px-8 py-4 rounded-xl text-2xl font-bold shadow-xl"
+        >
+          Ping Pong Madness 🏓
+        </button>
+
+        <button
+          onClick={() => startGameHandler("/tic-tac-toe-tournament")}
+          className="bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-xl text-2xl font-bold shadow-xl"
+        >
+          X’s & O’s Showdown ✖️⭕️
+        </button>
+      </div>
     </div>
   );
 };

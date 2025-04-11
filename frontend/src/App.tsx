@@ -12,10 +12,15 @@ import {
 } from "./service/userService";
 import { AppInfoContext } from "./context/app-info/context";
 import { authorised, unauthorised, general } from "./pages";
+import { useUserActivityTracker } from "./service/useUserActivityTracker";
+
+import PongGame from "./pages/game/PongGame";
 
 function App() {
   const [loading, setLoading] = useState(true);
   const [appInfo, setAppInfo] = useState<AppInfoIface | undefined>(undefined);
+
+  useUserActivityTracker(!!appInfo); // Only track if user is logged in
 
   useEffect(() => {
     getAppInfo()
@@ -63,6 +68,12 @@ function App() {
                 path="/user/:username"
                 element={<general.UserProfilePage />}
               />
+              <Route
+                path="/tic-tac-toe-duel"
+                element={<authorised.TicTacToeDuel />}
+              />
+              // "/game/play?mode=duel"
+              <Route path="/game/play" element={<PongGame />} />
             </>
           ) : (
             <>

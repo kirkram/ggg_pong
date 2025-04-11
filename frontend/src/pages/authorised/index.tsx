@@ -4,6 +4,7 @@ export { ProfilePage } from "./profile";
 export { ConnectionsPage } from "./connections";
 export { CustomazationPage } from "./customization";
 export { CustomazationTournamentPage } from "./customization-tournament";
+export { TicTacToeDuel } from "./tic-tac-toe-duel";
 export { GameStats } from "./gamestats";
 
 export const Dashboard = () => {

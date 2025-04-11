@@ -40,12 +40,15 @@ export const CustomazationPage = () => {
     const fromAvatar = location.state?.fromAvatar === true;
 
     if (!fromAvatar) {
-      // 🧹 Clear all stored customization state
+      // 🧹 Clear all stored customization state (including guest name)
       localStorage.removeItem("userAvatar");
       localStorage.removeItem("guestAvatar");
       localStorage.removeItem("guestName");
       localStorage.removeItem("guests");
       localStorage.removeItem("guestCount");
+
+      // Reset guest name to empty string as well
+      setGuestName("");
     }
   }, []);
 
@@ -83,7 +86,7 @@ export const CustomazationPage = () => {
     });
   };
 
-  const startGameHandler = () => {
+  const startGameHandler = (targetRoute: string) => {
     if (!userAvatar || !guestAvatar || !guestName) return;
 
     startDuelGame({
@@ -93,8 +96,8 @@ export const CustomazationPage = () => {
       guestAvatar: guestAvatar.name,
     })
       .then(() => {
-        // ✅ Redirect to game page
-        navigate("/start-duel-game", {
+        // ✅ Redirect to game page // HERE HERE
+        navigate(targetRoute, {
           state: {
             user: loggedInUsername,
             guest: guestName,
@@ -187,9 +190,16 @@ export const CustomazationPage = () => {
         {/* Start Game Button */}
         <button
           className="bg-green-600 hover:bg-green-700 px-8 py-4 rounded-xl text-2xl font-bold shadow-xl mt-4"
-          onClick={startGameHandler}
+          onClick={() => startGameHandler("/game/play?mode=duel")}
         >
-          LET’S GOOOO 🏓🔥
+          Ping Pong Madness 🏓
+        </button>
+
+        <button
+          onClick={() => startGameHandler("/tic-tac-toe-duel")}
+          className="bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-xl text-2xl font-bold shadow-xl"
+        >
+          X’s & O’s Showdown ✖️⭕️
         </button>
       </div>
     </div>

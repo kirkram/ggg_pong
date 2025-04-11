@@ -78,7 +78,7 @@ export const MenuPage = () => {
               onClick={() => navigate("/customization")}
               className="bg-green-500 hover:bg-green-600 text-xl font-bold px-6 py-3 rounded-lg shadow-md w-60"
             >
-              Ping Pong Duel 💥
+              Duel 💥
             </button>
             <button
               onClick={() => navigate("/customization-tournament")}
