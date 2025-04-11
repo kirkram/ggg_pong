@@ -190,7 +190,7 @@ export const CustomazationPage = () => {
         {/* Start Game Button */}
         <button
           className="bg-green-600 hover:bg-green-700 px-8 py-4 rounded-xl text-2xl font-bold shadow-xl mt-4"
-          onClick={() => startGameHandler("/start-duel-game")}
+          onClick={() => startGameHandler("/game/play?mode=duel")}
         >
           Ping Pong Madness 🏓
         </button>
