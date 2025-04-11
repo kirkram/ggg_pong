@@ -32,6 +32,7 @@ export const gameOptions = {
 }
 */
 
+
 export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>, mode?: string, sessionData?: any)
 {
 	const canvas = canvasRef.current
