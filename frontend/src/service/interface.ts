@@ -116,5 +116,5 @@ export interface Game {
   id_game: number;
   date: string;
   game_name: string;
-  rounds: Match[][];
+  rounds_json: Match[][];
 }

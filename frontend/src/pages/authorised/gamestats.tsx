@@ -7,16 +7,8 @@ import {
   getUserGames,
 } from "../../service/userService";
 import { UserProfile, Game, Match } from "../../service/interface";
-import { Bar } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
+
+import GameStatsChart from "../../components/GameStatsCharts";
 
 export const GameStats: React.FC = () => {
   const navigate = useNavigate();
@@ -201,12 +193,33 @@ export const GameStats: React.FC = () => {
             </div>
           </div>
 
+          {/* Add a chart for leaderboard */}
+          <div className="my-8">
+            <GameStatsChart
+              key={`wins-chart-${profile.username}`}
+              labels={sortedPlayers.map((player) => player.username)}
+              data={sortedPlayers.map((player) => player.wins)}
+              title="Wins by Player"
+              type="bar"
+            />
+          </div>
+
+          <div className="my-8">
+            <GameStatsChart
+              key={`losses-chart-${profile.username}`}
+              labels={sortedPlayers.map((player) => player.username)}
+              data={sortedPlayers.map((player) => player.losses)}
+              title="Losses by Player"
+              type="bar"
+            />
+          </div>
+
           <hr className="my-6 border-gray-600" />
 
           <div className=" bg-cover bg-center text-white relative p-8">
             <div className="bg-stone-900 bg-opacity-50 backdrop-blur-md p-8 rounded-xl max-w-5xl mx-auto mt-20 shadow-2xl">
               <h1 className="text-3xl font-semibold mb-4 text-center">
-                Game Leaderboard
+                Leaderboard
               </h1>
               <table className="w-full text-left border-collapse border border-gray-600">
                 <thead>
@@ -244,7 +257,7 @@ export const GameStats: React.FC = () => {
 
           <div className="bg-stone-900 bg-opacity-50 backdrop-blur-md p-8 rounded-xl max-w-5xl mx-auto mt-20 shadow-2xl">
             <h1 className="text-3xl text-white font-semibold mb-4 text-center ">
-              Game History
+              User Game History
             </h1>
             <div>
               {userGames.map((game) => (

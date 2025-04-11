@@ -38,6 +38,19 @@ export const initializeDatabase = async () => {
       )
     `);
 
+    //adding mock data
+    await database.db.exec(
+      `INSERT OR IGNORE INTO users (username, password, email, firstName, lastName, dateOfBirth, gender, favAvatar, language, wins, losses, profilePic, online_status, last_activity) VALUES ('pingqueen', 'hashed_pwd_1', 'pingqueen@example.com', 'Lana', 'Smith', '1990-05-12', 'female', 'QueenOfTheSpoons', 'english', 10, 2, 'lana.jpg', 'online', 1686238123)`
+    );
+
+    await database.db.exec(
+      `INSERT OR IGNORE INTO users (username, password, email, firstName, lastName, dateOfBirth, gender, favAvatar, language, wins, losses, profilePic, online_status, last_activity) VALUES ('maslinator', 'hashed_pwd_2', 'maslinator@example.com', 'Igor', 'Petrovic', '1988-10-23', 'male', 'Maslina', 'serbian', 8, 5, 'igor.png', 'offline', 1686200000)`
+    );
+
+    await database.db.exec(
+      `INSERT OR IGNORE INTO users (username, password, email, firstName, lastName, dateOfBirth, gender, favAvatar, language, wins, losses, profilePic, online_status, last_activity) VALUES ('stabbyboy', 'hashed_pwd_3', 'stabbyboy@example.com', 'Finn', 'Johnson', '2002-03-09', 'other', 'StabIlity', 'finnish', 12, 7, 'finnie.jpeg', 'online', 1686245000)`
+    );
+
     // Create friendships table (if it doesn't exist)
     await database.db.exec(`
       CREATE TABLE IF NOT EXISTS friendships (
@@ -61,6 +74,23 @@ export const initializeDatabase = async () => {
         game_name TEXT NOT NULL CHECK (game_name IN ('ping-pong', 'tic-tac-toe'))
       )
     `);
+
+    //adding mock data
+    await database.db.exec(
+      `INSERT OR IGNORE INTO games (id_user, rounds_json, game_name) VALUES ('1', '[ [ { "p1_username": "pingqueen", "p2_username": "maslinator", "p1_avatar": "QueenOfTheSpoons", "p2_avatar": "Maslina", "p1_wins": 1, "p2_wins": 0 }, { "p1_username": "stabbyboy", "p2_username": "pingqueen", "p1_avatar": "StabIlity", "p2_avatar": "QueenOfTheSpoons", "p1_wins": 0, "p2_wins": 1 } ], [ { "p1_username": "maslinator", "p2_username": "stabbyboy", "p1_avatar": "Maslina", "p2_avatar": "StabIlity", "p1_wins": 0, "p2_wins": 1 }, { "p1_username": "pingqueen", "p2_username": "maslinator", "p1_avatar": "QueenOfTheSpoons", "p2_avatar": "Maslina", "p1_wins": 1, "p2_wins": 0 } ] ]', 'ping-pong')`
+    );
+
+    await database.db.exec(
+      `INSERT OR IGNORE INTO games (id_user, rounds_json, game_name) VALUES ('1', '[ [ { "p1_username": "pingqueen", "p2_username": "maslinator", "p1_avatar": "QueenOfTheSpoons", "p2_avatar": "Maslina", "p1_wins": 1, "p2_wins": 0 }, { "p1_username": "stabbyboy", "p2_username": "pingqueen", "p1_avatar": "StabIlity", "p2_avatar": "QueenOfTheSpoons", "p1_wins": 0, "p2_wins": 1 } ], [ { "p1_username": "maslinator", "p2_username": "stabbyboy", "p1_avatar": "Maslina", "p2_avatar": "StabIlity", "p1_wins": 0, "p2_wins": 1 }, { "p1_username": "pingqueen", "p2_username": "maslinator", "p1_avatar": "QueenOfTheSpoons", "p2_avatar": "Maslina", "p1_wins": 1, "p2_wins": 0 } ] ]', 'ping-pong')`
+    );
+
+    await database.db.exec(
+      `INSERT OR IGNORE INTO games (id_user, rounds_json, game_name) VALUES ('2', '[ [ { "p1_username": "maslinator", "p2_username": "stabbyboy", "p1_avatar": "Maslina", "p2_avatar": "StabIlity", "p1_wins": 1, "p2_wins": 0 }, { "p1_username": "pingqueen", "p2_username": "maslinator", "p1_avatar": "QueenOfTheSpoons", "p2_avatar": "Maslina", "p1_wins": 0, "p2_wins": 1 } ], [ { "p1_username": "stabbyboy", "p2_username": "pingqueen", "p1_avatar": "StabIlity", "p2_avatar": "QueenOfTheSpoons", "p1_wins": 1, "p2_wins": 0 }, { "p1_username": "maslinator", "p2_username": "pingqueen", "p1_avatar": "Maslina", "p2_avatar": "QueenOfTheSpoons", "p1_wins": 0, "p2_wins": 1 } ] ]', 'tic-tac-toe')`
+    );
+
+    await database.db.exec(
+      `INSERT OR IGNORE INTO games (id_user, rounds_json, game_name) VALUES ('3', '[ [ { "p1_username": "stabbyboy", "p2_username": "pingqueen", "p1_avatar": "StabIlity", "p2_avatar": "QueenOfTheSpoons", "p1_wins": 0, "p2_wins": 1 }, { "p1_username": "maslinator", "p2_username": "stabbyboy", "p1_avatar": "Maslina", "p2_avatar": "StabIlity", "p1_wins": 1, "p2_wins": 0 } ], [ { "p1_username": "pingqueen", "p2_username": "maslinator", "p1_avatar": "QueenOfTheSpoons", "p2_avatar": "Maslina", "p1_wins": 1, "p2_wins": 0 }, { "p1_username": "stabbyboy", "p2_username": "pingqueen", "p1_avatar": "StabIlity", "p2_avatar": "QueenOfTheSpoons", "p1_wins": 0, "p2_wins": 1 } ] ]', 'ping-pong')`
+    );
 
     await database.db.exec(`
       CREATE TABLE IF NOT EXISTS game_sessions (
