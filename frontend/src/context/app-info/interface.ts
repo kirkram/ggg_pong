@@ -1,7 +1,7 @@
 export interface AppInfoIface {
-    user: {
-        username: string
-        id: number
-    }
-    //other data
+  user: {
+    username: string;
+    id: number;
+  };
+  //other data
 }

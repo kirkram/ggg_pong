@@ -1,2 +1,2 @@
-export { AuthorisedApp } from "./authorised-app"
-export { LandingPage } from "./LandingPage"
+export { AuthorisedApp } from "./authorised-app";
+export { LandingPage } from "./LandingPage";

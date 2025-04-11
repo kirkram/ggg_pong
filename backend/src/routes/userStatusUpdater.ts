@@ -1,5 +1,4 @@
-
-import { database } from '../database'; // Assuming your database connection is in this file
+import { database } from "../database"; // Assuming your database connection is in this file
 
 // Function to update user statuses
 export const updateUserStatuses = async () => {
@@ -12,7 +11,7 @@ export const updateUserStatuses = async () => {
       [currentTime - 3 * 60 * 1000]  // 3 minutes ago
     );
   } catch (error) {
-    console.error('Error updating user statuses:', error);
+    console.error("Error updating user statuses:", error);
   }
 };
 

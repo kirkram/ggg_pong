@@ -1,18 +1,18 @@
-import Fastify from 'fastify';
-import { fpSqlitePlugin } from "fastify-sqlite-typed"
+import Fastify from "fastify";
+import { fpSqlitePlugin } from "fastify-sqlite-typed";
 
 // Initialize the Fastify instance
 const database = Fastify();
 
 // Register the SQLite plugin
 database.register(fpSqlitePlugin, {
-  dbFilename: './database.db' // Define the path to the SQLite database file
+  dbFilename: "./database.db", // Define the path to the SQLite database file
 });
 
 // Function to initialize the database (creating the table)
 export const initializeDatabase = async () => {
   try {
-    await database.ready()
+    await database.ready();
     // Create table if it doesn't exist already
     // profilePic - URL or file path for the picture
     // dateOfBirth - ISO date format e.g. "YYYY-MM-DD"
@@ -53,6 +53,16 @@ export const initializeDatabase = async () => {
     `);
 
     await database.db.exec(`
+      CREATE TABLE IF NOT EXISTS games (
+        id_game INTEGER PRIMARY KEY AUTOINCREMENT,
+        id_user TEXT NOT NULL,
+        date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        rounds_json TEXT NOT NULL,
+        game_name TEXT NOT NULL CHECK (game_name IN ('ping-pong', 'tic-tac-toe'))
+      )
+    `);
+
+    await database.db.exec(`
       CREATE TABLE IF NOT EXISTS game_sessions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user TEXT NOT NULL,
@@ -74,9 +84,9 @@ export const initializeDatabase = async () => {
       )
     `);
 
-    console.log('Database and table are ready');
+    console.log("Database and tables are ready");
   } catch (error) {
-    console.error('Error creating database table:', error);
+    console.error("Error creating database table:", error);
   }
 };
 

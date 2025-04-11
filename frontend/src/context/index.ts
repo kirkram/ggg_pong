@@ -1,1 +1,1 @@
-export { useAppInfo } from './app-info/hook'
+export { useAppInfo } from "./app-info/hook";

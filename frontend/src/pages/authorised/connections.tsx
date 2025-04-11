@@ -1,6 +1,6 @@
-import { useNavigate, Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { appClient } from '../../service';
+import { useNavigate, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { appClient } from "../../service";
 
 export const ConnectionsPage = () => {
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ export const ConnectionsPage = () => {
   useEffect(() => {
     const fetchFriendships = async () => {
       try {
-        const response = await appClient.get('/friendships');
+        const response = await appClient.get("/friendships");
         const friendships: {
           sender_id: number;
           receiver_id: number;
@@ -34,7 +34,7 @@ export const ConnectionsPage = () => {
         setLoading(false);
       } catch (err) {
         console.error("Error fetching friendships:", err);
-        setError('Failed to load friendships');
+        setError("Failed to load friendships");
         setLoading(false);
       }
     };
@@ -47,7 +47,7 @@ export const ConnectionsPage = () => {
   useEffect(() => {
     const fetchFriendRequests = async () => {
       try {
-        const response = await appClient.get('/friendships/requests');
+        const response = await appClient.get("/friendships/requests");
         setFriendRequests(response.data);
       } catch (error) {
         console.error("Error fetching friend requests:", error);
@@ -63,13 +63,15 @@ export const ConnectionsPage = () => {
     const newPlayers = [...players];
     const player = newPlayers[index];
 
-    if (player.friendStatus === 'Not Friend') {
+    if (player.friendStatus === "Not Friend") {
       try {
-        await appClient.post('/friendships/request', { receiver_id: player.id });
-        player.friendStatus = 'Pending';
+        await appClient.post("/friendships/request", {
+          receiver_id: player.id,
+        });
+        player.friendStatus = "Pending";
         setPlayers(newPlayers);
       } catch (err) {
-        console.error('Error sending friend request:', err);
+        console.error("Error sending friend request:", err);
       }
     }
   };
@@ -78,12 +80,12 @@ export const ConnectionsPage = () => {
     const newPlayers = [...players];
     const player = newPlayers[index];
 
-    await appClient.put('/friendships/unfriend', {
+    await appClient.put("/friendships/unfriend", {
       sender_id: player.self_id,
       receiver_id: player.id,
     });
 
-    player.friendStatus = 'Not Friend';
+    player.friendStatus = "Not Friend";
     player.showUnfriend = false;
     setPlayers(newPlayers);
   };
@@ -92,7 +94,7 @@ export const ConnectionsPage = () => {
     const newPlayers = [...players];
     const player = newPlayers[index];
 
-    if (player.friendStatus === 'Friend') {
+    if (player.friendStatus === "Friend") {
       player.showUnfriend = !player.showUnfriend;
     }
     setPlayers(newPlayers);
@@ -102,20 +104,20 @@ export const ConnectionsPage = () => {
     const newRequests = [...friendRequests];
     const request = newRequests[index];
 
-    if (action === 'accept') {
+    if (action === "accept") {
       try {
-        await appClient.put('/friendships/accept', {
+        await appClient.put("/friendships/accept", {
           sender_id: request.sender_id,
           receiver_id: request.receiver_id,
         });
 
         newRequests.splice(index, 1);
 
-        const newPlayers = players.map(player => {
+        const newPlayers = players.map((player) => {
           if (player.id === request.sender_id) {
             return {
               ...player,
-              friendStatus: 'Friend',
+              friendStatus: "Friend",
             };
           }
           return player;
@@ -126,9 +128,9 @@ export const ConnectionsPage = () => {
       } catch (error) {
         console.error("Error accepting friend request:", error);
       }
-    } else if (action === 'decline') {
+    } else if (action === "decline") {
       try {
-        await appClient.put('/friendships/decline', {
+        await appClient.put("/friendships/decline", {
           sender_id: request.sender_id,
           receiver_id: request.receiver_id,
         });
@@ -172,17 +174,22 @@ export const ConnectionsPage = () => {
               <p className="text-gray-500">No pending friend requests.</p>
             )}
             {friendRequests.map((req, index) => (
-              <div key={index} className="bg-gray-800 p-4 rounded-lg flex justify-between items-center">
-                <span className="text-white font-semibold">{req.sender_username}</span>
+              <div
+                key={index}
+                className="bg-gray-800 p-4 rounded-lg flex justify-between items-center"
+              >
+                <span className="text-white font-semibold">
+                  {req.sender_username}
+                </span>
                 <div className="space-x-2">
                   <button
-                    onClick={() => handleRequestAction(index, 'accept')}
+                    onClick={() => handleRequestAction(index, "accept")}
                     className="bg-green-500 hover:bg-green-600 px-3 py-1 rounded-lg text-white"
                   >
                     Accept
                   </button>
                   <button
-                    onClick={() => handleRequestAction(index, 'decline')}
+                    onClick={() => handleRequestAction(index, "decline")}
                     className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded-lg text-white"
                   >
                     Decline
@@ -206,17 +213,24 @@ export const ConnectionsPage = () => {
             {players.map((player, index) => (
               <tr key={index} className="bg-gray-800">
                 <td className="px-4 py-2">
-                  <Link to={`/user/${player.username}`} className="text-blue-400 hover:text-blue-600 font-bold">
+                  <Link
+                    to={`/user/${player.username}`}
+                    className="text-blue-400 hover:text-blue-600 font-bold"
+                  >
                     {player.username}
                   </Link>
                 </td>
                 <td className="px-4 py-2">
-                  <span className={`font-bold ${player.online_status === 'online' ? 'text-green-500' : ''}`}>
+                  <span
+                    className={`font-bold ${
+                      player.online_status === "online" ? "text-green-500" : ""
+                    }`}
+                  >
                     {player.online_status}
                   </span>
                 </td>
                 <td className="px-4 py-2">
-                  {player.friendStatus === 'Not Friend' && (
+                  {player.friendStatus === "Not Friend" && (
                     <button
                       onClick={() => handleAddFriend(index)}
                       className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-white"
@@ -224,10 +238,12 @@ export const ConnectionsPage = () => {
                       Add Friend
                     </button>
                   )}
-                  {player.friendStatus === 'Pending' && (
-                    <span className="bg-yellow-500 px-4 py-2 rounded-lg text-white">Pending</span>
+                  {player.friendStatus === "Pending" && (
+                    <span className="bg-yellow-500 px-4 py-2 rounded-lg text-white">
+                      Pending
+                    </span>
                   )}
-                  {player.friendStatus === 'Friend' && (
+                  {player.friendStatus === "Friend" && (
                     <div className="inline-flex items-center">
                       <button
                         onClick={() => handleFriendClick(index)}
@@ -257,8 +273,6 @@ export const ConnectionsPage = () => {
 
 export default ConnectionsPage;
 
-
-
 // import { useNavigate, Link } from 'react-router-dom';
 // import { useState, useEffect } from 'react';
 // import { appClient } from '../../service'; // Import appClient
@@ -278,12 +292,12 @@ export default ConnectionsPage;
 
 //         // Fetch the list of friendships (for this user) from the backend
 //         const response = await appClient.get('/friendships');
-//         const friendships: {  sender_id: number; 
+//         const friendships: {  sender_id: number;
 //                               receiver_id: number;
-//                               receiver_username: string; 
+//                               receiver_username: string;
 //                               online_status: string;
 //                               status: string }[] = response.data;  // Explicitly type the friendships array
-  
+
 //         // Map to player objects from the friendships
 //         const players = friendships.map((f) => ({
 //           self_id: f.sender_id,
@@ -291,13 +305,13 @@ export default ConnectionsPage;
 //           username: f.receiver_username,
 //           online_status: f.online_status,
 //           friendStatus: f.status
-          
+
 //           // id: f.receiver_id, // Receiver is the friend in this case
 //           // self_id: f.sender_id,
 //           // username: f.receiver_username,
 //           // friendStatus: f.status,
 //         }));
-  
+
 //         setPlayers(players);
 //         setLoading(false);
 //       } catch (err) {
@@ -306,10 +320,9 @@ export default ConnectionsPage;
 //         setLoading(false);
 //       }
 //     };
-  
+
 //     fetchFriendships();
 //   }, []);
-
 
 //   useEffect(() => {
 //     const fetchFriendRequests = async () => {
@@ -325,13 +338,12 @@ export default ConnectionsPage;
 //     const interval = setInterval(fetchFriendRequests, 5000); // Poll every 5 seconds
 
 //     return () => clearInterval(interval); // Clean up on unmount
-//   }, []); 
-
+//   }, []);
 
 //   const handleAddFriend = async (index) => {
 //     const newPlayers = [...players];
 //     const player = newPlayers[index];
-  
+
 //     if (player.friendStatus === 'Not Friend') {
 //       try {
 //         // Send request to backend
@@ -355,11 +367,11 @@ export default ConnectionsPage;
 //       sender_id: player.self_id,
 //       receiver_id: player.id,
 //     });
-  
+
 //     // Unfriend in Frontend
 //     player.friendStatus = 'Not Friend';
 //     player.showUnfriend = false;
-  
+
 //     // Save in Frontend state
 //     setPlayers(newPlayers);
 //   };
@@ -378,8 +390,8 @@ export default ConnectionsPage;
 //   // Handle friend request accept or decline
 //   const handleRequestAction = async (index, action) => {
 //     const newRequests = [...friendRequests];
-//     const Request = newRequests[index]; 
-  
+//     const Request = newRequests[index];
+
 //     if (action === 'accept') {
 //       try {
 //         // Send a request to the backend to update both friendship statuses
@@ -387,10 +399,10 @@ export default ConnectionsPage;
 //           sender_id: Request.sender_id,       // The sender of the request
 //           receiver_id: Request.receiver_id,   // The receiver (current user)
 //         });
-  
+
 //         // Remove the accepted request from the list
 //         newRequests.splice(index, 1);
-  
+
 //         // Update the players' friend statuses
 //         const newPlayers = players.map(player => {
 //           if (player.id === Request.sender_id) {
@@ -401,7 +413,7 @@ export default ConnectionsPage;
 //           }
 //           return player;
 //         });
-  
+
 //         // Update state after accepting the request
 //         setPlayers(newPlayers);
 //         setFriendRequests(newRequests);
@@ -412,7 +424,7 @@ export default ConnectionsPage;
 //       await appClient.put('/friendships/decline', {
 //         sender_id: Request.sender_id,
 //         receiver_id: Request.receiver_id,
-//       }); 
+//       });
 
 //       // Remove the declined request from the list
 //       newRequests.splice(index, 1);
@@ -434,7 +446,6 @@ export default ConnectionsPage;
 //           }
 //           return player;
 //         });
-
 
 //         setPlayers(newPlayers);
 //     }

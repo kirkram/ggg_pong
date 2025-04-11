@@ -1,8 +1,8 @@
-import nodemailer from 'nodemailer';
-import { Env } from './env';
+import nodemailer from "nodemailer";
+import { Env } from "./env";
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  service: "gmail",
   auth: {
     user: Env.EmailUser,
     pass: Env.EmailPass,
@@ -16,7 +16,12 @@ const transporter = nodemailer.createTransport({
  * @param text Plain text body
  * @param html HTML body (optional)
  */
-async function sendEmail(to: string, subject: string, text: string, html?: string) {
+async function sendEmail(
+  to: string,
+  subject: string,
+  text: string,
+  html?: string
+) {
   const mailOptions = {
     from: `"Gang HQ" <${Env.EmailUser}>`,
     to,
@@ -29,8 +34,8 @@ async function sendEmail(to: string, subject: string, text: string, html?: strin
     await transporter.sendMail(mailOptions);
     console.log(`📧 Email sent to: ${to}`);
   } catch (error) {
-    console.error('❌ Error sending email:', error);
-    throw new Error('Failed to send email');
+    console.error("❌ Error sending email:", error);
+    throw new Error("Failed to send email");
   }
 }
 
@@ -40,8 +45,12 @@ async function sendEmail(to: string, subject: string, text: string, html?: strin
  * @param code 2FA code
  * @param username User's name
  */
-export async function send2FACode(email: string, code: string, username: string) {
-  const subject = 'Gang Gang Gang - Game Code';
+export async function send2FACode(
+  email: string,
+  code: string,
+  username: string
+) {
+  const subject = "Gang Gang Gang - Game Code";
   const text = `Yo!\n\nWelcome to the gang, ${username}! 🔥 Here's your exclusive game code:\n\n🎮 Your Code: ${code}\n\nUse it wisely... or don’t. We don’t judge. 😎\n\nIf you didn’t request this, tell them to back off and get their own invite. 💥\n\nStay awesome,\nThe Gang HQ\n\nP.S. Stay dangerous. 🚀`;
   const html = `
     <h2>Yo, ${username}!</h2>
@@ -64,7 +73,7 @@ export async function send2FACode(email: string, code: string, username: string)
  * @param resetLink The password reset link
  */
 export async function sendPasswordResetEmail(email: string, resetLink: string) {
-  const subject = 'Gang Gang Gang - Reset Your Password';
+  const subject = "Gang Gang Gang - Reset Your Password";
   const text = `Hey!\n\nWe got a request to reset your password. Click the link below to reset it:\n\n${resetLink}\n\nIf you didn’t request this, just ignore this email. 🔒\n\nStay awesome,\nThe Gang HQ`;
   const html = `
     <h2>Hey!</h2>
@@ -84,8 +93,11 @@ export async function sendPasswordResetEmail(email: string, resetLink: string) {
  * @param email Recipient's email
  * @param username User's name
  */
-export async function sendRegisterSuccessEmail(email: string, username: string) {
-  const subject = 'Gang Gang Gang - Register Successful';
+export async function sendRegisterSuccessEmail(
+  email: string,
+  username: string
+) {
+  const subject = "Gang Gang Gang - Register Successful";
   // const text = `Yo ${username}!\n\nJust wanted to let you know that you successfully registered. 🔥\n\nIf it wasn’t you, change your password right now! 🔐\n\nStay safe,\nThe Gang HQ`;
   const html = `
     <h2>Yo ${username}!</h2>
@@ -96,7 +108,7 @@ export async function sendRegisterSuccessEmail(email: string, username: string) 
     <p><b>The Gang HQ</b></p>
   `;
 
-  return sendEmail(email, subject, '', html);
+  return sendEmail(email, subject, "", html);
 }
 
 /**
@@ -104,8 +116,11 @@ export async function sendRegisterSuccessEmail(email: string, username: string) 
  * @param email Recipient's email
  * @param username User's name
  */
-export async function sendGameAchievementEmail(email: string, username: string) {
-  const subject = 'Gang Gang Gang - You\'re #1!';
+export async function sendGameAchievementEmail(
+  email: string,
+  username: string
+) {
+  const subject = "Gang Gang Gang - You're #1!";
   const text = `Yo ${username}! 🎉\n\nCongratulations! You secured the first place in the game! 🔥🔥🔥\n\nKeep dominating, stay dangerous, and see you at the top again soon! 🏆\n\nStay awesome,\nThe Gang HQ`;
   const html = `
     <h2>Yo ${username}! 🎉</h2>
