@@ -7,6 +7,16 @@ import {
   getUserGames,
 } from "../../service/userService";
 import { UserProfile, Game, Match } from "../../service/interface";
+import { Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
 
 export const GameStats: React.FC = () => {
   const navigate = useNavigate();
@@ -28,12 +38,14 @@ export const GameStats: React.FC = () => {
         setProfile(fetchedProfile);
         setProfiles(fetchedProfiles);
 
+        console.debug("fetched all profiles:", fetchedProfiles);
+
         const fetchedGames = await getUserGames(fetchedProfile.username);
-        // console.debug("Fetched Games:", fetchedGames);
-        // console.debug(
-        //   "fecthed games rounds type: ",
-        //   typeof fetchedGames[0].rounds_json
-        // );
+        console.debug("Fetched Games:", fetchedGames);
+        console.debug(
+          "fecthed games rounds type: ",
+          typeof fetchedGames[0].rounds_json
+        );
         const parsedGames = fetchedGames.map((game) => ({
           ...game,
           rounds_json:
@@ -68,6 +80,11 @@ export const GameStats: React.FC = () => {
 
     fetchData();
     // calcPoints();
+    localStorage.removeItem("userAvatar");
+    localStorage.removeItem("guestAvatar");
+    localStorage.removeItem("guestName");
+    localStorage.removeItem("guests");
+    localStorage.removeItem("guestCount");
   }, []);
 
   const renderTournamentBracket = (rounds_json: Match[][]) => {
