@@ -97,7 +97,7 @@ export const CustomazationPage = () => {
     })
       .then(() => {
         // ✅ Redirect to game page // HERE HERE
-        navigate("/game/play?mode=duel", {
+        navigate(targetRoute, {
           state: {
             user: loggedInUsername,
             guest: guestName,

@@ -48,7 +48,8 @@ function App() {
               <Route path="/user/:username" element={<general.UserProfilePage />} />
               
               <Route path="/tic-tac-toe-duel" element={<authorised.TicTacToeDuel />} />			 
-			        <Route path="/game/play" element={<PongGame />} />
+			  // "/game/play?mode=duel"
+			  <Route path="/game/play" element={<PongGame />} />
             </>
           ) : (
             <>
