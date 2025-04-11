@@ -1,13 +1,52 @@
 import { useNavigate } from 'react-router-dom';
+import { appLogout } from "../../service"
+
+import {
+    getUsernameFromToken
+  } from '../../service/userService';
 
 export const MenuPage = () => {
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-        localStorage.removeItem("ping-pong-jwt");
-        navigate("/"); // Redirect to Landing Page after logout
-        window.location.reload(); // Ensures state is reset
+    // const handleLogout = () => {
+    //     localStorage.removeItem("ping-pong-jwt");
+    //     navigate("/"); // Redirect to Landing Page after logout
+    //     window.location.reload(); // Ensures state is reset
+    // };
+
+    // const handleLogout = async () => {
+    //     try {
+    //         const response = await appLogout({ username });
+    //         console.log(response.message); // 'Logged out and status set to offline'
+
+    //         localStorage.removeItem("ping-pong-jwt");
+    //         navigate("/"); // Redirect to Landing Page after logout
+    //         window.location.reload(); // Ensures state is reset
+    //     } catch (error) {
+    //         console.error('Error logging out:', error);
+    //     }
+    // };
+
+    const handleLogout = async () => {
+        const username = getUsernameFromToken();
+    
+        if (!username) {
+            console.error('No username found in the token');
+            return;
+        }
+    
+        try {
+            const response = await appLogout({ username });
+            console.log(response.message); // 'Logged out and status set to offline'
+    
+            localStorage.removeItem("ping-pong-jwt");
+            navigate("/"); // Redirect to Landing Page after logout
+            window.location.reload(); // Ensures state is reset
+        } catch (error) {
+            console.error('Error logging out:', error);
+        }
     };
+    
 
     return (
         <div className="w-full h-screen flex relative">
@@ -41,7 +80,7 @@ export const MenuPage = () => {
                             onClick={() => navigate("/customization")}
                             className="bg-green-500 hover:bg-green-600 text-xl font-bold px-6 py-3 rounded-lg shadow-md w-60"
                         >
-                            Ping Pong Duel 💥
+                            Duel 💥
                         </button>
                         <button
                             onClick={() => navigate("/customization-tournament")}

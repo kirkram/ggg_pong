@@ -2,9 +2,13 @@ import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
 import jwt from '@fastify/jwt';
 import { Env } from './env';
 import { initializeDatabase } from './database'; 
-import { authRoutes } from './routes/authRoutes'; 
-import { userRoutes } from './routes/userRoutes';  
+import { authRoutes } from './routes/authRoutes';
+import { userRoutes } from './routes/userRoutes';
+import { friendshipRoutes } from './routes/friendshipRoutes';
+import { startUserStatusUpdater } from './routes/userStatusUpdater';
 import { gameRoutes } from './routes/gameRoutes';
+
+
 
 declare module '@fastify/jwt' {
   interface FastifyJWT {
@@ -46,7 +50,11 @@ initializeDatabase();
 // Register authentication and user routes
 app.register(authRoutes);
 app.register(userRoutes);
-app. register(gameRoutes);
+app.register(friendshipRoutes);
+app.register(gameRoutes);
+
+// Start user status updater
+startUserStatusUpdater();  // Start the interval for updating user statuses
 
 // Root Route
 app.get('/', async (request, reply) => {

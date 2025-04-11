@@ -1,22 +1,21 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
+import path from 'path'
 
-// https://vite.dev/config/
-export default defineConfig({
-  plugins: [react(), tailwindcss()],
-  server: {
-    proxy: {
-      "/app": {
-        changeOrigin: true,
-        rewrite: (path: string) => {
-          if (path.startsWith("/app")) {
-            return path.substring(4)
-          }
+export default defineConfig(({ mode }) => {
+  // Load .env files
+  const env = loadEnv(mode, process.cwd(), '')
 
-          return path
-        },
-        target: `http://localhost:8080`
+  return {
+    plugins: [react(), tailwindcss()],
+    server: {
+      proxy: {
+        "/app": {
+          changeOrigin: true,
+          rewrite: (path: string) => path.replace(/^\/app/, ''),
+          target: env.VITE_API_URL || 'http://localhost:8080'
+        }
       }
     }
   }

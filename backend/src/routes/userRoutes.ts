@@ -3,7 +3,6 @@ import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
 import { database } from '../database'
 import { Env } from '../env'
-//this crashes the whole thing on my mac _inka
 //import { useResolvedPath } from 'react-router-dom'
 import { fdatasync } from 'fs'
 import fastifyMultipart  from '@fastify/multipart'
@@ -16,6 +15,10 @@ import { sendGameAchievementEmail } from '../emailService'
 interface UpdateField {
   field: string
   value: any
+}
+
+interface LogoutInput {
+  username: string
 }
 
 export const userRoutes = async (app: FastifyInstance) => {
@@ -131,5 +134,25 @@ export const userRoutes = async (app: FastifyInstance) => {
 
     return reply.send({ message: `Game result: ${username} finished in position ${position}` });
   });
+
+  app.put('/logout', async (request, reply) => {
+    const { username } = request.body as LogoutInput
+  
+    try {
+      // Set the user status to offline when logging out
+      await database.db.run(
+        `UPDATE users SET online_status = 'offline' WHERE username = ?`,
+        [username]
+      );
+  
+      return reply.send({ message: 'Logged out and status set to offline' });
+    } catch (error) {
+      console.error('Error updating status:', error);
+      return reply.status(500).send({ error: 'Failed to log out' });
+    }
+  });
+
+
 };
+
 

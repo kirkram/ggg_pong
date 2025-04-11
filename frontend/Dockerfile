@@ -1,0 +1,14 @@
+# frontend/Dockerfile
+FROM node:20
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install --include=dev
+
+COPY . .
+
+# Expose Vite dev server port (default is 5173)
+EXPOSE 5173
+
+CMD ["npm", "run", "dev"]

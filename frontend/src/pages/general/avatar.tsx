@@ -29,7 +29,7 @@ const avatars: Avatar[] = [
   },
   {
     name: "JustBorn",
-    image: "/avatars/just_born/f4bcae28-4391-4bd0-a032-d673a9068e28.png",
+    image: "/avatars/just_born/15f073e5-ef4d-409c-81d6-dba100a94bd0.png",
     description: "Sweet, cheerful, and totally clueless... until he finds himself in a ping pong match, where his Irresistable Vibes becomes his Secret Weapon! 🏓😂",
   },
   {
@@ -49,7 +49,7 @@ const avatars: Avatar[] = [
   },
   {
     name: "VampBoy",
-    image: "/avatars/vamp_boy/b821b969-96d0-40e7-a0b2-5cb2f2e2825a.png",
+    image: "/avatars/vamp_boy/a7c05cb7-3c86-4f34-aed6-db8108ecb9d3.png",
     description: "In his rock band by day, but when the ping pong table calls, he’s the stylish show-off who always hits the coolest shots. 🎸🏓",
   },
   {
