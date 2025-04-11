@@ -11,6 +11,7 @@ import { useUserActivityTracker } from "./service/useUserActivityTracker";
 
 import PongGame from './pages/game/PongGame';
 
+
 function App() {
   const [loading, setLoading] = useState(true);
   const [appInfo, setAppInfo] = useState<AppInfoIface | undefined>(undefined);
@@ -45,10 +46,9 @@ function App() {
               <Route path="/customization-tournament" element={<authorised.CustomazationTournamentPage />} />
               <Route path="/avatar" element={<general.AvatarPage />} />
               <Route path="/user/:username" element={<general.UserProfilePage />} />
+              
               <Route path="/tic-tac-toe-duel" element={<authorised.TicTacToeDuel />} />			 
-			  <Route path="/game/play" element={<PongGame />} />
-
-
+			        <Route path="/game/play" element={<PongGame />} />
             </>
           ) : (
             <>

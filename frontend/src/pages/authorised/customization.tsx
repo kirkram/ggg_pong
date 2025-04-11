@@ -96,7 +96,7 @@ export const CustomazationPage = () => {
       guestAvatar: guestAvatar.name,
     })
       .then(() => {
-        // ✅ Redirect to game page
+        // ✅ Redirect to game page // HERE HERE
         navigate("/game/play?mode=duel", {
           state: {
             user: loggedInUsername,
