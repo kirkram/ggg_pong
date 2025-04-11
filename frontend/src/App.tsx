@@ -7,6 +7,9 @@ import { getAppInfo } from './service';
 import { getUserProfile, getUsernameFromToken, updateProfileField, uploadProfilePicture } from './service/userService'
 import { AppInfoContext } from './context/app-info/context';
 import { authorised, unauthorised, general } from "./pages"
+import { useUserActivityTracker } from "./service/useUserActivityTracker";
+
+import PongGame from './pages/game/PongGame';
 
 function App() {
   const [loading, setLoading] = useState(true);
