@@ -9,6 +9,8 @@ import { AppInfoContext } from './context/app-info/context';
 import { authorised, unauthorised, general } from "./pages"
 import { useUserActivityTracker } from "./service/useUserActivityTracker";
 
+import PongGame from './pages/game/PongGame';
+
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -44,7 +46,10 @@ function App() {
               <Route path="/customization-tournament" element={<authorised.CustomazationTournamentPage />} />
               <Route path="/avatar" element={<general.AvatarPage />} />
               <Route path="/user/:username" element={<general.UserProfilePage />} />
-              <Route path="/tic-tac-toe-duel" element={<authorised.TicTacToeDuel />} />
+              
+              <Route path="/tic-tac-toe-duel" element={<authorised.TicTacToeDuel />} />			 
+			  // "/game/play?mode=duel"
+			  <Route path="/game/play" element={<PongGame />} />
             </>
           ) : (
             <>
