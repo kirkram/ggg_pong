@@ -95,10 +95,26 @@ export interface GameData {
   }[];
 }
 
-  export interface DuelGameData {
-    user: string;
-    userAvatar: string;
-    guest: string;
-    guestAvatar: string;
-  }
-  
+export interface DuelGameData {
+  user: string;
+  userAvatar: string;
+  guest: string;
+  guestAvatar: string;
+}
+
+export interface Match {
+  p1_username: string;
+  p2_username: string;
+  p1_avatar: string;
+  p2_avatar: string;
+  p1_wins: number;
+  p2_wins: number;
+}
+
+export interface Game {
+  id_user: string | undefined;
+  id_game: number;
+  date: string;
+  game_name: string;
+  rounds_json: Match[][];
+}
