@@ -102,6 +102,6 @@ export interface GameData {
     guestAvatar: string;
   }
   
-  export interface AppLogoutInput { 
-    username: string
-}
+//   export interface AppLogoutInput { 
+//     username: string
+// }

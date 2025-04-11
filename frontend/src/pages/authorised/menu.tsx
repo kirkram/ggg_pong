@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { appLogout } from "../../service"
+// import { appLogout } from "../../service"
 
 import {
     getUsernameFromToken
@@ -36,8 +36,8 @@ export const MenuPage = () => {
         }
     
         try {
-            const response = await appLogout({ username });
-            console.log(response.message); // 'Logged out and status set to offline'
+            // const response = await appLogout({ username });
+            // console.log(response.message); // 'Logged out and status set to offline'
     
             localStorage.removeItem("ping-pong-jwt");
             navigate("/"); // Redirect to Landing Page after logout

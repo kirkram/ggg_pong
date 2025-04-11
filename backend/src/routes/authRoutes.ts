@@ -147,7 +147,7 @@ app.post('/register', async (request, reply) => {
     // Save the 2FA code in the database (this could also be stored in memory for a short time)
     await database.db.run('UPDATE users SET secret = ? WHERE username = ?', [twoFACode, username]);
 
-    await database.db.run(`UPDATE users SET online_status = 'online' WHERE username = ?`, [username]);
+
 
     return reply.send({ message: '2FA code sent to email. Please verify your code.' });
   });
@@ -172,6 +172,8 @@ app.post('/register', async (request, reply) => {
 
     // Generate JWT token after 2FA verification
     const token = app.jwt.sign({ id: user.id, username: user.username });
+
+    await database.db.run(`UPDATE users SET online_status = 'online' WHERE username = ?`, [username]);
 
     return reply.send({ token });
   });

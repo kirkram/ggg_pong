@@ -135,22 +135,22 @@ export const userRoutes = async (app: FastifyInstance) => {
     return reply.send({ message: `Game result: ${username} finished in position ${position}` });
   });
 
-  app.put('/logout', async (request, reply) => {
-    const { username } = request.body as LogoutInput
+  // app.put('/logout', async (request, reply) => {
+  //   const { username } = request.body as LogoutInput
   
-    try {
-      // Set the user status to offline when logging out
-      await database.db.run(
-        `UPDATE users SET online_status = 'offline' WHERE username = ?`,
-        [username]
-      );
+  //   try {
+  //     // Set the user status to offline when logging out
+  //     await database.db.run(
+  //       `UPDATE users SET online_status = 'offline' WHERE username = ?`,
+  //       [username]
+  //     );
   
-      return reply.send({ message: 'Logged out and status set to offline' });
-    } catch (error) {
-      console.error('Error updating status:', error);
-      return reply.status(500).send({ error: 'Failed to log out' });
-    }
-  });
+  //     return reply.send({ message: 'Logged out and status set to offline' });
+  //   } catch (error) {
+  //     console.error('Error updating status:', error);
+  //     return reply.status(500).send({ error: 'Failed to log out' });
+  //   }
+  // });
 
 
 };

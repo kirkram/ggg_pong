@@ -42,7 +42,7 @@ export async function friendshipRoutes(app: FastifyInstance) {
       return reply.send(requests); // Return the list of friend requests
     } catch (error) {
       console.error("Error fetching friend requests:", error);
-      return reply.status(500).send({ error: "Failed to fetch friend requests" }); // Return error if something goes wrong
+      return reply.status(500).send({ error: "Failed to fetch friend requests" });
     }
   });
 

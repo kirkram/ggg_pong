@@ -12,8 +12,8 @@ export function useUserActivityTracker(shouldTrack: boolean) {
       const now = Date.now();
       const diff = now - lastActivityRef.current;
 
-      // Only send update every 30 seconds at most
-      if (diff > 5) {
+      // Only send update every 1 second(s) at most
+      if (diff > 1000) {
         lastActivityRef.current = now;
 
         console.log("Send Activity Update from FrontEnd...");// Print statement
@@ -25,7 +25,7 @@ export function useUserActivityTracker(shouldTrack: boolean) {
 
     const handleActivity = () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      timeoutRef.current = setTimeout(reportActivity, 1000); // debounce
+      timeoutRef.current = setTimeout(reportActivity, 500); // debounce
     };
 
     // Events to listen to

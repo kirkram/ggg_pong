@@ -40,6 +40,8 @@ export const ConnectionsPage = () => {
     };
 
     fetchFriendships();
+    const interval = setInterval(fetchFriendships, 3000);
+    return () => clearInterval(interval);    
   }, []);
 
   useEffect(() => {
