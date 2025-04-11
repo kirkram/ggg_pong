@@ -1,2 +1,2 @@
-export { UserProfilePage } from "./user-profile.tsx"
-export { AvatarPage } from "./avatar.tsx"
+export { UserProfilePage } from "./user-profile.tsx";
+export { AvatarPage } from "./avatar.tsx";

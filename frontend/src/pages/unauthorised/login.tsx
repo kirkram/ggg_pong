@@ -1,105 +1,125 @@
-import { useState } from "react"
-import { AxiosError } from "axios"
-import { useNavigate } from 'react-router-dom'
-import { appLogin, appLoginCode } from "../../service"
+import { useState } from "react";
+import { AxiosError } from "axios";
+import { useNavigate } from "react-router-dom";
+import { appLogin, appLoginCode } from "../../service";
 
 export const LogInPage = () => {
-    const [isLoading, setIsLoading] = useState(false)
-    const [error, setError] = useState<AxiosError | undefined>(undefined)
-    const [backendMessage, setBackendMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<AxiosError | undefined>(undefined);
+  const [backendMessage, setBackendMessage] = useState("");
 
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
-    const [code, setCode] = useState('')
-    const navigate = useNavigate()
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
+  const navigate = useNavigate();
 
-    const handleLogin = (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsLoading(true)
-        appLogin({ username, password })
-            .then(response => {
-                setError(undefined)
-                setBackendMessage(response.message)
-            })
-            .catch(setError)
-            .finally(() => setIsLoading(false))
-    };
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    appLogin({ username, password })
+      .then((response) => {
+        setError(undefined);
+        setBackendMessage(response.message);
+      })
+      .catch(setError)
+      .finally(() => setIsLoading(false));
+  };
 
-    const handleCode = (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsLoading(true)
-        appLoginCode({ username, code })
-            .then(response => {
-                localStorage.setItem('ping-pong-jwt', response.token)
-                navigate('/')
-                window.location.reload()
-            })
-            .catch(setError)
-            .finally(() => setIsLoading(false))
-    }
+  const handleCode = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    appLoginCode({ username, code })
+      .then((response) => {
+        localStorage.setItem("ping-pong-jwt", response.token);
+        navigate("/");
+        window.location.reload();
+      })
+      .catch(setError)
+      .finally(() => setIsLoading(false));
+  };
 
-    console.log(error) // check if we need this
+  console.log(error); // check if we need this
 
-    return (
-        <div className="flex h-screen">
+  return (
+    <div className="flex h-screen">
+      {backendMessage ? (
+        <>
+          <div className="w-1/2 flex flex-col justify-center p-12 bg-white">
+            <h5 className="text-4xl font-bold mb-6">{backendMessage}</h5>
+            {error ? <div>error: {error.response.data.error}</div> : null}
+            <form onSubmit={handleCode} className="space-y-4">
+              <input
+                type="text"
+                placeholder="Code"
+                className="w-full p-3 border rounded"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                required
+              />
 
-            {backendMessage ? (
-                <>
-                    <div className="w-1/2 flex flex-col justify-center p-12 bg-white">
-                        <h5 className="text-4xl font-bold mb-6">{backendMessage}</h5>
-                        {error ? (
-                            <div>error: {error.response.data.error}</div>
-                        ) : null}
-                        <form onSubmit={handleCode} className="space-y-4">
-                            <input
-                                type="text"
-                                placeholder="Code"
-                                className="w-full p-3 border rounded"
-                                value={code}
-                                onChange={(e) => setCode(e.target.value)}
-                                required
-                            />
+              <button
+                type="submit"
+                className="w-full bg-blue-500 text-white py-3 rounded"
+              >
+                Verify
+              </button>
+            </form>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="w-1/2 flex flex-col justify-center p-12 bg-white">
+            <h2 className="text-4xl font-bold mb-6">Welcome Back!</h2>
+            {error ? <div>error: {error.response.data.error}</div> : null}
+            <form onSubmit={handleLogin} className="space-y-4">
+              <input
+                type="text"
+                placeholder="Username"
+                className="w-full p-3 border rounded"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                className="w-full p-3 border rounded"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-blue-500 text-white py-3 rounded"
+              >
+                Log In
+              </button>
+            </form>
+            <p className="mt-4 text-sm">
+              Don't have an account?{" "}
+              <span
+                className="text-blue-500 cursor-pointer"
+                onClick={() => navigate("/register")}
+              >
+                Sign Up
+              </span>
+            </p>
+            <p
+              className="mt-2 text-sm text-gray-500 cursor-pointer"
+              onClick={() => navigate("/reset-password")}
+            >
+              Forgot Password?
+            </p>
+          </div>
+        </>
+      )}
 
-                            <button type="submit" className="w-full bg-blue-500 text-white py-3 rounded">Verify</button>
-                        </form>
-                    </div>
-                </>
-            ) : <>
-                <div className="w-1/2 flex flex-col justify-center p-12 bg-white">
-                    <h2 className="text-4xl font-bold mb-6">Welcome Back!</h2>
-                    {error ? (
-                        <div>error: {error.response.data.error}</div>
-                    ) : null}
-                    <form onSubmit={handleLogin} className="space-y-4">
-                        <input
-                            type="text"
-                            placeholder="Username"
-                            className="w-full p-3 border rounded"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            required
-                        />
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            className="w-full p-3 border rounded"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                        <button type="submit" disabled={isLoading} className="w-full bg-blue-500 text-white py-3 rounded">Log In</button>
-                    </form>
-                    <p className="mt-4 text-sm">
-                        Don't have an account? <span className="text-blue-500 cursor-pointer" onClick={() => navigate('/register')}>Sign Up</span>
-                    </p>
-                    <p className="mt-2 text-sm text-gray-500 cursor-pointer" onClick={() => navigate('/reset-password')}>Forgot Password?</p>
-                </div>
-            </>}
-
-
-
-            {/* Right Section */}
-            <div className="w-1/2 bg-cover bg-center" style={{ backgroundImage: "url('background/login.png')" }}></div>
-        </div>
-    );
+      {/* Right Section */}
+      <div
+        className="w-1/2 bg-cover bg-center"
+        style={{ backgroundImage: "url('background/login.png')" }}
+      ></div>
+    </div>
+  );
 };

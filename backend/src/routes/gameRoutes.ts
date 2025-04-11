@@ -15,6 +15,7 @@ export const gameRoutes = async (app: FastifyInstance) => {
       return reply.status(400).send({ error: "Missing fields" });
     }
 
+    console.debug("before db run");
     await database.db.run(
       `INSERT INTO game_sessions (user, user_avatar, guest, guest_avatar) VALUES (?, ?, ?, ?)`,
       [user, userAvatar, guest, guestAvatar]

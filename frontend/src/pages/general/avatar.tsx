@@ -10,7 +10,8 @@ const avatars: Avatar[] = [
   {
     name: "QueenOfTheSpoons",
     image: "/avatars/queen_of_spoons/6f6e1f9c-7ea1-4902-a844-a3292cc6954d.png",
-    description: "A sweet athletic girl... until she grabs her spoon. Then she turns into a seductive ping pong sorceress. 🍨",
+    description:
+      "A sweet athletic girl... until she grabs her spoon. Then she turns into a seductive ping pong sorceress. 🍨",
   },
   {
     name: "BossLady",
@@ -25,47 +26,56 @@ const avatars: Avatar[] = [
   {
     name: "StabIlity",
     image: "/avatars/stability/9e93c420-8eb5-41a7-b656-d2c813300962.png",
-    description: "A sweet gamer girl... until she serves a perfect ping pong shot. Watch out she's ferocious! 🎮🏓",
+    description:
+      "A sweet gamer girl... until she serves a perfect ping pong shot. Watch out she's ferocious! 🎮🏓",
   },
   {
     name: "JustBorn",
     image: "/avatars/just_born/15f073e5-ef4d-409c-81d6-dba100a94bd0.png",
-    description: "Sweet, cheerful, and totally clueless... until he finds himself in a ping pong match, where his Irresistable Vibes becomes his Secret Weapon! 🏓😂",
+    description:
+      "Sweet, cheerful, and totally clueless... until he finds himself in a ping pong match, where his Irresistable Vibes becomes his Secret Weapon! 🏓😂",
   },
   {
     name: "GangGanger",
     image: "/avatars/gang_ganger/6e904349-5ddc-45cd-866e-b9c78ff8b0ac.png",
-    description: "Strong and patient... but when it's time for ping pong, he hits with power and precision. He’s a tough opponent! 💪🏓",
+    description:
+      "Strong and patient... but when it's time for ping pong, he hits with power and precision. He’s a tough opponent! 💪🏓",
   },
   {
     name: "Maslina",
     image: "/avatars/maslina/bebdfcc5-f207-410c-8351-50a1549c34e3.png",
-    description: "Smart and always smiling... just don’t expect him to wake up early for school. But when it's game time, he’s on point with his ping pong serve. 🏓🧠",
+    description:
+      "Smart and always smiling... just don’t expect him to wake up early for school. But when it's game time, he’s on point with his ping pong serve. 🏓🧠",
   },
   {
     name: "Inka",
     image: "/avatars/inka/0ca9dd53-13cf-4488-8705-c34e11f369ee.png",
-    description: "An amiable coffee-lover... until a ping pong match heats up. Then he’s all focused, turning every game into a calm but deadly rally. ☕🏓",
+    description:
+      "An amiable coffee-lover... until a ping pong match heats up. Then he’s all focused, turning every game into a calm but deadly rally. ☕🏓",
   },
   {
     name: "VampBoy",
     image: "/avatars/vamp_boy/a7c05cb7-3c86-4f34-aed6-db8108ecb9d3.png",
-    description: "In his rock band by day, but when the ping pong table calls, he’s the stylish show-off who always hits the coolest shots. 🎸🏓",
+    description:
+      "In his rock band by day, but when the ping pong table calls, he’s the stylish show-off who always hits the coolest shots. 🎸🏓",
   },
   {
     name: "TheBurek",
     image: "/avatars/burek/c24d84c4-f4c3-4d6e-b306-be19f7296d5a.png",
-    description: "Never gets mad... but when it's ping pong time, he becomes the most cheerful challenger you’ve ever seen. Loveable and competitive! 🍰🏓",
+    description:
+      "Never gets mad... but when it's ping pong time, he becomes the most cheerful challenger you’ve ever seen. Loveable and competitive! 🍰🏓",
   },
   {
     name: "TheFish",
     image: "/avatars/fish/2d44a0fd-b62b-421a-837d-c870a5468f5e.png",
-    description: "A nature-loving, game-making girl, who’s also got the skills to make ping pong a work of art. Positive vibes all around! 🐾🏓",
+    description:
+      "A nature-loving, game-making girl, who’s also got the skills to make ping pong a work of art. Positive vibes all around! 🐾🏓",
   },
   {
     name: "WarMachine",
     image: "/avatars/war_machine/warmachine.webp",
-    description: "Our baby girl, coding in her momma’s tummy... and already practicing her ping pong swings. She’s gonna rule the table one day! 👶🏓",
+    description:
+      "Our baby girl, coding in her momma’s tummy... and already practicing her ping pong swings. She’s gonna rule the table one day! 👶🏓",
   },
 ];
 
@@ -94,7 +104,9 @@ export const AvatarPage = () => {
 
   // Guests avatars
   const guests = JSON.parse(
-    localStorage.getItem("tournamentGuests") || localStorage.getItem("guests") || "[]"
+    localStorage.getItem("tournamentGuests") ||
+      localStorage.getItem("guests") ||
+      "[]"
   );
   guests.forEach((g: any, i: number) => {
     if (g?.avatar?.name && !(target === "guest" && i === guestIndex)) {
@@ -127,7 +139,9 @@ export const AvatarPage = () => {
         🔙 Back
       </button>
 
-      <h1 className="text-4xl font-bold text-center mb-10">🎨 Pick Your Fighter</h1>
+      <h1 className="text-4xl font-bold text-center mb-10">
+        🎨 Pick Your Fighter
+      </h1>
 
       <div className="w-full max-w-2xl flex flex-col gap-10">
         {avatars.map((avatar) => {
@@ -137,8 +151,11 @@ export const AvatarPage = () => {
             <div
               key={avatar.name}
               onClick={() => !isTaken && handleSelect(avatar)}
-              className={`bg-gray-800 rounded-xl p-6 shadow-lg text-center transition-transform ${isTaken ? "opacity-40 pointer-events-none" : "cursor-pointer hover:scale-105"
-                }`}
+              className={`bg-gray-800 rounded-xl p-6 shadow-lg text-center transition-transform ${
+                isTaken
+                  ? "opacity-40 pointer-events-none"
+                  : "cursor-pointer hover:scale-105"
+              }`}
             >
               <img
                 src={avatar.image}
@@ -148,7 +165,9 @@ export const AvatarPage = () => {
               <h2 className="text-2xl font-bold mb-2">{avatar.name}</h2>
               <p className="text-gray-300 text-sm">{avatar.description}</p>
               {isTaken && (
-                <p className="mt-2 text-red-400 text-sm font-semibold">Already taken</p>
+                <p className="mt-2 text-red-400 text-sm font-semibold">
+                  Already taken
+                </p>
               )}
             </div>
           );
