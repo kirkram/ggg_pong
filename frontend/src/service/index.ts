@@ -8,6 +8,9 @@ import {
   AppRegisterInput,
   AppResetPassword,
   AppChangePassword,
+  GameData,
+  DuelGameData,
+  AppLogoutInput,
 } from "./interface";
 
 export const appClient = axios.create({
