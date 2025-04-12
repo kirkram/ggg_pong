@@ -18,6 +18,7 @@ export const GameStats: React.FC = () => {
   const [userGames, setUserGames] = useState<Game[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [expandedGameId, setExpandedGameId] = useState<number | null>(null);
+  const [chartButton, setChartButton] = useState<string>("bar");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -159,8 +160,8 @@ export const GameStats: React.FC = () => {
           🔙 Back to Menu
         </button>
 
-        <div className="bg-stone-200 bg-opacity-70 backdrop-blur-md p-8 rounded-xl max-w-5xl mx-auto mt-20 shadow-lg">
-          <h1 className="text-4xl font-bold mb-6 text-center border-b-2 border-gray-600 pb-4">
+        <div className="bg-stone-200 flex flex-col items-center bg-opacity-70 backdrop-blur-md p-8 rounded-xl max-w-5xl mx-auto mt-20 shadow-lg">
+          <h1 className="text-4xl w-full font-bold mb-6 text-center border-b-2 border-gray-400 pb-4">
             Game Stats
           </h1>
 
@@ -193,30 +194,42 @@ export const GameStats: React.FC = () => {
             </div>
           </div>
 
-          {/* Add a chart for leaderboard */}
-          <div className="my-8">
-            <GameStatsChart
-              key={`wins-chart-${profile.username}`}
-              labels={sortedPlayers.map((player) => player.username)}
-              data={sortedPlayers.map((player) => player.wins)}
-              title="Wins by Player"
-              type="bar"
-            />
+          <div className="flex p-10 gap-10">
+            <div className="my-8">
+              <GameStatsChart
+                key={`wins-chart-${profile.username}`}
+                labels={sortedPlayers.map((player) => player.username)}
+                data={sortedPlayers.map((player) => player.wins)}
+                title="Wins by Player"
+                type={chartButton}
+              />
+            </div>
+
+            <div className="my-8">
+              <GameStatsChart
+                key={`losses-chart-${profile.username}`}
+                labels={sortedPlayers.map((player) => player.username)}
+                data={sortedPlayers.map((player) => player.losses)}
+                title="Losses by Player"
+                type={chartButton}
+              />
+            </div>
           </div>
 
-          <div className="my-8">
-            <GameStatsChart
-              key={`losses-chart-${profile.username}`}
-              labels={sortedPlayers.map((player) => player.username)}
-              data={sortedPlayers.map((player) => player.losses)}
-              title="Losses by Player"
-              type="bar"
-            />
-          </div>
+          <button
+            className="w-30 text-center bg-[#56c2c2] rounded-xl p-2 text-gray-100 "
+            onClick={() => {
+              setChartButton((prevButton) => {
+                return prevButton === "bar" ? "pie" : "bar";
+              });
+            }}
+          >
+            Switch Chart Style
+          </button>
 
-          <hr className="my-6 border-gray-600" />
+          <hr className="my-6 border-gray-600 w-full" />
 
-          <div className=" bg-cover bg-center text-white relative p-8">
+          <div className=" bg-cover bg-center text-white relative p-8 w-full">
             <div className="bg-stone-900 bg-opacity-50 backdrop-blur-md p-8 rounded-xl max-w-5xl mx-auto mt-20 shadow-2xl">
               <h1 className="text-3xl font-semibold mb-4 text-center">
                 Leaderboard
@@ -253,9 +266,9 @@ export const GameStats: React.FC = () => {
             </div>
           </div>
 
-          <hr className="my-6 border-gray-600" />
+          <hr className="my-6 border-gray-600 w-full" />
 
-          <div className="bg-stone-900 bg-opacity-50 backdrop-blur-md p-8 rounded-xl max-w-5xl mx-auto mt-20 shadow-2xl">
+          <div className="bg-stone-900 w-7/8 bg-opacity-50 backdrop-blur-md p-8 rounded-xl max-w-5xl mx-auto mt-20 shadow-2xl">
             <h1 className="text-3xl text-white font-semibold mb-4 text-center ">
               User Game History
             </h1>

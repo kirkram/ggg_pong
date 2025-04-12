@@ -47,11 +47,11 @@ export const MenuPage = () => {
 
   return (
     <>
-      <div className="w-full h-screen flex relative">
+      <div className="w-full h-screen flex relative min-h-200 min-w-150">
         {/* Left side (Content) */}
-        <div className="w-2/5 h-full min-w-100 flex flex-col items-center justify-center p-7 text-white relative z-10">
+        <div className="w-2/5 h-full min-w-100 flex flex-col items-center justify-center p-7 text-gray-100relative z-10">
           {/* News Ticker */}
-          <div className="w-full bg-white text-black text-lg font-semibold rounded-lg mb-6 overflow-hidden">
+          <div className="w-full bg-white text-gray-800 text-lg font-semibold rounded-lg mb-6 overflow-hidden">
             <div className="animate-marquee whitespace-nowrap">
               <span className="mr-10">
                 Respect is earned, one smash at a time. 💥🏓
@@ -68,13 +68,13 @@ export const MenuPage = () => {
           {/* Top Buttons */}
           <button
             onClick={handleLogout}
-            className="absolute top-6 left-6 bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-white font-semibold shadow-md"
+            className="absolute top-6 left-6 bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-gray-100 font-semibold shadow-md"
           >
             Log Out 👋
           </button>
 
           {/* Centered Content */}
-          <div className="bg-white  items-center bg-opacity-70 backdrop-blur-md p-10 rounded-2xl max-w-3xl text-center shadow-2xl">
+          <div className="bg-white flex flex-col min-h-90 justify-center items-center mb-15 bg-opacity-70 backdrop-blur-md p-10 rounded-2xl max-w-3xl text-center shadow-2xl">
             <h1 className="text-5xl font-extrabold text-orange-500 mb-6">
               🏓 Gang Gang Game
             </h1>
@@ -83,13 +83,13 @@ export const MenuPage = () => {
             <div className="flex flex-col gap-6 justify-center items-center">
               <button
                 onClick={() => navigate("/customization")}
-                className="bg-green-500 hover:bg-green-600 text-xl font-bold px-6 py-3 rounded-lg shadow-md w-60"
+                className="bg-green-500  text-gray-100 hover:bg-green-600 text-xl font-bold px-6 py-3 rounded-lg shadow-md w-60"
               >
                 Duel 💥
               </button>
               <button
                 onClick={() => navigate("/customization-tournament")}
-                className="bg-red-500 hover:bg-red-600 text-xl font-bold px-6 py-3 rounded-lg shadow-md w-60"
+                className="bg-red-500  text-gray-100 hover:bg-red-600 text-xl font-bold px-6 py-3 rounded-lg shadow-md w-60"
               >
                 Tournament
               </button>
@@ -110,22 +110,12 @@ export const MenuPage = () => {
 
         {/* Top-right Buttons (Stacked vertically with space between them) */}
         <div className="flex flex-col gap-1 absolute top-6 right-6 z-20 space-y-4">
-          <ul className="space-y-5 text-xl font-bold text-center">
-            <li>
-              <a
-                href=""
-                onClick={() => navigate("/gamestats")}
-                className=" bg-red-500 block rounded-lg px-6 py-2 text-white"
-              >
-                Game Stats 🏆
-              </a>
-            </li>
-
+          <ul className="space-y-3 text-l font-bold text-center">
             <li>
               <a
                 href=""
                 onClick={() => navigate("/profile")}
-                className="bg-red-500 block rounded-lg px-4 py-2  text-white hover:bg-gray-100 hover:text-gray-700"
+                className="bg-red-500 block rounded-lg px-4 py-2  text-gray-100 hover:bg-red-600"
               >
                 User Profile 📸
               </a>
@@ -135,9 +125,19 @@ export const MenuPage = () => {
               <a
                 href=""
                 onClick={() => navigate("/connections")}
-                className=" bg-red-500 block rounded-lg px-4 py-2 text-white hover:bg-gray-100 hover:text-gray-700"
+                className=" bg-red-500 block rounded-lg px-4 py-2 text-gray-100 hover:bg-red-600"
               >
                 Your Friends 👊
+              </a>
+            </li>
+
+            <li>
+              <a
+                href=""
+                onClick={() => navigate("/gamestats")}
+                className=" bg-red-500 block rounded-lg px-4 py-2 text-white  hover:bg-red-600 "
+              >
+                Game Stats 🏆
               </a>
             </li>
           </ul>

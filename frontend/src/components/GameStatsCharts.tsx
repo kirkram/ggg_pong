@@ -6,6 +6,7 @@ import {
   LinearScale,
   BarElement,
   LineElement,
+  PointElement,
   ArcElement,
   Title,
   Tooltip,
@@ -17,6 +18,7 @@ ChartJS.register(
   LinearScale,
   BarElement,
   LineElement,
+  PointElement,
   ArcElement,
   Title,
   Tooltip,
@@ -27,14 +29,18 @@ interface GameStatsChartProps {
   labels: string[];
   data: number[];
   title: string;
-  type?: "bar" | "line" | "pie"; // Add "pie" as a valid type
+  type?: "bar" | "line" | "pie";
+  width?: string | number;
+  height?: string | number;
 }
 
 const GameStatsChart: React.FC<GameStatsChartProps> = ({
   labels,
   data,
   title,
-  type = "bar", // Default to bar chart
+  type = "bar",
+  width = 400, // Default width
+  height = 300, // Default height
 }) => {
   const chartData = {
     labels,
@@ -51,13 +57,14 @@ const GameStatsChart: React.FC<GameStatsChartProps> = ({
             ? ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"]
             : "rgba(75, 192, 192, 1)",
         borderWidth: 1,
-        fill: type === "line", // Fill area for line charts
+        fill: type === "line",
       },
     ],
   };
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false, // Allow custom dimensions
     plugins: {
       legend: {
         position: "top" as const,
@@ -69,13 +76,26 @@ const GameStatsChart: React.FC<GameStatsChartProps> = ({
     },
   };
 
-  // Dynamically render the correct chart type
-  if (type === "line") {
-    return <Line data={chartData} options={options} />;
-  } else if (type === "pie") {
-    return <Pie data={chartData} options={options} />;
-  } else {
-    return <Bar data={chartData} options={options} />;
+  switch (type) {
+    case "line":
+      return (
+        <div style={{ width, height }}>
+          <Line data={chartData} options={options} />
+        </div>
+      );
+    case "pie":
+      return (
+        <div style={{ width, height }}>
+          <Pie data={chartData} options={options} />
+        </div>
+      );
+    case "bar":
+    default:
+      return (
+        <div style={{ width, height }}>
+          <Bar data={chartData} options={options} />
+        </div>
+      );
   }
 };
 
