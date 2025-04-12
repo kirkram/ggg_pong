@@ -1,5 +1,17 @@
-import axios from "axios"
-import { AppInfo, AppLoginInput, AppResponse, AppLoginCodeInput, AppLoginToken, AppRegisterInput, AppResetPassword, AppChangePassword, GameData, DuelGameData } from "./interface"
+import axios from "axios";
+import {
+  AppInfo,
+  AppLoginInput,
+  AppResponse,
+  AppLoginCodeInput,
+  AppLoginToken,
+  AppRegisterInput,
+  AppResetPassword,
+  AppChangePassword,
+  GameData,
+  DuelGameData,
+} from "./interface";
+import { data } from "react-router-dom";
 
 export const appClient = axios.create({
   baseURL: "/app",
@@ -61,4 +73,6 @@ export const startDuelGame = (data: DuelGameData) =>
 export const appLogout = (data: AppLogoutInput) =>
   appClient.put<AppResponse>("/logout", data).then((data) => data.data);
 
-// export const appLogout = (data: AppLogoutInput) => appClient.put<AppResponse>('/logout', data).then(data => data.data);
+export const googleLoginAuth = (code: string) =>
+  appClient.get(`/auth/google/callback?code=${code}`).then((res) => res.data);
+// // export const appLogout = (data: AppLogoutInput) => appClient.put<AppResponse>('/logout', data).then(data => data.data);

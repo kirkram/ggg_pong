@@ -3,6 +3,7 @@ export { LogInPage } from "./login";
 export { RegisterPage } from "./register";
 export { ResetPasswordPage } from "./reset-password";
 export { ChangePasswordPage } from "./change-password";
+export { GoogleCallback } from "./googleCallback";
 
 export const LandingPage = () => {
   const navigate = useNavigate();

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
-import { appLogin, appLoginCode } from "../../service";
+import { appLogin, appLoginCode, googleLoginAuth } from "../../service";
 import GoogleAuthButton from "../../components/GoogleAuthButton";
 
 export const LogInPage = () => {
@@ -13,6 +13,9 @@ export const LogInPage = () => {
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
   const navigate = useNavigate();
+
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID; // Add your Client ID here
+  const redirectUri = "http://localhost:5173/auth/google/callback"; // The redirect URI you defined in your backend
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,6 +40,25 @@ export const LogInPage = () => {
       })
       .catch(setError)
       .finally(() => setIsLoading(false));
+  };
+
+  // Google OAuth Client ID
+  const googleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    // setIsLoading(true);
+    const baseUrl = "https://accounts.google.com/o/oauth2/v2/auth";
+    const params = new URLSearchParams({
+      client_id: clientId,
+      redirect_uri: redirectUri,
+      response_type: "code",
+      scope: "openid email profile",
+      include_granted_scopes: "true",
+      access_type: "offline",
+      prompt: "consent",
+    });
+
+    console.debug("in google login redirect to google page");
+    window.location.href = `${baseUrl}?${params.toString()}`;
   };
 
   console.log(error); // check if we need this
@@ -98,7 +120,13 @@ export const LogInPage = () => {
               </button>
             </form>
 
-            <GoogleAuthButton />
+            {/* Google Auth */}
+            <button
+              className="w-full bg-blue-500 mt-2 text-white py-3 rounded"
+              onClick={googleLogin}
+            >
+              Sign in with Google
+            </button>
 
             <p className="mt-4 text-sm">
               Don't have an account?{" "}

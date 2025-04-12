@@ -88,9 +88,13 @@ function App() {
                 path="/change-password"
                 element={<unauthorised.ChangePasswordPage />}
               />
+              <Route
+                path="/auth/google/callback"
+                element={<unauthorised.GoogleCallback />}
+              />
             </>
           )}
-        </Routes> 
+        </Routes>
       </Router>
     </AppInfoContext.Provider>
   );
