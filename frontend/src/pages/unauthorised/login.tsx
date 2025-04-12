@@ -2,6 +2,7 @@ import { useState } from "react";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { appLogin, appLoginCode } from "../../service";
+import GoogleAuthButton from "../../components/GoogleAuthButton";
 
 export const LogInPage = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -96,6 +97,9 @@ export const LogInPage = () => {
                 Log In
               </button>
             </form>
+
+            <GoogleAuthButton />
+
             <p className="mt-4 text-sm">
               Don't have an account?{" "}
               <span

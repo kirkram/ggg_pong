@@ -8,6 +8,7 @@ import {
   sendRegisterSuccessEmail,
 } from "../emailService";
 import { Env } from "../env";
+import axios from "axios";
 
 interface RegisterInput {
   username: string;
@@ -162,8 +163,6 @@ export const authRoutes = async (app: FastifyInstance) => {
       username,
     ]);
 
-
-
     return reply.send({
       message: "2FA code sent to email. Please verify your code.",
     });
@@ -195,7 +194,10 @@ export const authRoutes = async (app: FastifyInstance) => {
     // Generate JWT token after 2FA verification
     const token = app.jwt.sign({ id: user.id, username: user.username });
 
-    await database.db.run(`UPDATE users SET online_status = 'online' WHERE username = ?`, [username]);
+    await database.db.run(
+      `UPDATE users SET online_status = 'online' WHERE username = ?`,
+      [username]
+    );
 
     return reply.send({ token });
   });
@@ -265,5 +267,38 @@ export const authRoutes = async (app: FastifyInstance) => {
     );
 
     return reply.send({ message: "Password successfully updated!" });
+  });
+
+  app.get("/auth/google/callback", async (request, reply) => {
+    const redirectUri = "http://localhost:5173/auth/google/callback";
+    const code = (request.query as { code: string }).code;
+
+    try {
+      // Exchange the authorization code for an access token
+      const tokenResponse = await axios.post(
+        "https://oauth2.googleapis.com/token",
+        null,
+        {
+          params: {
+            code,
+            client_id: Env.googleClientId,
+            client_secret: Env.googleClientSecret,
+            redirect_uri: redirectUri,
+            grant_type: "authorization_code",
+          },
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        }
+      );
+      const { access_token, id_token } = tokenResponse.data;
+      // Optionally: decode or verify the id_token
+      console.log("ID Token:", id_token);
+      console.log("Access Token:", access_token);
+
+      // Send a response back to the user (you can render a page or redirect)
+      reply.send(`Authentication successful! ID Token: ${id_token}`);
+    } catch (err) {
+      console.error("🔥 Google error:", err);
+      return reply.code(500).send({ error: "Internal Server Error" });
+    }
   });
 };
