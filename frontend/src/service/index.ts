@@ -27,6 +27,7 @@ appClient.interceptors.request.use(
     return config;
   },
   (error) => {
+    console.debug("checking jwt in interseptor returning reject");
     return Promise.reject(error);
   }
 );
@@ -36,6 +37,7 @@ appClient.interceptors.request.use(
 export const getAppInfo = async (): Promise<AppInfo | undefined> => {
   try {
     const res = await appClient.get<AppInfo>("/info");
+    console.debug("/info returned: ", res);
     return res.data;
   } catch (err: any) {
     if (err.response?.status === 401) {

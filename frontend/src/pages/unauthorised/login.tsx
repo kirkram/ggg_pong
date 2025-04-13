@@ -46,6 +46,7 @@ export const LogInPage = () => {
   const googleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     // setIsLoading(true);
+
     const baseUrl = "https://accounts.google.com/o/oauth2/v2/auth";
     const params = new URLSearchParams({
       client_id: clientId,
@@ -58,6 +59,8 @@ export const LogInPage = () => {
     });
 
     console.debug("in google login redirect to google page");
+    console.debug("VITE_GOOGLE_CLIENT_ID: ", clientId);
+
     window.location.href = `${baseUrl}?${params.toString()}`;
   };
 

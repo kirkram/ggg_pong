@@ -15,7 +15,7 @@ export const GoogleCallback = () => {
           // Send the code to your backend to exchange for tokens
           const response = await googleLoginAuth(code);
           localStorage.setItem("ping-pong-jwt", response.token); // Save the JWT
-          navigate("/"); // Redirect to the home page or dashboard
+          navigate("/menu"); // Redirect to the home page or dashboard
         } catch (error) {
           navigate("/login"); // Redirect back to login on failure
         }
