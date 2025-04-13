@@ -1,3 +1,4 @@
+import i18n from "i18next";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -21,7 +22,13 @@ export const ProfilePage = () => {
 
   const handleUpdate = (field: string, value: string) => {
     updateProfileField(field, value)
-      .then(() => alert(`${field} updated successfully!`))
+      .then(() => {
+        if (field === "language") {
+          i18n.changeLanguage(value);
+          localStorage.setItem("language", value);
+        }
+        alert(`${field} updated successfully!`);
+      })
       .catch(() => alert(`Failed to update ${field}`));
   };
 
