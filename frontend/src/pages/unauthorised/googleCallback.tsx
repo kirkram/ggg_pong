@@ -1,11 +1,21 @@
-import { useEffect } from "react";
+import { use, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { googleLoginAuth } from "../../service"; // Backend API call
+import { useAuth } from "../../context/authContext";
 
 export const GoogleCallback = () => {
   const navigate = useNavigate();
 
+  const { setToken } = useAuth();
+
+  //this is to prevent double calls in Strict Mode
+  //this works because StrictMode doesn’t reset module-level variables between renders
+  const calledRef = useRef(false);
+
   useEffect(() => {
+    if (calledRef.current) return;
+    calledRef.current = true;
+
     const handleGoogleCallback = async () => {
       const params = new URLSearchParams(window.location.search);
       const code = params.get("code");
@@ -14,8 +24,14 @@ export const GoogleCallback = () => {
         try {
           // Send the code to your backend to exchange for tokens
           const response = await googleLoginAuth(code);
-          localStorage.setItem("ping-pong-jwt", response.token); // Save the JWT
+          // console.debug(
+          //   "The response from the api for a google callback: ",
+          //   response
+          // );
+          // localStorage.setItem("ping-pong-jwt", response.token); // Save the JWT
+          setToken(response.token);
           navigate("/menu"); // Redirect to the home page or dashboard
+          // window.location.href = "/menu";
         } catch (error) {
           navigate("/login"); // Redirect back to login on failure
         }

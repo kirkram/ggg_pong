@@ -297,6 +297,7 @@ export const authRoutes = async (app: FastifyInstance) => {
       const GOOGLE_CLIENT_ID = "";
       const GOOGLE_CLIENT_SECRET = "";
       const redirectUri = "http://localhost:5173/auth/google/callback";
+
       const code = (request.query as { code: string }).code;
       console.debug("Token Request Params:", {
         code,

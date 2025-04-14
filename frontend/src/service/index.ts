@@ -11,7 +11,6 @@ import {
   GameData,
   DuelGameData,
 } from "./interface";
-import { data } from "react-router-dom";
 
 export const appClient = axios.create({
   baseURL: "/app",
@@ -37,7 +36,7 @@ appClient.interceptors.request.use(
 export const getAppInfo = async (): Promise<AppInfo | undefined> => {
   try {
     const res = await appClient.get<AppInfo>("/info");
-    console.debug("/info returned: ", res);
+    // console.debug("/info returned: ", res);
     return res.data;
   } catch (err: any) {
     if (err.response?.status === 401) {

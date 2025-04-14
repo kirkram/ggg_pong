@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
-import { appLogin, appLoginCode, googleLoginAuth } from "../../service";
-import GoogleAuthButton from "../../components/GoogleAuthButton";
+import { appLogin, appLoginCode } from "../../service";
 
 export const LogInPage = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -64,7 +63,7 @@ export const LogInPage = () => {
     window.location.href = `${baseUrl}?${params.toString()}`;
   };
 
-  console.log(error); // check if we need this
+  // console.log(error); // check if we need this
 
   return (
     <div className="flex h-screen">

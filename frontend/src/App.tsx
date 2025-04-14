@@ -13,6 +13,7 @@ import {
 import { AppInfoContext } from "./context/app-info/context";
 import { authorised, unauthorised, general } from "./pages";
 import { useUserActivityTracker } from "./service/useUserActivityTracker";
+import { useAuth } from "./context/authContext";
 
 import PongGame from "./pages/game/PongGame";
 
@@ -22,21 +23,35 @@ function App() {
 
   useUserActivityTracker(!!appInfo); // Only track if user is logged in
 
+  const { token } = useAuth();
+  // Watch for token changes and fetch app info
   useEffect(() => {
-    getAppInfo()
-      .then(setAppInfo)
-      .catch((err) => {
+    const fetchAppInfo = async () => {
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const appInfo = await getAppInfo();
+        setAppInfo(appInfo);
+      } catch (err: any) {
         if (err.response?.status !== 401) {
-          console.error(err); // only log if not 401
+          console.error(err);
+        } else {
+          // If token is invalid, clear it
+          localStorage.removeItem("ping-pong-jwt");
         }
-      })
-      .finally(() => setLoading(false));
-  }, []);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAppInfo();
+  }, [token]);
 
   if (loading)
     return (
       <div>
-        {" "}
         <p className="text-4xl font-bold mb-6">App is loading</p>
       </div>
     );
