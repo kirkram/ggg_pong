@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { startDuelGame } from "../../service";
 
 export const CustomazationPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
 
   const [guestName, setGuestName] = useState(
     () => localStorage.getItem("guestName") || ""
@@ -40,14 +42,11 @@ export const CustomazationPage = () => {
     const fromAvatar = location.state?.fromAvatar === true;
 
     if (!fromAvatar) {
-      // 🧹 Clear all stored customization state (including guest name)
       localStorage.removeItem("userAvatar");
       localStorage.removeItem("guestAvatar");
       localStorage.removeItem("guestName");
       localStorage.removeItem("guests");
       localStorage.removeItem("guestCount");
-
-      // Reset guest name to empty string as well
       setGuestName("");
     }
   }, []);
@@ -61,16 +60,10 @@ export const CustomazationPage = () => {
     if (state?.selectedAvatar && state.target) {
       if (state.target === "user") {
         setUserAvatar(state.selectedAvatar);
-        localStorage.setItem(
-          "userAvatar",
-          JSON.stringify(state.selectedAvatar)
-        );
+        localStorage.setItem("userAvatar", JSON.stringify(state.selectedAvatar));
       } else {
         setGuestAvatar(state.selectedAvatar);
-        localStorage.setItem(
-          "guestAvatar",
-          JSON.stringify(state.selectedAvatar)
-        );
+        localStorage.setItem("guestAvatar", JSON.stringify(state.selectedAvatar));
       }
     }
   }, [location.state]);
@@ -96,7 +89,6 @@ export const CustomazationPage = () => {
       guestAvatar: guestAvatar.name,
     })
       .then(() => {
-        // ✅ Redirect to game page // HERE HERE
         navigate(targetRoute, {
           state: {
             user: loggedInUsername,
@@ -106,7 +98,7 @@ export const CustomazationPage = () => {
           },
         });
       })
-      .catch((err) => alert("Failed to start game: " + err.message));
+      .catch((err) => alert(`${t("FAILED_TO_START_GAME")}: ${err.message}`));
   };
 
   return (
@@ -118,19 +110,19 @@ export const CustomazationPage = () => {
         onClick={() => navigate("/menu")}
         className="absolute top-6 left-6 bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg font-semibold shadow-md"
       >
-        🔙 Back to Menu
+        🔙 {t("BACK_TO_MENU")}
       </button>
 
       <h1 className="text-4xl font-bold text-center mb-10">
-        🧑‍🤝‍🧑 Choose Your Avatars
+        🧑‍🤝‍🧑 {t("CHOOSE_AVATARS")}
       </h1>
 
       <div className="w-full max-w-2xl flex flex-col gap-8 items-center">
         {/* Player 1 */}
         <div className="bg-gray-800 p-6 w-full rounded-xl shadow-lg flex flex-col items-center">
-          <h2 className="text-2xl font-bold mb-2">👤 Player 1</h2>
+          <h2 className="text-2xl font-bold mb-2">👤 {t("PLAYER")} 1</h2>
           <p className="mb-4 text-lg">
-            Username: <strong>{loggedInUsername}</strong>
+            {t("USERNAME")}: <strong>{loggedInUsername}</strong>
           </p>
 
           {userAvatar ? (
@@ -143,24 +135,24 @@ export const CustomazationPage = () => {
               <p className="capitalize mb-4">{userAvatar.name}</p>
             </>
           ) : (
-            <p className="mb-4 italic text-gray-400">No avatar selected</p>
+            <p className="mb-4 italic text-gray-400">{t("NO_AVATAR_SELECTED")}</p>
           )}
 
           <button
             onClick={() => chooseAvatar("user")}
             className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold"
           >
-            Choose Avatar
+            {t("CHOOSE_AVATAR")}
           </button>
         </div>
 
         {/* Guest Player */}
         <div className="bg-gray-800 p-6 w-full rounded-xl shadow-lg flex flex-col items-center">
-          <h2 className="text-2xl font-bold mb-2">👥 Guest Player</h2>
+          <h2 className="text-2xl font-bold mb-2">👥 {t("GUEST_PLAYER")}</h2>
 
           <input
             type="text"
-            placeholder="Enter guest username"
+            placeholder={t("ENTER_GUEST_USERNAME")}
             value={guestName}
             onChange={(e) => setGuestName(e.target.value)}
             className="mb-4 px-4 py-2 rounded text-black w-full max-w-sm"
@@ -176,30 +168,30 @@ export const CustomazationPage = () => {
               <p className="capitalize mb-4">{guestAvatar.name}</p>
             </>
           ) : (
-            <p className="mb-4 italic text-gray-400">No avatar selected</p>
+            <p className="mb-4 italic text-gray-400">{t("NO_AVATAR_SELECTED")}</p>
           )}
 
           <button
             onClick={() => chooseAvatar("guest")}
             className="bg-pink-600 hover:bg-pink-700 px-4 py-2 rounded-lg font-semibold"
           >
-            Choose Avatar
+            {t("CHOOSE_AVATAR")}
           </button>
         </div>
 
-        {/* Start Game Button */}
+        {/* Start Game Buttons */}
         <button
           className="bg-green-600 hover:bg-green-700 px-8 py-4 rounded-xl text-2xl font-bold shadow-xl mt-4"
           onClick={() => startGameHandler("/game/play?mode=duel")}
         >
-          Ping Pong Madness 🏓
+          {t("START_PING_PONG")}
         </button>
 
         <button
           onClick={() => startGameHandler("/tic-tac-toe-duel")}
           className="bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-xl text-2xl font-bold shadow-xl"
         >
-          X’s & O’s Showdown ✖️⭕️
+          {t("START_TIC_TAC_TOE")}
         </button>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { startDuelGame } from "../../service";
 
 interface AvatarInfo {
@@ -15,6 +16,7 @@ interface Guest {
 export const CustomazationTournamentPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
 
   const [guestCount, setGuestCount] = useState<number>(() => {
     const stored = localStorage.getItem("guestCount");
@@ -41,14 +43,12 @@ export const CustomazationTournamentPage = () => {
     }
   }, []);
 
-  // Clear state only when not coming back from AvatarPage
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
     const fromAvatar = location.state?.fromAvatar;
 
     if (!fromAvatar && !initialized) {
-      // fresh load → clear previous session
       localStorage.removeItem("userAvatar");
       localStorage.removeItem("tournamentGuests");
       localStorage.removeItem("guestCount");
@@ -60,7 +60,6 @@ export const CustomazationTournamentPage = () => {
     setInitialized(true);
   }, []);
 
-  // Update guest slots if count changes
   useEffect(() => {
     setGuests((prev) => {
       const updated = [...prev];
@@ -73,7 +72,6 @@ export const CustomazationTournamentPage = () => {
     localStorage.setItem("guestCount", guestCount.toString());
   }, [guestCount]);
 
-  // Avatar selector return handler
   useEffect(() => {
     const state = location.state as {
       selectedAvatar?: AvatarInfo;
@@ -85,10 +83,7 @@ export const CustomazationTournamentPage = () => {
     if (state?.selectedAvatar) {
       if (state.target === "user") {
         setUserAvatar(state.selectedAvatar);
-        localStorage.setItem(
-          "userAvatar",
-          JSON.stringify(state.selectedAvatar)
-        );
+        localStorage.setItem("userAvatar", JSON.stringify(state.selectedAvatar));
       } else if (
         state.target === "guest" &&
         typeof state.guestIndex === "number"
@@ -104,7 +99,6 @@ export const CustomazationTournamentPage = () => {
         });
       }
 
-      // prevent reruns
       navigate(location.pathname, { replace: true });
     }
   }, [location.state]);
@@ -137,7 +131,7 @@ export const CustomazationTournamentPage = () => {
   const startGameHandler = (targetRoute: string) => {
     const guestNames = guests.map((g) => g.username.trim().toLowerCase());
     const hasDuplicates = new Set(guestNames).size !== guestNames.length;
-    if (hasDuplicates) return alert("Guest usernames must be unique!");
+    if (hasDuplicates) return alert(t("GUEST_NAMES_MUST_BE_UNIQUE"));
 
     if (!userAvatar || guests.some((g) => !g.avatar || !g.username)) return;
 
@@ -160,7 +154,7 @@ export const CustomazationTournamentPage = () => {
           },
         });
       })
-      .catch((err) => alert("Failed to start game: " + err.message));
+      .catch((err) => alert(t("START_GAME_FAILED") + ": " + err.message));
   };
 
   return (
@@ -172,15 +166,15 @@ export const CustomazationTournamentPage = () => {
         onClick={() => navigate("/menu")}
         className="absolute top-6 left-6 bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg font-semibold shadow-md"
       >
-        🔙 Back to Menu
+        🔙 {t("BACK_TO_MENU")}
       </button>
 
       <h1 className="text-4xl font-bold text-center mb-6">
-        🎭 Choose Your Avatars
+        🎭 {t("CHOOSE_AVATARS")}
       </h1>
 
       <div className="mb-8">
-        <label className="text-lg mr-2">Number of Guest Players:</label>
+        <label className="text-lg mr-2">{t("NUMBER_OF_GUESTS")}:</label>
         <select
           value={guestCount}
           onChange={(e) => setGuestCount(Number(e.target.value))}
@@ -194,11 +188,11 @@ export const CustomazationTournamentPage = () => {
         </select>
       </div>
 
-      {/* User */}
+      {/* Player */}
       <div className="bg-gray-800 p-6 mb-8 w-full max-w-md rounded-xl shadow-lg flex flex-col items-center">
-        <h2 className="text-2xl font-bold mb-2">👤 Player 1</h2>
+        <h2 className="text-2xl font-bold mb-2">👤 {t("PLAYER")} 1</h2>
         <p className="mb-4 text-lg">
-          Username: <strong>{loggedInUsername}</strong>
+          {t("USERNAME")}: <strong>{loggedInUsername}</strong>
         </p>
 
         {userAvatar ? (
@@ -211,14 +205,14 @@ export const CustomazationTournamentPage = () => {
             <p className="capitalize mb-4">{userAvatar.name}</p>
           </>
         ) : (
-          <p className="mb-4 italic text-gray-400">No avatar selected</p>
+          <p className="mb-4 italic text-gray-400">{t("NO_AVATAR_SELECTED")}</p>
         )}
 
         <button
           onClick={() => chooseAvatar("user")}
           className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold"
         >
-          Choose Avatar
+          {t("CHOOSE_AVATAR")}
         </button>
       </div>
 
@@ -228,11 +222,11 @@ export const CustomazationTournamentPage = () => {
           key={index}
           className="bg-gray-800 p-6 mb-8 w-full max-w-md rounded-xl shadow-lg flex flex-col items-center"
         >
-          <h2 className="text-2xl font-bold mb-2">👥 Guest {index + 1}</h2>
+          <h2 className="text-2xl font-bold mb-2">👥 {t("GUEST")} {index + 1}</h2>
 
           <input
             type="text"
-            placeholder="Enter guest username"
+            placeholder={t("ENTER_GUEST_USERNAME")}
             value={guest.username}
             onChange={(e) => updateGuestUsername(index, e.target.value)}
             className="mb-4 px-4 py-2 rounded text-black w-full max-w-sm"
@@ -248,7 +242,7 @@ export const CustomazationTournamentPage = () => {
               <p className="capitalize mb-4">{guest.avatar.name}</p>
             </>
           ) : (
-            <p className="mb-4 italic text-gray-400">No avatar selected</p>
+            <p className="mb-4 italic text-gray-400">{t("NO_AVATAR_SELECTED")}</p>
           )}
 
           <button
@@ -256,25 +250,24 @@ export const CustomazationTournamentPage = () => {
             className="bg-pink-600 hover:bg-pink-700 px-4 py-2 rounded-lg font-semibold"
             disabled={takenAvatars.includes(guest.avatar?.name || "")}
           >
-            Choose Avatar
+            {t("CHOOSE_AVATAR")}
           </button>
         </div>
       ))}
 
-      {/* Start Game Button */}
       <div className="flex flex-col gap-6">
         <button
           onClick={() => startGameHandler("/start-tournament-game")}
           className="bg-green-600 hover:bg-green-700 px-8 py-4 rounded-xl text-2xl font-bold shadow-xl"
         >
-          Ping Pong Madness 🏓
+          {t("START_PING_PONG")}
         </button>
 
         <button
           onClick={() => startGameHandler("/tic-tac-toe-tournament")}
           className="bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-xl text-2xl font-bold shadow-xl"
         >
-          X’s & O’s Showdown ✖️⭕️
+          {t("START_TIC_TAC_TOE")}
         </button>
       </div>
     </div>
