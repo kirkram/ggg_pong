@@ -3,6 +3,17 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { startGame } from "../../service";
 
+interface AvatarInfo {
+  name: string;
+  image: string;
+}
+
+interface Guest {
+  username: string;
+  avatar: AvatarInfo | null;
+  color: string | null; // Default color is null
+}
+
 export const CustomazationTournamentPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
