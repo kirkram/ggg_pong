@@ -93,6 +93,8 @@ export interface DuelGameData {
   userAvatar: string;
   guest: string;
   guestAvatar: string;
+  userColor: string
+  guestColor: string
 }
 
 export interface Match {

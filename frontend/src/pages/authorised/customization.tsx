@@ -30,6 +30,16 @@ export const CustomazationPage = () => {
 
   const [loggedInUsername, setLoggedInUsername] = useState("");
 
+  const [userColor, setUserColor] = useState<string | null>(() => {
+    const savedColor = localStorage.getItem("userColor");
+    return savedColor ? savedColor : ""; // Default to none
+  });
+
+  const [guestColor, setGuestColor] = useState<string | null>(() => {
+    const savedColor = localStorage.getItem("guestColor");
+    return savedColor ? savedColor : ""; // Default to none
+  });
+
   useEffect(() => {
     const token = localStorage.getItem("ping-pong-jwt");
     if (token) {
@@ -45,8 +55,8 @@ export const CustomazationPage = () => {
       localStorage.removeItem("userAvatar");
       localStorage.removeItem("guestAvatar");
       localStorage.removeItem("guestName");
-      localStorage.removeItem("guests");
-      localStorage.removeItem("guestCount");
+      localStorage.removeItem("userColor");
+      localStorage.removeItem("guestColor");
       setGuestName("");
     }
   }, []);
@@ -82,11 +92,17 @@ export const CustomazationPage = () => {
   const startGameHandler = (targetRoute: string) => {
     if (!userAvatar || !guestAvatar || !guestName) return;
 
+    if (!userColor || !guestColor) {
+      return alert(t("ALL_PLAYERS_MUST_SELECT_COLOR")); // Alert if color is not selected
+    }
+
     startDuelGame({
       user: loggedInUsername,
       userAvatar: userAvatar.name,
       guest: guestName,
       guestAvatar: guestAvatar.name,
+      userColor,
+      guestColor,
     })
       .then(() => {
         navigate(targetRoute, {
@@ -95,11 +111,19 @@ export const CustomazationPage = () => {
             guest: guestName,
             userAvatar,
             guestAvatar,
+            userColor,
+            guestColor,
           },
         });
       })
       .catch((err) => alert(`${t("FAILED_TO_START_GAME")}: ${err.message}`));
   };
+
+  // Colors already taken by user and guest
+  const takenColors = [
+    userColor,
+    guestColor,
+  ];
 
   return (
     <div
@@ -144,6 +168,28 @@ export const CustomazationPage = () => {
           >
             {t("CHOOSE_AVATAR")}
           </button>
+
+          {/* Color selection */}
+          <div className="mt-4">
+            <label htmlFor="userColor" className="block mb-2">{t("CHOOSE_COLOR")}</label>
+            <select
+              id="userColor"
+              value={userColor || ""}
+              onChange={(e) => {
+                const selectedColor = e.target.value;
+                setUserColor(selectedColor);
+                localStorage.setItem("userColor", selectedColor); // Save color in localStorage
+              }}
+              className="p-2 rounded text-black"
+            >
+              <option value="">{t("NONE")}</option>
+              {["red", "green", "blue", "yellow", "purple", "orange"].map((color) => (
+                <option key={color} value={color} disabled={takenColors.includes(color)}>
+                  {color.charAt(0).toUpperCase() + color.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {/* Guest Player */}
@@ -177,12 +223,35 @@ export const CustomazationPage = () => {
           >
             {t("CHOOSE_AVATAR")}
           </button>
+
+          {/* Guest Color selection */}
+          <div className="mt-4">
+            <label htmlFor="guestColor" className="block mb-2">{t("CHOOSE_COLOR")}</label>
+            <select
+              id="guestColor"
+              value={guestColor || ""}
+              onChange={(e) => {
+                const selectedColor = e.target.value;
+                setGuestColor(selectedColor);
+                localStorage.setItem("guestColor", selectedColor); // Save color in localStorage
+              }}
+              className="p-2 rounded text-black"
+            >
+              <option value="">{t("NONE")}</option>
+              {["red", "green", "blue", "yellow", "purple", "orange"].map((color) => (
+                <option key={color} value={color} disabled={takenColors.includes(color)}>
+                  {color.charAt(0).toUpperCase() + color.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {/* Start Game Buttons */}
         <button
           className="bg-green-600 hover:bg-green-700 px-8 py-4 rounded-xl text-2xl font-bold shadow-xl mt-4"
           onClick={() => startGameHandler("/game/play?mode=duel")}
+          disabled={!userColor || !guestColor}
         >
           {t("START_PING_PONG")}
         </button>
@@ -190,6 +259,7 @@ export const CustomazationPage = () => {
         <button
           onClick={() => startGameHandler("/tic-tac-toe-duel")}
           className="bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-xl text-2xl font-bold shadow-xl"
+          disabled={!userColor || !guestColor}
         >
           {t("START_TIC_TAC_TOE")}
         </button>
