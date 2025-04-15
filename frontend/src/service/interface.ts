@@ -79,13 +79,6 @@ export interface UpdateFieldInput {
   value: string;
 }
 
-//   export interface GameData {
-//     user: string
-//     userAvatar: string
-//     guest: string
-//     guestAvatar: string
-//   }
-
 export interface GameData {
   user: string;
   userAvatar: string;
@@ -100,6 +93,9 @@ export interface DuelGameData {
   userAvatar: string;
   guest: string;
   guestAvatar: string;
+  userColor: string
+  guestColor: string
+  gameType : string
 }
 
 export interface Match {
