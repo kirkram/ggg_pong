@@ -11,7 +11,7 @@ export const LandingPage = () => {
     <div
       className="w-full h-screen bg-cover bg-center"
       style={{
-        backgroundImage: "url(/background/e&b.png)",
+        backgroundImage: "url(/background/front_page.jpg)",
         backgroundSize: "contain",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
