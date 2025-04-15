@@ -1,4 +1,5 @@
 
+
 type ForgottenItem =
 {
 	image: HTMLImageElement
@@ -8,7 +9,7 @@ type ForgottenItem =
 }
 
 const itemImages: HTMLImageElement[] = []
-const activeItems: ForgottenItem[] = []
+export const activeItems: ForgottenItem[] = []
 
 let canvasRef: HTMLCanvasElement | null=null
 
