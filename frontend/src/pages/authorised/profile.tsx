@@ -118,18 +118,28 @@ export const ProfilePage = () => {
             type="date"
           />
 
-          <SelectField
-            label="gender"
-            value={profile.gender}
-            options={["male", "female", "other"]}
-            onUpdate={handleUpdate}
-          />
-          <SelectField
-            label="language"
-            value={profile.language}
-            options={["english", "finnish", "serbian", "russian"]}
-            onUpdate={handleUpdate}
-          />
+        <SelectField
+          label="gender"
+          value={profile.gender}
+          options={[
+            { value: "male", label: "GENDER_MALE" },
+            { value: "female", label: "GENDER_FEMALE" },
+            { value: "other", label: "GENDER_OTHER" },
+          ]}
+          onUpdate={handleUpdate}
+        />
+
+        <SelectField
+          label="language"
+          value={profile.language}
+          options={[
+            { value: "english", label: "LANGUAGE_ENGLISH" },
+            { value: "finnish", label: "LANGUAGE_FINNISH" },
+            { value: "serbian", label: "LANGUAGE_SERBIAN" },
+            { value: "russian", label: "LANGUAGE_RUSSIAN" },
+          ]}
+          onUpdate={handleUpdate}
+        />
           <SelectField
             label="favAvatar"
             value={profile.favAvatar}
@@ -147,7 +157,7 @@ export const ProfilePage = () => {
               "GangGanger",
               "StabIlity",
               "VampBoy",
-            ]}
+            ].map((key) => ({ value: key, label: key }))}
             onUpdate={handleUpdate}
           />
         </div>
@@ -173,7 +183,7 @@ const EditableField = ({
   return (
     <div>
       <label className="block text-white mb-1 capitalize">
-        {t(label.replace(/([A-Z])/g, " $1"))}
+        {t(`LABEL_${label.replace(/([A-Z])/g, "_$1").toUpperCase()}`)}
       </label>
       <div className="flex gap-2">
         <input
@@ -193,6 +203,8 @@ const EditableField = ({
   );
 };
 
+type Option = { value: string; label: string };
+
 const SelectField = ({
   label,
   value,
@@ -201,7 +213,7 @@ const SelectField = ({
 }: {
   label: string;
   value: string;
-  options: string[];
+  options: Option[];
   onUpdate: (field: string, value: string) => void;
 }) => {
   const [selected, setSelected] = useState(value);
@@ -210,7 +222,7 @@ const SelectField = ({
   return (
     <div>
       <label className="block text-white mb-1 capitalize">
-        {t(label.replace(/([A-Z])/g, " $1"))}
+        {t(`LABEL_${label.replace(/([A-Z])/g, "_$1").toUpperCase()}`)}
       </label>
       <div className="flex gap-2">
         <select
@@ -219,8 +231,8 @@ const SelectField = ({
           className="w-full p-2 rounded bg-white text-black"
         >
           {options.map((opt) => (
-            <option key={opt} value={opt}>
-              {t(opt)}
+            <option key={opt.value} value={opt.value}>
+              {t(opt.label)}
             </option>
           ))}
         </select>
