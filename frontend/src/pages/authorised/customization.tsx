@@ -40,6 +40,11 @@ export const CustomazationPage = () => {
     return savedColor ? savedColor : ""; // Default to none
   });
 
+  const [gameType, setGameType] = useState<string>(() => {
+    const savedGameType = localStorage.getItem("gameType");
+    return savedGameType ? savedGameType : "boring"; // Default to "boring"
+  });
+
   useEffect(() => {
     const token = localStorage.getItem("ping-pong-jwt");
     if (token) {
@@ -58,6 +63,7 @@ export const CustomazationPage = () => {
       localStorage.removeItem("userColor");
       localStorage.removeItem("guestColor");
       setGuestName("");
+      setGameType("boring");
     }
   }, []);
 
@@ -103,6 +109,7 @@ export const CustomazationPage = () => {
       guestAvatar: guestAvatar.name,
       userColor,
       guestColor,
+      gameType
     })
       .then(() => {
         navigate(targetRoute, {
@@ -113,6 +120,7 @@ export const CustomazationPage = () => {
             guestAvatar,
             userColor,
             guestColor,
+            gameType,
           },
         });
       })
@@ -244,6 +252,41 @@ export const CustomazationPage = () => {
                 </option>
               ))}
             </select>
+          </div>
+        </div>
+
+        {/* Customization */}
+        <div className="mt-6">
+          <h2 className="text-2xl font-bold mb-2">{t("GAME_CUSTOMIZATION")}</h2>
+          <div className="flex items-center gap-4">
+            <div>
+              <input
+                type="radio"
+                id="boring"
+                name="gameType"
+                value="boring"
+                checked={gameType === "boring"}
+                onChange={() => {
+                  setGameType("boring");
+                  localStorage.setItem("gameType", "boring");
+                }}
+              />
+              <label htmlFor="boring" className="ml-2">{t("BORING_GAME")}</label>
+            </div>
+            <div>
+              <input
+                type="radio"
+                id="madness"
+                name="gameType"
+                value="madness"
+                checked={gameType === "madness"}
+                onChange={() => {
+                  setGameType("madness");
+                  localStorage.setItem("gameType", "madness");
+                }}
+              />
+              <label htmlFor="madness" className="ml-2">{t("MADNESS")}</label>
+            </div>
           </div>
         </div>
 

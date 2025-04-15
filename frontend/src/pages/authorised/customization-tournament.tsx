@@ -3,17 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { startGame } from "../../service";
 
-interface AvatarInfo {
-  name: string;
-  image: string;
-}
-
-interface Guest {
-  username: string;
-  avatar: AvatarInfo | null;
-  color: string | null; // Default color is null
-}
-
 export const CustomazationTournamentPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -41,6 +30,11 @@ export const CustomazationTournamentPage = () => {
 
   const [loggedInUsername, setLoggedInUsername] = useState("");
 
+  const [gameType, setGameType] = useState<string>(() => {
+    const savedGameType = localStorage.getItem("gameType");
+    return savedGameType ? savedGameType : "boring"; // Default to "boring"
+  });
+
   useEffect(() => {
     const token = localStorage.getItem("ping-pong-jwt");
     if (token) {
@@ -59,9 +53,11 @@ export const CustomazationTournamentPage = () => {
       localStorage.removeItem("tournamentGuests");
       localStorage.removeItem("guestCount");
       localStorage.removeItem("userColor");
+      localStorage.removeItem("gameType"); // Clear game type
       setUserAvatar(null);
       setGuests([]);
       setGuestCount(2); // Reset to default 2 guests
+      setGameType("boring"); // Reset to default game type
     }
 
     setInitialized(true);
@@ -118,7 +114,6 @@ export const CustomazationTournamentPage = () => {
     ...guests.filter((g) => g.avatar).map((g) => g.avatar!.name),
   ];
 
-  // Handle avatar selection when returning from the Avatar page
   useEffect(() => {
     const state = location.state as {
       selectedAvatar: AvatarInfo;
@@ -156,6 +151,7 @@ export const CustomazationTournamentPage = () => {
       user: loggedInUsername,
       userAvatar: userAvatar.name,
       userColor: userColor,
+      gameType, // Include gameType in the payload
       guests: guests.map((g) => ({
         username: g.username,
         avatar: g.avatar!.name,
@@ -170,6 +166,7 @@ export const CustomazationTournamentPage = () => {
             user: loggedInUsername,
             userAvatar,
             userColor,
+            gameType, // Pass selected game type to the game
             guests,
           },
         });
@@ -314,6 +311,41 @@ export const CustomazationTournamentPage = () => {
           </div>
         </div>
       ))}
+
+      {/* Customization */}
+      <div className="mt-6">
+        <h2 className="text-2xl font-bold mb-2">{t("GAME_CUSTOMIZATION")}</h2>
+        <div className="flex items-center gap-4">
+          <div>
+            <input
+              type="radio"
+              id="boring"
+              name="gameType"
+              value="boring"
+              checked={gameType === "boring"}
+              onChange={() => {
+                setGameType("boring");
+                localStorage.setItem("gameType", "boring");
+              }}
+            />
+            <label htmlFor="boring" className="ml-2">{t("BORING_GAME")}</label>
+          </div>
+          <div>
+            <input
+              type="radio"
+              id="madness"
+              name="gameType"
+              value="madness"
+              checked={gameType === "madness"}
+              onChange={() => {
+                setGameType("madness");
+                localStorage.setItem("gameType", "madness");
+              }}
+            />
+            <label htmlFor="madness" className="ml-2">{t("MADNESS")}</label>
+          </div>
+        </div>
+      </div>
 
       <div className="flex flex-col gap-6">
         <button
