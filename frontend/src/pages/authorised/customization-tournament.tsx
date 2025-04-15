@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { startDuelGame } from "../../service";
+import { startGame } from "../../service";
 
 interface AvatarInfo {
-  name: string;
-  image: string;
+  name: string
+  image: string
 }
 
 interface Guest {
-  username: string;
-  avatar: AvatarInfo | null;
+  username: string
+  avatar: AvatarInfo | null
 }
 
 export const CustomazationTournamentPage = () => {
@@ -74,9 +74,9 @@ export const CustomazationTournamentPage = () => {
 
   useEffect(() => {
     const state = location.state as {
-      selectedAvatar?: AvatarInfo;
+      selectedAvatar: AvatarInfo;
       target?: "user" | "guest";
-      guestIndex?: number;
+      guestIndex: number;
       fromAvatar?: boolean;
     };
 
@@ -144,7 +144,7 @@ export const CustomazationTournamentPage = () => {
       })),
     };
 
-    startDuelGame(payload)
+    startGame(payload)
       .then(() => {
         navigate(targetRoute, {
           state: {

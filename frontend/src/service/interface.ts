@@ -79,13 +79,6 @@ export interface UpdateFieldInput {
   value: string;
 }
 
-//   export interface GameData {
-//     user: string
-//     userAvatar: string
-//     guest: string
-//     guestAvatar: string
-//   }
-
 export interface GameData {
   user: string;
   userAvatar: string;
