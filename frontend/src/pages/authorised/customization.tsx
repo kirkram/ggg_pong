@@ -45,6 +45,10 @@ export const CustomazationPage = () => {
     return savedGameType ? savedGameType : "boring"; // Default to "boring"
   });
 
+  // State for color picker visibility
+  const [colorPickerOpen, setColorPickerOpen] = useState(false);
+  const [guestColorPickerOpen, setGuestColorPickerOpen] = useState(false);
+
   useEffect(() => {
     const token = localStorage.getItem("ping-pong-jwt");
     if (token) {
@@ -62,8 +66,12 @@ export const CustomazationPage = () => {
       localStorage.removeItem("guestName");
       localStorage.removeItem("userColor");
       localStorage.removeItem("guestColor");
+      setUserAvatar(null);
+      setGuestAvatar(null);
       setGuestName("");
       setGameType("boring");
+      setUserColor("NONE");
+      setGuestColor("NONE");
     }
   }, []);
 
@@ -96,10 +104,16 @@ export const CustomazationPage = () => {
   };
 
   const startGameHandler = (targetRoute: string) => {
-    if (!userAvatar || !guestAvatar || !guestName) return;
+    if (!userAvatar || !guestAvatar) {
+      return alert(t("ALL_PLAYERS_MUST_SELECT_AVATAR"));
+    }
 
-    if (!userColor || !guestColor) {
-      return alert(t("ALL_PLAYERS_MUST_SELECT_COLOR")); // Alert if color is not selected
+    if (!guestName) {
+      return alert(t("GUEST_MUST_SELECT_USERNAME"));
+    }
+
+    if ((!userColor || !guestColor) && gameType !== "boring") {
+      return alert(t("ALL_PLAYERS_MUST_SELECT_COLOR")); 
     }
 
     startDuelGame({
@@ -109,7 +123,7 @@ export const CustomazationPage = () => {
       guestAvatar: guestAvatar.name,
       userColor,
       guestColor,
-      gameType
+      gameType,
     })
       .then(() => {
         navigate(targetRoute, {
@@ -128,10 +142,27 @@ export const CustomazationPage = () => {
   };
 
   // Colors already taken by user and guest
-  const takenColors = [
-    userColor,
-    guestColor,
-  ];
+  const takenColors = [userColor, guestColor];
+
+  // Helper function to get the button's color based on the selected color
+  const getButtonColor = (color: string | null) => {
+    switch (color) {
+      case "red":
+        return "bg-red-500";
+      case "green":
+        return "bg-green-500";
+      case "blue":
+        return "bg-blue-500";
+      case "yellow":
+        return "bg-yellow-500";
+      case "purple":
+        return "bg-purple-500";
+      case "orange":
+        return "bg-orange-500";
+      default:
+        return "bg-gray-300"; // Default to gray when no color selected
+    }
+  };
 
   return (
     <div
@@ -145,118 +176,12 @@ export const CustomazationPage = () => {
         🔙 {t("BACK_TO_MENU")}
       </button>
 
-      <h1 className="text-4xl font-bold text-center mb-10">
+      <h1 className="text-4xl font-bold text-center mb-6">
         🧑‍🤝‍🧑 {t("CHOOSE_AVATARS")}
       </h1>
 
-      <div className="w-full max-w-2xl flex flex-col gap-8 items-center">
-        {/* Player 1 */}
-        <div className="bg-gray-800 p-6 w-full rounded-xl shadow-lg flex flex-col items-center">
-          <h2 className="text-2xl font-bold mb-2">👤 {t("PLAYER")} 1</h2>
-          <p className="mb-4 text-lg">
-            {t("USERNAME")}: <strong>{loggedInUsername}</strong>
-          </p>
-
-          {userAvatar ? (
-            <>
-              <img
-                src={userAvatar.image}
-                alt={userAvatar.name}
-                className="w-32 h-32 rounded-full border-4 border-blue-400 mb-2 object-cover"
-              />
-              <p className="capitalize mb-4">{userAvatar.name}</p>
-            </>
-          ) : (
-            <p className="mb-4 italic text-gray-400">{t("NO_AVATAR_SELECTED")}</p>
-          )}
-
-          <button
-            onClick={() => chooseAvatar("user")}
-            className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold"
-          >
-            {t("CHOOSE_AVATAR")}
-          </button>
-
-          {/* Color selection */}
-          <div className="mt-4">
-            <label htmlFor="userColor" className="block mb-2">{t("CHOOSE_COLOR")}</label>
-            <select
-              id="userColor"
-              value={userColor || ""}
-              onChange={(e) => {
-                const selectedColor = e.target.value;
-                setUserColor(selectedColor);
-                localStorage.setItem("userColor", selectedColor); // Save color in localStorage
-              }}
-              className="p-2 rounded text-black"
-            >
-              <option value="">{t("NONE")}</option>
-              {["red", "green", "blue", "yellow", "purple", "orange"].map((color) => (
-                <option key={color} value={color} disabled={takenColors.includes(color)}>
-                  {color.charAt(0).toUpperCase() + color.slice(1)}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Guest Player */}
-        <div className="bg-gray-800 p-6 w-full rounded-xl shadow-lg flex flex-col items-center">
-          <h2 className="text-2xl font-bold mb-2">👥 {t("GUEST_PLAYER")}</h2>
-
-          <input
-            type="text"
-            placeholder={t("ENTER_GUEST_USERNAME")}
-            value={guestName}
-            onChange={(e) => setGuestName(e.target.value)}
-            className="mb-4 px-4 py-2 rounded text-black w-full max-w-sm"
-          />
-
-          {guestAvatar ? (
-            <>
-              <img
-                src={guestAvatar.image}
-                alt={guestAvatar.name}
-                className="w-32 h-32 rounded-full border-4 border-pink-400 mb-2 object-cover"
-              />
-              <p className="capitalize mb-4">{guestAvatar.name}</p>
-            </>
-          ) : (
-            <p className="mb-4 italic text-gray-400">{t("NO_AVATAR_SELECTED")}</p>
-          )}
-
-          <button
-            onClick={() => chooseAvatar("guest")}
-            className="bg-pink-600 hover:bg-pink-700 px-4 py-2 rounded-lg font-semibold"
-          >
-            {t("CHOOSE_AVATAR")}
-          </button>
-
-          {/* Guest Color selection */}
-          <div className="mt-4">
-            <label htmlFor="guestColor" className="block mb-2">{t("CHOOSE_COLOR")}</label>
-            <select
-              id="guestColor"
-              value={guestColor || ""}
-              onChange={(e) => {
-                const selectedColor = e.target.value;
-                setGuestColor(selectedColor);
-                localStorage.setItem("guestColor", selectedColor); // Save color in localStorage
-              }}
-              className="p-2 rounded text-black"
-            >
-              <option value="">{t("NONE")}</option>
-              {["red", "green", "blue", "yellow", "purple", "orange"].map((color) => (
-                <option key={color} value={color} disabled={takenColors.includes(color)}>
-                  {color.charAt(0).toUpperCase() + color.slice(1)}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Customization */}
-        <div className="mt-6">
+      {/* Game Customization */}
+      <div className="mt-3 mb-6">
           <h2 className="text-2xl font-bold mb-2">{t("GAME_CUSTOMIZATION")}</h2>
           <div className="flex items-center gap-4">
             <div>
@@ -290,11 +215,145 @@ export const CustomazationPage = () => {
           </div>
         </div>
 
+      <div className="w-full max-w-2xl flex flex-col gap-8 items-center">
+        {/* Player 1 */}
+        <div className="bg-gray-800 p-6 w-full rounded-xl shadow-lg flex flex-col items-center">
+          <h2 className="text-2xl font-bold mb-2">👤 {t("PLAYER")} 1</h2>
+          <p className="mb-4 text-lg">
+            {t("USERNAME")}: <strong>{loggedInUsername}</strong>
+          </p>
+
+          {userAvatar ? (
+            <>
+              <img
+                src={userAvatar.image}
+                alt={userAvatar.name}
+                className="w-32 h-32 rounded-full border-4 border-blue-400 mb-2 object-cover"
+              />
+              <p className="capitalize mb-4">{userAvatar.name}</p>
+            </>
+          ) : (
+            <p className="mb-4 italic text-gray-400">{t("NO_AVATAR_SELECTED")}</p>
+          )}
+
+          <button
+            onClick={() => chooseAvatar("user")}
+            className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold"
+          >
+            {t("CHOOSE_AVATAR")}
+          </button>
+
+          {/* Color selection button */}
+          <button
+            onClick={() => setColorPickerOpen(!colorPickerOpen)}
+            className={`mt-4 ${getButtonColor(userColor)} px-4 py-2 rounded-lg font-semibold`}
+            disabled={gameType === "boring"}
+          >
+            {gameType === "boring" ? "Default" : t("CHOOSE_COLOR")}
+          </button>
+          {colorPickerOpen && (
+            <div className="mt-4">
+              <select
+                id="userColor"
+                value={userColor || ""}
+                onChange={(e) => {
+                  const selectedColor = e.target.value;
+                  setUserColor(selectedColor);
+                  localStorage.setItem("userColor", selectedColor); // Save color in localStorage
+                }}
+                className="p-2 rounded text-white"
+              >
+                <option value="">{t("NONE")}</option>
+                {["red", "green", "blue", "yellow", "purple", "orange"].map(
+                  (color) => (
+                    <option
+                      key={color}
+                      value={color}
+                      disabled={takenColors.includes(color)}
+                    >
+                      {color.charAt(0).toUpperCase() + color.slice(1)}
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
+          )}
+        </div>
+
+        {/* Guest Player */}
+        <div className="bg-gray-800 p-6 w-full rounded-xl shadow-lg flex flex-col items-center justify-center">
+          <h2 className="text-2xl font-bold mb-2">👥 {t("GUEST_PLAYER")}</h2>
+
+          <input
+            type="text"
+            placeholder={t("ENTER_GUEST_USERNAME")}
+            value={guestName}
+            onChange={(e) => setGuestName(e.target.value)}
+            className="mb-4 px-4 py-2 rounded text-pink-400 font-bold w-full max-w-sm text-center"
+          />
+
+          {guestAvatar ? (
+            <>
+              <img
+                src={guestAvatar.image}
+                alt={guestAvatar.name}
+                className="w-32 h-32 rounded-full border-4 border-pink-400 mb-2 object-cover"
+              />
+              <p className="capitalize mb-4">{guestAvatar.name}</p>
+            </>
+          ) : (
+            <p className="mb-4 italic text-gray-400">{t("NO_AVATAR_SELECTED")}</p>
+          )}
+
+          <button
+            onClick={() => chooseAvatar("guest")}
+            className="bg-pink-600 hover:bg-pink-700 px-4 py-2 rounded-lg font-semibold"
+          >
+            {t("CHOOSE_AVATAR")}
+          </button>
+
+          {/* Guest Color selection button */}
+          <button
+            onClick={() => setGuestColorPickerOpen(!guestColorPickerOpen)}
+            className={`mt-4 ${getButtonColor(guestColor)} px-4 py-2 rounded-lg font-semibold`}
+            disabled={gameType === "boring"}
+          >
+            {gameType === "boring" ? "Default" : t("CHOOSE_COLOR")}
+            
+          </button>
+          {guestColorPickerOpen && (
+            <div className="mt-4">
+              <select
+                id="guestColor"
+                value={guestColor || ""}
+                onChange={(e) => {
+                  const selectedColor = e.target.value;
+                  setGuestColor(selectedColor);
+                  localStorage.setItem("guestColor", selectedColor); // Save color in localStorage
+                }}
+                className="p-2 rounded text-white"
+              >
+                <option value="">{t("NONE")}</option>
+                {["red", "green", "blue", "yellow", "purple", "orange"].map(
+                  (color) => (
+                    <option
+                      key={color}
+                      value={color}
+                      disabled={takenColors.includes(color)}
+                    >
+                      {color.charAt(0).toUpperCase() + color.slice(1)}
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
+          )}
+        </div>
+
         {/* Start Game Buttons */}
         <button
           className="bg-green-600 hover:bg-green-700 px-8 py-4 rounded-xl text-2xl font-bold shadow-xl mt-4"
           onClick={() => startGameHandler("/game/play?mode=duel")}
-          disabled={!userColor || !guestColor}
         >
           {t("START_PING_PONG")}
         </button>
@@ -302,7 +361,6 @@ export const CustomazationPage = () => {
         <button
           onClick={() => startGameHandler("/tic-tac-toe-duel")}
           className="bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-xl text-2xl font-bold shadow-xl"
-          disabled={!userColor || !guestColor}
         >
           {t("START_TIC_TAC_TOE")}
         </button>
