@@ -186,7 +186,7 @@ export const CustomazationPage = () => {
           <div className="flex items-center gap-4">
             <div>
               <input
-                type="radio"
+                type="radio"s
                 id="boring"
                 name="gameType"
                 value="boring"
@@ -249,7 +249,7 @@ export const CustomazationPage = () => {
             className={`mt-4 ${getButtonColor(userColor)} px-4 py-2 rounded-lg font-semibold`}
             disabled={gameType === "boring"}
           >
-            {gameType === "boring" ? "Default" : t("CHOOSE_COLOR")}
+            {gameType === "boring" ? t("DEFAULT") : t("CHOOSE_COLOR")}
           </button>
           {colorPickerOpen && (
             <div className="mt-4">
@@ -263,19 +263,18 @@ export const CustomazationPage = () => {
                 }}
                 className="p-2 rounded text-white"
               >
-                <option value="">{t("NONE")}</option>
-                {["red", "green", "blue", "yellow", "purple", "orange"].map(
-                  (color) => (
-                    <option
-                      key={color}
-                      value={color}
-                      disabled={takenColors.includes(color)}
-                    >
-                      {color.charAt(0).toUpperCase() + color.slice(1)}
-                    </option>
-                  )
-                )}
-              </select>
+              <option value="">{t("NONE")}</option>
+              {["red", "green", "blue", "yellow", "purple", "orange"].map((color) => (
+                <option
+                  key={color}
+                  value={color}
+                  disabled={takenColors.includes(color)}
+                  className="text-black" // makes option text visible when open
+                >
+                  {t(`COLOR_${color.toUpperCase()}`)}
+                </option>
+              ))}
+            </select>
             </div>
           )}
         </div>
@@ -318,7 +317,7 @@ export const CustomazationPage = () => {
             className={`mt-4 ${getButtonColor(guestColor)} px-4 py-2 rounded-lg font-semibold`}
             disabled={gameType === "boring"}
           >
-            {gameType === "boring" ? "Default" : t("CHOOSE_COLOR")}
+            {gameType === "boring" ? t("DEFAULT") : t("CHOOSE_COLOR")}
             
           </button>
           {guestColorPickerOpen && (

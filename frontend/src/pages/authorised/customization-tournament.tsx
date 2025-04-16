@@ -160,15 +160,15 @@ export const CustomazationTournamentPage = () => {
     }
 
     if (!userAvatar || guests.some((g) => !g.avatar)) {
-      return alert(t("ALL_PLAYERS_MUST_HAVE_AVATAR_SELECTED"));
+      return alert(t("ALL_PLAYERS_MUST_SELECT_AVATAR"));
     }
 
     if (guests.some((g) => !g.username)) {
-      return alert(t("ALL_GUESTS_MUST_HAVE_USERNAME"));
+      return alert(t("GUEST_MUST_SELECT_USERNAME"));
     }
 
     if ((!userColor || guests.some((g) => !g.color)) && gameType !== "boring") {
-      return alert(t("ALL_GUESTS_MUST_HAVE_COLOR_SELECTED"));
+      return alert(t("ALL_PLAYERS_MUST_SELECT_COLOR"));
     }
 
     const payload = {
@@ -318,7 +318,7 @@ export const CustomazationTournamentPage = () => {
           className={`mt-4 ${getButtonColor(userColor)} px-4 py-2 rounded-lg font-semibold`}
           disabled={gameType === "boring"}
         >
-          {gameType === "boring" ? "Default" : t("CHOOSE_COLOR")}
+          {gameType === "boring" ? t("DEFAULT") : t("CHOOSE_COLOR")}
         </button>
         {colorPickerOpen && (
           <div className="mt-4">
@@ -333,15 +333,15 @@ export const CustomazationTournamentPage = () => {
               className="p-2 rounded text-white"
             >
               <option value="">{t("NONE")}</option>
-              {["red", "green", "blue", "yellow", "purple", "orange"].map(
-                (color) => (
-                  <option
-                    key={color}
-                    value={color}
-                    disabled={takenColors.includes(color)}
-                  >
-                    {color.charAt(0).toUpperCase() + color.slice(1)}
-                  </option>
+              {["red", "green", "blue", "yellow", "purple", "orange"].map((color) => (
+                <option
+                  key={color}
+                  value={color}
+                  disabled={takenColors.includes(color)}
+                  className="text-black" // makes option text visible when open
+                >
+                  {t(`COLOR_${color.toUpperCase()}`)}
+                </option>
                 )
               )}
             </select>
@@ -396,7 +396,7 @@ export const CustomazationTournamentPage = () => {
             className={`mt-4 ${getButtonColor(guest.color)} px-4 py-2 rounded-lg font-semibold`}
             disabled={gameType === "boring"}
           >
-            {gameType === "boring" ? "Default" : t("CHOOSE_COLOR")}
+            {gameType === "boring" ? t("DEFAULT") : t("CHOOSE_COLOR")}
           </button>
           {guestColorPickerOpen[index] && (
             <div className="mt-4">
@@ -406,16 +406,16 @@ export const CustomazationTournamentPage = () => {
                 onChange={(e) => handleColorChange(index, e.target.value)}
                 className="p-2 rounded text-white"
               >
-                <option value="">{t("NONE")}</option>
-                {["red", "green", "blue", "yellow", "purple", "orange"].map(
-                  (color) => (
-                    <option
-                      key={color}
-                      value={color}
-                      disabled={takenColors.includes(color)}
-                    >
-                      {color.charAt(0).toUpperCase() + color.slice(1)}
-                    </option>
+              <option value="">{t("NONE")}</option>
+              {["red", "green", "blue", "yellow", "purple", "orange"].map((color) => (
+                <option
+                  key={color}
+                  value={color}
+                  disabled={takenColors.includes(color)}
+                  className="text-black" // makes option text visible when open
+                >
+                  {t(`COLOR_${color.toUpperCase()}`)}
+                </option>
                   )
                 )}
               </select>
