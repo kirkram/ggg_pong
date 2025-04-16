@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 // import { AxiosError } from "axios"
 import { Navigate } from "react-router-dom";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { AppInfoIface } from "./context/app-info/interface";
-import { getAppInfo } from "./service";
 import {
   getUserProfile,
   getUsernameFromToken,
@@ -18,36 +16,8 @@ import { useAuth } from "./context/authContext";
 import PongGame from "./pages/game/PongGame";
 
 function App() {
-  const [loading, setLoading] = useState(true);
-  const [appInfo, setAppInfo] = useState<AppInfoIface | undefined>(undefined);
-
+  const { appInfo, loading } = useAuth();
   useUserActivityTracker(!!appInfo); // Only track if user is logged in
-
-  const { token } = useAuth();
-  // Watch for token changes and fetch app info
-  useEffect(() => {
-    const fetchAppInfo = async () => {
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-      try {
-        const appInfo = await getAppInfo();
-        setAppInfo(appInfo);
-      } catch (err: any) {
-        if (err.response?.status !== 401) {
-          console.error(err);
-        } else {
-          // If token is invalid, clear it
-          localStorage.removeItem("ping-pong-jwt");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAppInfo();
-  }, [token]);
 
   if (loading)
     return (
