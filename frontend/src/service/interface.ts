@@ -89,12 +89,12 @@ export interface GameData {
 }
 
 export interface DuelGameData {
-  user: string;
-  userAvatar: string;
-  guest: string;
-  guestAvatar: string;
-  userColor: string
-  guestColor: string
+  user: string
+  userAvatar: string
+  guest: string
+  guestAvatar: string
+  userColor: string | null
+  guestColor: string | null
   gameType : string
 }
 

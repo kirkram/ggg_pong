@@ -46,6 +46,9 @@ export const CustomazationTournamentPage = () => {
     return savedGameType ? savedGameType : "boring"; // Default to "boring"
   });
 
+  const [colorPickerOpen, setColorPickerOpen] = useState(false); // for user
+  const [guestColorPickerOpen, setGuestColorPickerOpen] = useState<boolean[]>([]); // for guests
+
   useEffect(() => {
     const token = localStorage.getItem("ping-pong-jwt");
     if (token) {
@@ -152,17 +155,27 @@ export const CustomazationTournamentPage = () => {
   const startGameHandler = (targetRoute: string) => {
     const guestNames = guests.map((g) => g.username.trim().toLowerCase());
     const hasDuplicates = new Set(guestNames).size !== guestNames.length;
-    if (hasDuplicates) return alert(t("GUEST_NAMES_MUST_BE_UNIQUE"));
+    if (hasDuplicates) {
+      return alert(t("GUEST_NAMES_MUST_BE_UNIQUE"));
+    }
 
-    if (!userAvatar || guests.some((g) => !g.avatar || !g.username || !g.color)) {
-      return alert(t("ALL_GUESTS_MUST_HAVE_COLOR_SELECTED")); // Alert if color is not selected
+    if (!userAvatar || guests.some((g) => !g.avatar)) {
+      return alert(t("ALL_PLAYERS_MUST_HAVE_AVATAR_SELECTED"));
+    }
+
+    if (guests.some((g) => !g.username)) {
+      return alert(t("ALL_GUESTS_MUST_HAVE_USERNAME"));
+    }
+
+    if ((!userColor || guests.some((g) => !g.color)) && gameType !== "boring") {
+      return alert(t("ALL_GUESTS_MUST_HAVE_COLOR_SELECTED"));
     }
 
     const payload = {
       user: loggedInUsername,
       userAvatar: userAvatar.name,
       userColor: userColor,
-      gameType, // Include gameType in the payload
+      gameType,
       guests: guests.map((g) => ({
         username: g.username,
         avatar: g.avatar!.name,
@@ -177,12 +190,32 @@ export const CustomazationTournamentPage = () => {
             user: loggedInUsername,
             userAvatar,
             userColor,
-            gameType, // Pass selected game type to the game
+            gameType,
             guests,
           },
         });
       })
       .catch((err) => alert(t("START_GAME_FAILED") + ": " + err.message));
+  };
+
+  // Helper function to get the button's color based on the selected color
+  const getButtonColor = (color: string | null) => {
+    switch (color) {
+      case "red":
+        return "bg-red-500";
+      case "green":
+        return "bg-green-500";
+      case "blue":
+        return "bg-blue-500";
+      case "yellow":
+        return "bg-yellow-500";
+      case "purple":
+        return "bg-purple-500";
+      case "orange":
+        return "bg-orange-500";
+      default:
+        return "bg-gray-300"; // Default to gray when no color selected
+    }
   };
 
   return (
@@ -201,6 +234,42 @@ export const CustomazationTournamentPage = () => {
         🎭 {t("CHOOSE_AVATARS")}
       </h1>
 
+      {/* Game Customization */}
+      <div className="mt-3 mb-6">
+        <h2 className="text-2xl font-bold mb-2">{t("GAME_CUSTOMIZATION")}</h2>
+        <div className="flex items-center gap-4">
+          <div>
+            <input
+              type="radio"
+              id="boring"
+              name="gameType"
+              value="boring"
+              checked={gameType === "boring"}
+              onChange={() => {
+                setGameType("boring");
+                localStorage.setItem("gameType", "boring");
+              }}
+            />
+            <label htmlFor="boring" className="ml-2">{t("BORING_GAME")}</label>
+          </div>
+          <div>
+            <input
+              type="radio"
+              id="madness"
+              name="gameType"
+              value="madness"
+              checked={gameType === "madness"}
+              onChange={() => {
+                setGameType("madness");
+                localStorage.setItem("gameType", "madness");
+              }}
+            />
+            <label htmlFor="madness" className="ml-2">{t("MADNESS")}</label>
+          </div>
+        </div>
+      </div>
+
+      {/* Guest Count */}
       <div className="mb-8">
         <label className="text-lg mr-2">{t("NUMBER_OF_GUESTS")}:</label>
         <select
@@ -244,29 +313,43 @@ export const CustomazationTournamentPage = () => {
         </button>
 
         {/* Color selection */}
-        <div className="mt-4">
-          <label htmlFor="userColor" className="block mb-2">{t("CHOOSE_COLOR")}</label>
-          <select
-            id="userColor"
-            value={userColor || ""}
-            onChange={(e) => {
-              const selectedColor = e.target.value;
-              setUserColor(selectedColor);
-              localStorage.setItem("userColor", selectedColor); // Save color in localStorage
-            }}
-            className="p-2 rounded text-black"
-          >
-            <option value="">{t("NONE")}</option>
-            {["red", "green", "blue", "yellow", "purple", "orange"].map((color) => (
-              <option key={color} value={color} disabled={takenColors.includes(color)}>
-                {color.charAt(0).toUpperCase() + color.slice(1)}
-              </option>
-            ))}
-          </select>
-        </div>
+        <button
+          onClick={() => setColorPickerOpen(!colorPickerOpen)}
+          className={`mt-4 ${getButtonColor(userColor)} px-4 py-2 rounded-lg font-semibold`}
+          disabled={gameType === "boring"}
+        >
+          {gameType === "boring" ? "Default" : t("CHOOSE_COLOR")}
+        </button>
+        {colorPickerOpen && (
+          <div className="mt-4">
+            <select
+              id="userColor"
+              value={userColor || ""}
+              onChange={(e) => {
+                const selectedColor = e.target.value;
+                setUserColor(selectedColor);
+                localStorage.setItem("userColor", selectedColor); // Save color in localStorage
+              }}
+              className="p-2 rounded text-white"
+            >
+              <option value="">{t("NONE")}</option>
+              {["red", "green", "blue", "yellow", "purple", "orange"].map(
+                (color) => (
+                  <option
+                    key={color}
+                    value={color}
+                    disabled={takenColors.includes(color)}
+                  >
+                    {color.charAt(0).toUpperCase() + color.slice(1)}
+                  </option>
+                )
+              )}
+            </select>
+          </div>
+        )}
       </div>
 
-      {/* Guests */}
+      {/* Guest Players */}
       {guests.map((guest, index) => (
         <div
           key={index}
@@ -279,7 +362,7 @@ export const CustomazationTournamentPage = () => {
             placeholder={t("ENTER_GUEST_USERNAME")}
             value={guest.username}
             onChange={(e) => updateGuestUsername(index, e.target.value)}
-            className="mb-4 px-4 py-2 rounded text-black w-full max-w-sm"
+            className="mb-4 px-4 py-2 rounded text-pink-400 font-bold w-full max-w-sm text-center"
           />
 
           {guest.avatar ? (
@@ -304,65 +387,48 @@ export const CustomazationTournamentPage = () => {
           </button>
 
           {/* Guest color selection */}
-          <div className="mt-4">
-            <label htmlFor={`guestColor-${index}`} className="block mb-2">{t("CHOOSE_COLOR")}</label>
-            <select
-              id={`guestColor-${index}`}
-              value={guest.color || ""}
-              onChange={(e) => handleColorChange(index, e.target.value)}
-              className="p-2 rounded text-black"
-            >
-              <option value="">{t("NONE")}</option>
-              {["red", "green", "blue", "yellow", "purple", "orange"].map((color) => (
-                <option key={color} value={color} disabled={takenColors.includes(color)}>
-                  {color.charAt(0).toUpperCase() + color.slice(1)}
-                </option>
-              ))}
-            </select>
-          </div>
+          <button
+            onClick={() => setGuestColorPickerOpen((prev) => {
+              const updated = [...prev];
+              updated[index] = !updated[index];
+              return updated;
+            })}
+            className={`mt-4 ${getButtonColor(guest.color)} px-4 py-2 rounded-lg font-semibold`}
+            disabled={gameType === "boring"}
+          >
+            {gameType === "boring" ? "Default" : t("CHOOSE_COLOR")}
+          </button>
+          {guestColorPickerOpen[index] && (
+            <div className="mt-4">
+              <select
+                id={`guestColor-${index}`}
+                value={guest.color || ""}
+                onChange={(e) => handleColorChange(index, e.target.value)}
+                className="p-2 rounded text-white"
+              >
+                <option value="">{t("NONE")}</option>
+                {["red", "green", "blue", "yellow", "purple", "orange"].map(
+                  (color) => (
+                    <option
+                      key={color}
+                      value={color}
+                      disabled={takenColors.includes(color)}
+                    >
+                      {color.charAt(0).toUpperCase() + color.slice(1)}
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
+          )}
         </div>
       ))}
 
-      {/* Customization */}
-      <div className="mt-6">
-        <h2 className="text-2xl font-bold mb-2">{t("GAME_CUSTOMIZATION")}</h2>
-        <div className="flex items-center gap-4">
-          <div>
-            <input
-              type="radio"
-              id="boring"
-              name="gameType"
-              value="boring"
-              checked={gameType === "boring"}
-              onChange={() => {
-                setGameType("boring");
-                localStorage.setItem("gameType", "boring");
-              }}
-            />
-            <label htmlFor="boring" className="ml-2">{t("BORING_GAME")}</label>
-          </div>
-          <div>
-            <input
-              type="radio"
-              id="madness"
-              name="gameType"
-              value="madness"
-              checked={gameType === "madness"}
-              onChange={() => {
-                setGameType("madness");
-                localStorage.setItem("gameType", "madness");
-              }}
-            />
-            <label htmlFor="madness" className="ml-2">{t("MADNESS")}</label>
-          </div>
-        </div>
-      </div>
-
+      {/* Start Game Buttons */}
       <div className="flex flex-col gap-6">
         <button
           onClick={() => startGameHandler("/start-tournament-game")}
           className="bg-green-600 hover:bg-green-700 px-8 py-4 rounded-xl text-2xl font-bold shadow-xl"
-          disabled={guests.some((g) => !g.color) || !userColor}
         >
           {t("START_PING_PONG")}
         </button>
@@ -370,7 +436,6 @@ export const CustomazationTournamentPage = () => {
         <button
           onClick={() => startGameHandler("/tic-tac-toe-tournament")}
           className="bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-xl text-2xl font-bold shadow-xl"
-          disabled={guests.some((g) => !g.color) || !userColor}
         >
           {t("START_TIC_TAC_TOE")}
         </button>
