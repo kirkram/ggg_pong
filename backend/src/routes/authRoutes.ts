@@ -335,17 +335,6 @@ export const authRoutes = async (app: FastifyInstance) => {
       const userInfo = userInfoResponse.data;
       console.log("User Info:", userInfo);
 
-      // Generate your own JWT or session token for the user
-      // const jwtToken = app.jwt.sign({
-      //   id: userInfo.sub,
-      //   // email: userInfo.email,
-      // });
-
-      // reply.send({ token: jwtToken });
-
-      // Send a response back to the user (you can render a page or redirect)
-      // reply.send(`Authentication successful! ID Token: ${id_token}`);
-
       try {
         const existingGoogleUser = await database.db.get(
           "SELECT * FROM users WHERE email = ?",
@@ -388,7 +377,7 @@ export const authRoutes = async (app: FastifyInstance) => {
         await database.db.run(
           `INSERT INTO users 
            (username, password, email, gender, favAvatar, language, wins, losses, profilePic, online_status, last_activity, auth_provider)
-           VALUES (?, ?, ?, 'other', 'None', 'english', 0, 0, '/profile-pics/default-profile.jpg', 'offline', 0, google)`,
+           VALUES (?, ?, ?, 'other', 'None', 'english', 0, 0, '/profile-pics/default-profile.jpg', 'offline', 0, 'google')`,
           [userNameNoWhiteSpace, null, userInfo.email]
         );
 
@@ -429,7 +418,18 @@ export const authRoutes = async (app: FastifyInstance) => {
         // Send a registration success email
         await sendRegisterSuccessEmail(userInfo.email, userNameNoWhiteSpace);
 
-        return reply.send({ message: "User registered successfully" });
+        const token = app.jwt.sign({
+          id: newUser.id,
+          username: newUser.username,
+        });
+
+        await database.db.run(
+          `UPDATE users SET online_status = 'online' WHERE username = ?`,
+          [newUser.username]
+        );
+
+        console.debug("created token: ", token);
+        return reply.send({ token });
       } catch (err) {
         console.error("🔥 Registration error:", err);
         return reply.code(500).send({ error: "Internal Server Error" });
