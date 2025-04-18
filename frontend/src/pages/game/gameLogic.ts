@@ -1,5 +1,5 @@
 
-// gameLogic.tsx
+// gameLogic.ts
 "use client";
 
 import { RefObject } from "react";
