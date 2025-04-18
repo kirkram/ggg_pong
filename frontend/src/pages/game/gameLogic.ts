@@ -50,7 +50,11 @@ export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>, mode?: string
 	let keydownHandler: (e: KeyboardEvent) => void
 	let stopped = false
 
-	loadGameAssets().then(({ table, paddle1, paddle2, music: loadedMusic }) => 
+	loadGameAssets(
+		sessionData?.userColor, 
+		sessionData?.guestColor, 
+		sessionData?.gameType
+	  ).then(({ table, paddle1, paddle2, music: loadedMusic }) =>
 	{
 		if (stopped) return
 
