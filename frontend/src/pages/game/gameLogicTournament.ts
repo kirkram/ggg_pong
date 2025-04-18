@@ -26,23 +26,22 @@ const gameState =
 	winnerAvatar: new Image()
 }
 
+
+/*
 //this needs to be added on the previous page
 export const gameOptions = {
-	enableMadness: false,
+	enableMadness: true,
 }
+*/
 
-export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>, mode?: string, sessionData?: any) 
+export function gameLogicTournament(canvasRef: RefObject<HTMLCanvasElement>, mode?: string, sessionData?: any) 
 {
-
-	if (sessionData?.gameType === "madness")
-		gameOptions.enableMadness = true;
-	else
-		gameOptions.enableMadness = false;
-
 	const canvas = canvasRef.current
 	if (!canvas) return
 	const ctx = canvas.getContext('2d')
 	if (!ctx) return
+	
+	
 
   //music
 	let animationId: number
@@ -155,7 +154,6 @@ export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>, mode?: string
 	    */
 	    function checkItemCollision() 
 		{
-			if (!gameOptions.enableMadness) return; 
     		for (const item of activeItems) 
 			{
         		const itemRadius = (item.image.width * item.scale) / 2
@@ -256,9 +254,9 @@ export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>, mode?: string
     const { x, y, paddleWidth, paddleHeight, x2, y2, paddleWidth2, paddleHeight2 } = drawPaddles()
       // draw the table after the paddles to make paddles go under it
     ctx.drawImage(table, 0, 0, canvas.width, canvas.height)
-    if (gameOptions.enableMadness) {
-    	drawForgotten(ctx);
-    }
+    //if (gameOptions.enableMadness) {
+    drawForgotten(ctx)
+    //}
     drawBall()
 
       //move the BALL!!
@@ -299,7 +297,8 @@ export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>, mode?: string
 
 				gameState.round++
 
-	        	if (gameState.round > 1 && gameOptions.enableMadness) {
+	        	if (gameState.round > 1) 
+				{ // && gameOptions.enableMadness) {
 		            forgottenItemsInit(ctx, canvas)
 	        	}
 
