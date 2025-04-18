@@ -120,5 +120,42 @@ export const initializeDatabase = async () => {
   }
 };
 
+/*
+	Here is the route for the pingpong
+*/
+
+database.post('/api/save-game-session', async (request, reply) => 
+{
+	const { user, userAvatar, guest, guestAvatar, userWins, guestWins } = request.body as 
+	{
+		user: string
+		userAvatar: string
+		guest: string
+		guestAvatar: string
+		userWins: number
+		guestWins: number
+	}
+  
+	try 
+	{
+		await database.db.run(
+			`
+			INSERT INTO game_sessions (user, user_avatar, guest, guest_avatar, user_wins, guest_wins)
+			VALUES (?, ?, ?, ?, ?, ?)
+			`,
+			[user, userAvatar, guest, guestAvatar, userWins, guestWins]
+		);
+  		reply.send({ success: true });
+	}
+	catch (err) 
+	{
+		console.error("Error saving game session:", err);
+		reply.status(500).send({ success: false, error: "Failed to save game session" });
+	}
+});
+
+  // END OF PIMGPONG ROUTING
+
+
 // Export db to interact with it in other parts of the database
 export { database };

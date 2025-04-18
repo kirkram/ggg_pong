@@ -5,8 +5,8 @@ import { RefObject } from 'react'
 import { loadGameAssets } from './loadAssets'
 import { drawOpening, drawEnding, drawFinalScreen } from './startAndEnding'
 import { forgottenItemsInit, drawForgotten, clearForgottenItems, activeItems } from './forgottenItems'
+import { saveGameResult } from './saveGameResult'
 
-//import { gameOptions } from './gameOptions'
 
 enum GamePhase 
 {
@@ -321,8 +321,17 @@ export function gameLogic(canvasRef: RefObject<HTMLCanvasElement>, mode?: string
 	        	p1Score = 0
 	        	p2Score = 0
 	        } 
-			else if (gameState.phase === GamePhase.Final) 
+			else if (gameState.phase === GamePhase.Final)
 			{
+				saveGameResult(
+				{
+					user: sessionData.user,
+					userAvatar: sessionData.userAvatar.name,
+					guest: sessionData.guest,
+					guestAvatar: sessionData.guestAvatar.name,
+					userWins: p1Wins,
+					guestWins: p2Wins,
+				});
         		gameState.phase = GamePhase.Opening
         		gameState.round = 1
         		p1Score = 0
