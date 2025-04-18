@@ -142,9 +142,9 @@ export function gameLogic(
       return ballRadius;
     }
 
-    /* 
-   			   Collision
-   			 */
+    /*
+     *Older function* Collision
+     */
     /*
     function checkPaddleCollision(
       x: number,
