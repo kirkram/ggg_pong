@@ -1,27 +1,35 @@
 import { useEffect, useState } from "react";
-// import { AxiosError } from "axios"
 import { Navigate } from "react-router-dom";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import {
-  getUserProfile,
-  getUsernameFromToken,
-  updateProfileField,
-  uploadProfilePicture,
-} from "./service/userService";
+import { AppInfoIface } from "./context/app-info/interface";
+import { getAppInfo } from "./service";
 import { AppInfoContext } from "./context/app-info/context";
 import { authorised, unauthorised, general } from "./pages";
 import { useUserActivityTracker } from "./service/useUserActivityTracker";
-import { useAuth } from "./context/authContext";
 
 import PongGame from "./pages/game/PongGame";
 
 function App() {
-  const { appInfo, loading } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [appInfo, setAppInfo] = useState<AppInfoIface | undefined>(undefined);
+
   useUserActivityTracker(!!appInfo); // Only track if user is logged in
+
+  useEffect(() => {
+    getAppInfo()
+      .then(setAppInfo)
+      .catch((err) => {
+        if (err.response?.status !== 401) {
+          console.error(err); // only log if not 401
+        }
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   if (loading)
     return (
       <div>
+        {" "}
         <p className="text-4xl font-bold mb-6">App is loading</p>
       </div>
     );
