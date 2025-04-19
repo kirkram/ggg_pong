@@ -55,7 +55,7 @@ export const authRoutes = async (app: FastifyInstance) => {
       await database.db.run(
         `INSERT INTO users 
          (username, password, email, gender, favAvatar, language, wins, losses, profilePic, online_status, last_activity, auth_provider)
-         VALUES (?, ?, ?, 'other', 'None', 'english', 0, 0, '/profile-pics/default-profile.jpg', 'offline', 0, email)`,
+         VALUES (?, ?, ?, 'other', 'None', 'english', 0, 0, '/profile-pics/default-profile.jpg', 'offline', 0, 'email')`,
         [username, hashedPassword, email]
       );
 

@@ -1,5 +1,7 @@
+import i18n from "i18next";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   getUserProfile,
   updateProfileField,
@@ -9,6 +11,7 @@ import { UserProfile } from "../../service/interface";
 
 export const ProfilePage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -21,12 +24,18 @@ export const ProfilePage = () => {
 
   const handleUpdate = (field: string, value: string) => {
     updateProfileField(field, value)
-      .then(() => alert(`${field} updated successfully!`))
-      .catch(() => alert(`Failed to update ${field}`));
+      .then(() => {
+        if (field === "language") {
+          i18n.changeLanguage(value);
+          localStorage.setItem("language", value);
+        }
+        alert(t("SUCCESS"));
+      })
+      .catch(() => alert(t("FIELD_NOT_ALLOWED")));
   };
 
   if (loading || !profile)
-    return <div className="text-white p-8">Loading...</div>;
+    return <div className="text-white p-8">{t("LOADING")}</div>;
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -34,7 +43,6 @@ export const ProfilePage = () => {
 
     try {
       const result = await uploadProfilePicture(file);
-      // TODO: fix timeout
       setTimeout(() => {
         setProfile({ ...profile, profilePic: result.profilePic });
       }, 500);
@@ -52,12 +60,12 @@ export const ProfilePage = () => {
         onClick={() => navigate("/menu")}
         className="absolute top-6 left-6 bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg font-semibold shadow-md"
       >
-        🔙 Back to Menu
+        🔙 {t("BACK_TO_MENU")}
       </button>
 
       <div className="bg-black bg-opacity-70 backdrop-blur-md p-8 rounded-xl max-w-5xl mx-auto mt-20">
         <h1 className="text-4xl font-bold mb-6 text-center">
-          Mugshot & Street Cred 📸
+          {t("PROFILE_BUTTON")}
         </h1>
 
         <div className="flex flex-col md:flex-row gap-8 items-center">
@@ -76,16 +84,16 @@ export const ProfilePage = () => {
 
           <div className="text-left">
             <p className="text-xl">
-              <strong>Username:</strong> {profile.username}
+              <strong>{t("USERNAME")}:</strong> {profile.username}
             </p>
             <p className="text-xl mt-2">
-              <strong>Email:</strong> {profile.email}
+              <strong>{t("EMAIL")}:</strong> {profile.email}
             </p>
             <p className="text-xl mt-2">
-              <strong>Wins:</strong> {profile.wins}
+              <strong>{t("WINS")}:</strong> {profile.wins}
             </p>
             <p className="text-xl mt-2">
-              <strong>Losses:</strong> {profile.losses}
+              <strong>{t("LOSSES")}:</strong> {profile.losses}
             </p>
           </div>
         </div>
@@ -110,18 +118,28 @@ export const ProfilePage = () => {
             type="date"
           />
 
-          <SelectField
-            label="gender"
-            value={profile.gender}
-            options={["male", "female", "other"]}
-            onUpdate={handleUpdate}
-          />
-          <SelectField
-            label="language"
-            value={profile.language}
-            options={["english", "finnish", "serbian", "russian"]}
-            onUpdate={handleUpdate}
-          />
+        <SelectField
+          label="gender"
+          value={profile.gender}
+          options={[
+            { value: "male", label: "GENDER_MALE" },
+            { value: "female", label: "GENDER_FEMALE" },
+            { value: "other", label: "GENDER_OTHER" },
+          ]}
+          onUpdate={handleUpdate}
+        />
+
+        <SelectField
+          label="language"
+          value={profile.language}
+          options={[
+            { value: "english", label: "LANGUAGE_ENGLISH" },
+            { value: "finnish", label: "LANGUAGE_FINNISH" },
+            { value: "serbian", label: "LANGUAGE_SERBIAN" },
+            { value: "russian", label: "LANGUAGE_RUSSIAN" },
+          ]}
+          onUpdate={handleUpdate}
+        />
           <SelectField
             label="favAvatar"
             value={profile.favAvatar}
@@ -139,7 +157,7 @@ export const ProfilePage = () => {
               "GangGanger",
               "StabIlity",
               "VampBoy",
-            ]}
+            ].map((key) => ({ value: key, label: key }))}
             onUpdate={handleUpdate}
           />
         </div>
@@ -160,11 +178,12 @@ const EditableField = ({
   type?: string;
 }) => {
   const [inputValue, setInputValue] = useState(value);
+  const { t } = useTranslation();
 
   return (
     <div>
       <label className="block text-white mb-1 capitalize">
-        {label.replace(/([A-Z])/g, " $1")}
+        {t(`LABEL_${label.replace(/([A-Z])/g, "_$1").toUpperCase()}`)}
       </label>
       <div className="flex gap-2">
         <input
@@ -177,12 +196,14 @@ const EditableField = ({
           onClick={() => onUpdate(label, inputValue)}
           className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded"
         >
-          Update
+          {t("UPDATE") || "Update"}
         </button>
       </div>
     </div>
   );
 };
+
+type Option = { value: string; label: string };
 
 const SelectField = ({
   label,
@@ -192,15 +213,16 @@ const SelectField = ({
 }: {
   label: string;
   value: string;
-  options: string[];
+  options: Option[];
   onUpdate: (field: string, value: string) => void;
 }) => {
   const [selected, setSelected] = useState(value);
+  const { t } = useTranslation();
 
   return (
     <div>
       <label className="block text-white mb-1 capitalize">
-        {label.replace(/([A-Z])/g, " $1")}
+        {t(`LABEL_${label.replace(/([A-Z])/g, "_$1").toUpperCase()}`)}
       </label>
       <div className="flex gap-2">
         <select
@@ -209,8 +231,8 @@ const SelectField = ({
           className="w-full p-2 rounded bg-white text-black"
         >
           {options.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
+            <option key={opt.value} value={opt.value}>
+              {t(opt.label)}
             </option>
           ))}
         </select>
@@ -218,7 +240,7 @@ const SelectField = ({
           onClick={() => onUpdate(label, selected)}
           className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded"
         >
-          Update
+          {t("UPDATE") || "Update"}
         </button>
       </div>
     </div>

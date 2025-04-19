@@ -1,9 +1,11 @@
+import { useTranslation } from "react-i18next";
 import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { appClient } from "../../service";
 
 export const ConnectionsPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [players, setPlayers] = useState([]);
   const [friendRequests, setFriendRequests] = useState([]);
@@ -34,7 +36,7 @@ export const ConnectionsPage = () => {
         setLoading(false);
       } catch (err) {
         console.error("Error fetching friendships:", err);
-        setError("Failed to load friendships");
+        setError(t("FAILED_TO_LOAD_FRIENDSHIPS"));
         setLoading(false);
       }
     };
@@ -42,7 +44,7 @@ export const ConnectionsPage = () => {
     fetchFriendships();
     const interval = setInterval(fetchFriendships, 3000);
     return () => clearInterval(interval);    
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     const fetchFriendRequests = async () => {
@@ -143,7 +145,7 @@ export const ConnectionsPage = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div>{t("LOADING")}</div>;
   if (error) return <div>{error}</div>;
 
   return (
@@ -155,23 +157,23 @@ export const ConnectionsPage = () => {
         onClick={() => navigate("/menu")}
         className="absolute top-6 left-6 bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-white font-semibold shadow-md"
       >
-        🔙 Back to Menu
+        🔙 {t("BACK_TO_MENU")}
       </button>
 
       <div className="flex flex-col justify-center items-center w-full text-center">
         <h1 className="text-5xl font-bold bg-black bg-opacity-60 px-6 py-4 rounded-lg">
-          Gang Connections 🤝
+          {t("CONNECTIONS_TITLE")}
         </h1>
         <p className="mt-4 text-xl text-gray-700">
-          Find your squad, challenge your rivals. Loyalty not guaranteed.
+          {t("CONNECTIONS_SUBTITLE")}
         </p>
 
         {/* Friend Requests Section */}
         <div className="mt-8 w-3/4 text-center">
-          <h2 className="text-2xl text-gray-700">Friend Requests</h2>
+          <h2 className="text-2xl text-gray-700">{t("FRIEND_REQUESTS")}</h2>
           <div className="mt-4 space-y-2">
             {friendRequests.length === 0 && (
-              <p className="text-gray-500">No pending friend requests.</p>
+              <p className="text-gray-500">{t("NO_PENDING_REQUESTS")}</p>
             )}
             {friendRequests.map((req, index) => (
               <div
@@ -186,13 +188,13 @@ export const ConnectionsPage = () => {
                     onClick={() => handleRequestAction(index, "accept")}
                     className="bg-green-500 hover:bg-green-600 px-3 py-1 rounded-lg text-white"
                   >
-                    Accept
+                    {t("ACCEPT")}
                   </button>
                   <button
                     onClick={() => handleRequestAction(index, "decline")}
                     className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded-lg text-white"
                   >
-                    Decline
+                    {t("DECLINE")}
                   </button>
                 </div>
               </div>
@@ -204,9 +206,9 @@ export const ConnectionsPage = () => {
         <table className="mt-8 w-3/4 text-center border-collapse">
           <thead>
             <tr>
-              <th className="px-4 py-2 text-lg bg-gray-700">Username</th>
-              <th className="px-4 py-2 text-lg bg-gray-700">Online Status</th>
-              <th className="px-4 py-2 text-lg bg-gray-700">Friend Status</th>
+              <th className="px-4 py-2 text-lg bg-gray-700">{t("USERNAME")}</th>
+              <th className="px-4 py-2 text-lg bg-gray-700">{t("ONLINE_STATUS")}</th>
+              <th className="px-4 py-2 text-lg bg-gray-700">{t("FRIEND_STATUS")}</th>
             </tr>
           </thead>
           <tbody>
@@ -235,12 +237,12 @@ export const ConnectionsPage = () => {
                       onClick={() => handleAddFriend(index)}
                       className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-white"
                     >
-                      Add Friend
+                      {t("ADD_FRIEND")}
                     </button>
                   )}
                   {player.friendStatus === "Pending" && (
                     <span className="bg-yellow-500 px-4 py-2 rounded-lg text-white">
-                      Pending
+                      {t("PENDING")}
                     </span>
                   )}
                   {player.friendStatus === "Friend" && (
@@ -249,14 +251,14 @@ export const ConnectionsPage = () => {
                         onClick={() => handleFriendClick(index)}
                         className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg text-white"
                       >
-                        Friend
+                        {t("FRIEND")}
                       </button>
                       {player.showUnfriend && (
                         <button
                           onClick={() => handleUnfriend(index)}
                           className="bg-red-500 hover:bg-red-600 px-2 py-1 rounded-lg text-white text-sm ml-2"
                         >
-                          Unfriend
+                          {t("UNFRIEND")}
                         </button>
                       )}
                     </div>

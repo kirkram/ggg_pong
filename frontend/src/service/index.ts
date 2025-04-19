@@ -31,8 +31,6 @@ appClient.interceptors.request.use(
   }
 );
 
-// export const getAppInfo = () => appClient.get<AppInfo>('/info').then(data => data.data)
-
 export const getAppInfo = async (): Promise<AppInfo | undefined> => {
   try {
     const res = await appClient.get<AppInfo>("/info");
@@ -70,9 +68,6 @@ export const startGame = (data: GameData) =>
 
 export const startDuelGame = (data: DuelGameData) =>
   appClient.post("/start-duel-game", data).then((res) => res.data);
-
-export const appLogout = (data: AppLogoutInput) =>
-  appClient.put<AppResponse>("/logout", data).then((data) => data.data);
 
 export const googleLoginAuth = (code: string) =>
   appClient.get(`/auth/google/callback?code=${code}`).then((res) => res.data);

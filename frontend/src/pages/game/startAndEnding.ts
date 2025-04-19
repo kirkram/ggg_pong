@@ -1,3 +1,5 @@
+import { t } from "i18next";
+
 export interface ScreenInfo
 {
 	round: number
@@ -16,7 +18,7 @@ export function drawOpening(ctx: CanvasRenderingContext2D, info: Screen)
 	ctx.font = "48px Arial"
 	ctx.fillStyle = "white"
 	ctx.textAlign = "center"
-	ctx.fillText(`Round ${info.round}`, ctx.canvas.width / 2, 100)
+	ctx.fillText(`${t("ROUND")} ${info.round}`, ctx.canvas.width / 2, 100);
 
 	const avatarSize = 100
 	ctx.drawImage(info.pl1Avatar, 100, ctx.canvas.height / 2 - avatarSize / 2, avatarSize, avatarSize)
@@ -29,7 +31,7 @@ export function drawOpening(ctx: CanvasRenderingContext2D, info: Screen)
   
 	// Press space
 	ctx.font = "28px Arial"
-	ctx.fillText("Press Space to Start", ctx.canvas.width / 2, ctx.canvas.height - 100)
+	ctx.fillText(t("PRESS_SPACE_TO_START"), ctx.canvas.width / 2, ctx.canvas.height - 100);
 }
 
 export function drawEnding(ctx: CanvasRenderingContext2D, info: ScreenInfo) 
@@ -39,11 +41,15 @@ export function drawEnding(ctx: CanvasRenderingContext2D, info: ScreenInfo)
 	ctx.font = "48px Arial"
 	ctx.fillStyle = "gold"
 	ctx.textAlign = "center"
-	ctx.fillText(`${info.winnerName || "Someone"} wins the round!`, ctx.canvas.width / 2, ctx.canvas.height / 2 - 50)
+	ctx.fillText(
+		t("WINS_THE_ROUND", { winner: info.winnerName || t("SOMEONE") }),
+		ctx.canvas.width / 2,
+		ctx.canvas.height / 2 - 50
+	);
   
 	ctx.font = "28px Arial"
 	ctx.fillStyle = "white"
-	ctx.fillText("Press Space to Continue", ctx.canvas.width / 2, ctx.canvas.height / 2 + 50)
+	ctx.fillText(t("PRESS_SPACE_TO_CONTINUE"), ctx.canvas.width / 2, ctx.canvas.height / 2 + 50);
 }
 
 export function drawFinalScreen(ctx: CanvasRenderingContext2D, info: FinalScreenInfo) 
@@ -58,7 +64,7 @@ export function drawFinalScreen(ctx: CanvasRenderingContext2D, info: FinalScreen
 	ctx.font = "64px Impact";
 	ctx.fillStyle = "gold";
 	ctx.textAlign = "center";
-	ctx.fillText("🏆 WINNER! 🏆", ctx.canvas.width / 2, 100);
+	ctx.fillText(t("WINNER_TITLE"), ctx.canvas.width / 2, 100);
   
 	// Avatar
 	const size = 200;
@@ -78,5 +84,5 @@ export function drawFinalScreen(ctx: CanvasRenderingContext2D, info: FinalScreen
 	// Prompt
 	ctx.font = "28px Arial";
 	ctx.fillStyle = "lightgray";
-	ctx.fillText("Press Space to return to menu", ctx.canvas.width / 2, ctx.canvas.height - 80);
+	ctx.fillText(t("PRESS_SPACE_TO_MENU"), ctx.canvas.width / 2, ctx.canvas.height - 80);
   }
