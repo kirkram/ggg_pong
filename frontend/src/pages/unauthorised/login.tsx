@@ -14,7 +14,6 @@ export const LogInPage = () => {
   const navigate = useNavigate();
 
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID; // Add your Client ID here
-  // const clientId = "";
   const redirectUri = "http://localhost:5173/auth/google/callback"; // The redirect URI you defined in your backend
 
   const handleLogin = (e: React.FormEvent) => {

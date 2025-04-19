@@ -282,27 +282,15 @@ export const authRoutes = async (app: FastifyInstance) => {
 
     isProcessing = true;
 
-    // console.debug("in the backed in auth google callback");
-    // console.debug("Google Client ID:", Env.googleClientId);
-    // console.debug("Google Client Secret:", Env.googleClientSecret);
-
-    // console.debug("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
-    // console.debug("GOOGLE_CLIENT_SECRET:", process.env.GOOGLE_CLIENT_SECRET);
-
-    // console.debug("BACKEND_HOST:", process.env.BACKEND_HOST);
-    // console.debug("BACKEND_PORT:", process.env.BACKEND_PORT);
-
     try {
       // Exchange the authorization code for an access token
-      const GOOGLE_CLIENT_ID = "";
-      const GOOGLE_CLIENT_SECRET = "";
       const redirectUri = "http://localhost:5173/auth/google/callback";
 
       const code = (request.query as { code: string }).code;
       console.debug("Token Request Params:", {
         code,
-        client_id: GOOGLE_CLIENT_ID,
-        client_secret: GOOGLE_CLIENT_SECRET,
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
         redirect_uri: redirectUri,
         grant_type: "authorization_code",
       });
@@ -312,8 +300,8 @@ export const authRoutes = async (app: FastifyInstance) => {
         {
           params: {
             code,
-            client_id: GOOGLE_CLIENT_ID,
-            client_secret: GOOGLE_CLIENT_SECRET,
+            client_id: process.env.GOOGLE_CLIENT_ID,
+            client_secret: process.env.GOOGLE_CLIENT_SECRET,
             redirect_uri: redirectUri,
             grant_type: "authorization_code",
           },
