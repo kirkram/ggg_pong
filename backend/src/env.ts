@@ -7,4 +7,6 @@ export const Env = {
   EmailPass: process.env.EMAIL_PASS || "emkt cebr acsv dpwe",
   FrontendBaseUrl: "http://localhost:5173",
   HashingSalt: "super-secret-hash-salt",
+  googleClientId: process.env.GOOGLE_CLIENT_ID,
+  googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
 } as const;

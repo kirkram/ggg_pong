@@ -8,6 +8,7 @@ import {
   sendRegisterSuccessEmail,
 } from "../emailService";
 import { Env } from "../env";
+import axios from "axios";
 
 interface RegisterInput {
   username: string;
@@ -53,8 +54,8 @@ export const authRoutes = async (app: FastifyInstance) => {
       // Insert new user into the database
       await database.db.run(
         `INSERT INTO users 
-         (username, password, email, gender, favAvatar, language, wins, losses, profilePic, online_status, last_activity)
-         VALUES (?, ?, ?, 'other', 'None', 'english', 0, 0, '/profile-pics/default-profile.jpg', 'offline', 0)`,
+         (username, password, email, gender, favAvatar, language, wins, losses, profilePic, online_status, last_activity, auth_provider)
+         VALUES (?, ?, ?, 'other', 'None', 'english', 0, 0, '/profile-pics/default-profile.jpg', 'offline', 0, 'email')`,
         [username, hashedPassword, email]
       );
 
@@ -145,6 +146,9 @@ export const authRoutes = async (app: FastifyInstance) => {
     if (!user) {
       return reply.status(401).send({ error: "Invalid credentials" });
     }
+    if (user.auth_provider === "google") {
+      return reply.status(403).send({ error: "Use Google Sign-In" });
+    }
 
     // Compare password with stored hash
     const passwordMatch = await bcrypt.compare(password, user.password);
@@ -161,8 +165,6 @@ export const authRoutes = async (app: FastifyInstance) => {
       twoFACode,
       username,
     ]);
-
-
 
     return reply.send({
       message: "2FA code sent to email. Please verify your code.",
@@ -195,7 +197,10 @@ export const authRoutes = async (app: FastifyInstance) => {
     // Generate JWT token after 2FA verification
     const token = app.jwt.sign({ id: user.id, username: user.username });
 
-    await database.db.run(`UPDATE users SET online_status = 'online' WHERE username = ?`, [username]);
+    await database.db.run(
+      `UPDATE users SET online_status = 'online' WHERE username = ?`,
+      [username]
+    );
 
     return reply.send({ token });
   });
@@ -266,4 +271,175 @@ export const authRoutes = async (app: FastifyInstance) => {
 
     return reply.send({ message: "Password successfully updated!" });
   });
+
+  let isProcessing = false;
+
+  app.get("/auth/google/callback", async (request, reply) => {
+    if (isProcessing) {
+      console.debug("Duplicate request detected. Ignoring...");
+      return reply.code(429).send({ error: "Duplicate request" });
+    }
+
+    isProcessing = true;
+
+    try {
+      // Exchange the authorization code for an access token
+      const redirectUri = "http://localhost:5173/auth/google/callback";
+
+      const code = (request.query as { code: string }).code;
+      console.debug("Token Request Params:", {
+        code,
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
+        redirect_uri: redirectUri,
+        grant_type: "authorization_code",
+      });
+      const tokenResponse = await axios.post(
+        "https://oauth2.googleapis.com/token",
+        null,
+        {
+          params: {
+            code,
+            client_id: process.env.GOOGLE_CLIENT_ID,
+            client_secret: process.env.GOOGLE_CLIENT_SECRET,
+            redirect_uri: redirectUri,
+            grant_type: "authorization_code",
+          },
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        }
+      );
+      const { access_token, id_token } = tokenResponse.data;
+      // Optionally: decode or verify the id_token
+      console.log("ID Token:", id_token);
+      console.log("Access Token:", access_token);
+
+      const userInfoResponse = await axios.get(
+        "https://www.googleapis.com/oauth2/v3/userinfo",
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      );
+
+      const userInfo = userInfoResponse.data;
+      console.log("User Info:", userInfo);
+
+      try {
+        const existingGoogleUser = await database.db.get(
+          "SELECT * FROM users WHERE email = ?",
+          [userInfo.email]
+        );
+        if (existingGoogleUser) {
+          //login
+          const token = app.jwt.sign({
+            id: existingGoogleUser.id,
+            username: existingGoogleUser.username,
+          });
+
+          await database.db.run(
+            `UPDATE users SET online_status = 'online' WHERE username = ?`,
+            [existingGoogleUser.username]
+          );
+
+          console.debug("created token: ", token);
+          return reply.send({ token });
+        }
+
+        let userNameNoWhiteSpace = userInfo.name.replace(/\s+/g, "");
+        let existingGoogleUsername = await database.db.get(
+          "SELECT * FROM users WHERE username = ?",
+          [userNameNoWhiteSpace]
+        );
+        // If the username already exists, append a random number until it's unique
+        while (existingGoogleUsername) {
+          const randomSuffix = Math.floor(Math.random() * 10000); // Generate a random number between 0 and 9999
+          userNameNoWhiteSpace = `${userInfo.name.replace(
+            /\s+/g,
+            ""
+          )}${randomSuffix}`;
+          existingGoogleUsername = await database.db.get(
+            "SELECT * FROM users WHERE username = ?",
+            [userNameNoWhiteSpace]
+          );
+        }
+
+        await database.db.run(
+          `INSERT INTO users 
+           (username, password, email, gender, favAvatar, language, wins, losses, profilePic, online_status, last_activity, auth_provider)
+           VALUES (?, ?, ?, 'other', 'None', 'english', 0, 0, '/profile-pics/default-profile.jpg', 'offline', 0, 'google')`,
+          [userNameNoWhiteSpace, null, userInfo.email]
+        );
+
+        // Get the new user's info
+        const newUser = await database.db.get(
+          "SELECT id, username FROM users WHERE username = ?",
+          [userNameNoWhiteSpace]
+        );
+        const newUserId = newUser.id;
+        const newUsername = newUser.username;
+
+        // Get all existing users except the new user
+        const users = await database.db.all(
+          "SELECT id, username FROM users WHERE id != ?",
+          [newUserId]
+        );
+
+        // Create "Not Friend" entries in both directions
+        const friendshipPromises = users.flatMap(
+          (user: { id: number; username: string }) => [
+            database.db.run(
+              `INSERT OR IGNORE INTO friendships 
+            (sender_id, receiver_id, sender_username, receiver_username, status) 
+          VALUES (?, ?, ?, ?, 'Not Friend')`,
+              [newUserId, user.id, newUsername, user.username]
+            ),
+            database.db.run(
+              `INSERT OR IGNORE INTO friendships 
+            (sender_id, receiver_id, sender_username, receiver_username, status) 
+          VALUES (?, ?, ?, ?, 'Not Friend')`,
+              [user.id, newUserId, user.username, newUsername]
+            ),
+          ]
+        );
+
+        await Promise.all(friendshipPromises);
+
+        // Send a registration success email
+        await sendRegisterSuccessEmail(userInfo.email, userNameNoWhiteSpace);
+
+        const token = app.jwt.sign({
+          id: newUser.id,
+          username: newUser.username,
+        });
+
+        await database.db.run(
+          `UPDATE users SET online_status = 'online' WHERE username = ?`,
+          [newUser.username]
+        );
+
+        console.debug("created token: ", token);
+        return reply.send({ token });
+      } catch (err) {
+        console.error("🔥 Registration error:", err);
+        return reply.code(500).send({ error: "Internal Server Error" });
+      }
+    } catch (err) {
+      console.error("🔥 Google error:", err);
+      return reply.code(500).send({ error: "Internal Server Error" });
+    } finally {
+      isProcessing = false;
+    }
+  });
+};
+
+const googleNewUserExample = async () => {
+  const userInfo = {
+    sub: "110798276044757637162",
+    name: "K L",
+    given_name: "K",
+    family_name: "L",
+    picture:
+      "https://lh3.googleusercontent.com/a/ACg8ocKtySE3MSJ_AczPlaN7vppH6hHD0y1cNOiOZQo7faCUNT4Uxrc=s96-c",
+    email: "kossnoss@gmail.com",
+    email_verified: true,
+  };
 };

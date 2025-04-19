@@ -1,15 +1,8 @@
 import { useEffect, useState } from "react";
-// import { AxiosError } from "axios"
 import { Navigate } from "react-router-dom";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AppInfoIface } from "./context/app-info/interface";
 import { getAppInfo } from "./service";
-import {
-  getUserProfile,
-  getUsernameFromToken,
-  updateProfileField,
-  uploadProfilePicture,
-} from "./service/userService";
 import { AppInfoContext } from "./context/app-info/context";
 import { authorised, unauthorised, general } from "./pages";
 import { useUserActivityTracker } from "./service/useUserActivityTracker";
@@ -88,9 +81,13 @@ function App() {
                 path="/change-password"
                 element={<unauthorised.ChangePasswordPage />}
               />
+              <Route
+                path="/auth/google/callback"
+                element={<unauthorised.GoogleCallback />}
+              />
             </>
           )}
-        </Routes> 
+        </Routes>
       </Router>
     </AppInfoContext.Provider>
   );
