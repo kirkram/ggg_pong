@@ -42,19 +42,23 @@ export const gameOptions =
 	enableMadness: false,
 };
 
-export function gameLogic(
+export function gameLogicTournament(
 	canvasRef: RefObject<HTMLCanvasElement>,
-	mode?: string,
-	sessionData?: any
+	sessionData: any,
+	onMatchEnd: (WinnerUsername: string) => void
 )
 {
+	gameState.phase = GamePhase.Opening
+
 	if (sessionData?.gameType === "madness") gameOptions.enableMadness = true;
 	else gameOptions.enableMadness = false;
 
 	const canvas = canvasRef.current;
-	if (!canvas) return;
+	if (!canvas) 
+		return;
 	const ctx = canvas.getContext("2d");
-	if (!ctx) return;
+	if (!ctx) 
+		return;
 
 	if (sessionData)
 	{
@@ -301,36 +305,34 @@ export function gameLogic(
 
 			if (e.code === "Space")
 			{
-				if (gameState.phase === GamePhase.Opening) gameState.phase = GamePhase.Playing;
+				if (gameState.phase === GamePhase.Opening) 
+					gameState.phase = GamePhase.Playing;
 				else if (gameState.phase === GamePhase.Ending)
 				{
-					if (p1Score > p2Score) p1Wins++;
-					else if (p2Score > p1Score) p2Wins++;
-					gameState.round++;
+					const winnerName = p1Score > p2Score ? gameState.pl1Name: gameState.pl2Name;
 
-					if (gameState.round > 1 && gameOptions.enableMadness) 
-						forgottenItemsInit(ctx, canvas);
+					stopped = true;
+					//clean 
+					if (keydownHandler)
+						document.removeEventListener("keydown", keydownHandler)
+					//stop animations
+					if (animationId)
+						cancelAnimationFrame(animationId);
 
-					if (gameState.round > 3)
-					{
-						gameState.phase = GamePhase.Final;
-						gameState.winnerName = p1Wins > p2Wins ? gameState.pl1Name : gameState.pl2Name;
-						gameState.winnerAvatar = p1Wins > p2Wins ? player1Avatar : player2Avatar;
-					}
-					else gameState.phase = GamePhase.Opening;
-					p1Score = 0;
-					p2Score = 0;
+					//call PongGame with the winner
+					onMatchEnd(winnerName)
+					return 
 				}
 				else if (gameState.phase === GamePhase.Final)
 				{
-					saveGameResult({ user: sessionData.user, userAvatar: sessionData.userAvatar.name, guest: sessionData.guest, guestAvatar: sessionData.guestAvatar.name, userWins: p1Wins, guestWins: p2Wins });
-					gameState.phase = GamePhase.Opening;
-					gameState.round = 1;
-					p1Score = 0;
-					p2Score = 0;
-					p1Wins = 0;
-					p2Wins = 0;
-					clearForgottenItems();
+					//saveGameResult({ user: sessionData.user, userAvatar: sessionData.userAvatar.name, guest: sessionData.guest, guestAvatar: sessionData.guestAvatar.name, userWins: p1Wins, guestWins: p2Wins });
+					//gameState.phase = GamePhase.Opening;
+					//gameState.round = 1;
+					//p1Score = 0;
+					//p2Score = 0;
+					//p1Wins = 0;
+					//p2Wins = 0;
+					//clearForgottenItems();
 					window.location.href = "/menu";
 				}
 			}

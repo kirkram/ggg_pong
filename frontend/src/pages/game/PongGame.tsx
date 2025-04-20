@@ -3,6 +3,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { gameLogic } from "./gameLogic";
+import { gameLogicTournament } from "./gameLogicTournament";
 
 import {
 	createMatchups,
@@ -11,136 +12,209 @@ import {
 	Matchup,
 } from "./tournamentManager";
 
-export default function PongGame() {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+export default function PongGame()
+{
+	const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // import stuff
-  const [searchParams] = useSearchParams();
-  const location = useLocation();
+	// import stuff
+	const [searchParams] = useSearchParams();
+	const location = useLocation();
 
-  const mode = searchParams.get("mode"); // duel vs tournament
-  const sessionData = location.state; // contains user, avatars, guests, etc.
+	const mode = searchParams.get("mode"); // duel vs tournament
+	const sessionData = location.state; // contains user, avatars, guests, etc.
 
-  const [currentMatch, setCurrentMatch] = useState<Matchup | null>(null);
-  const [matchQue, setMatchQue] = useState<Matchup[]>([]);
+	const [currentMatch, setCurrentMatch] = useState<Matchup | null>(null);
+	const [matchQue, setMatchQue] = useState<Matchup[]>([]);
 
-  useEffect(() => 
-  {
-	if (!canvasRef.current || !mode || !sessionData) return;
+	// FOR TOURNAMENT
+	const [playerScores, setPlayerScores] = useState<Record<string, number>>({});
+	const [currentRound, setCurrentRound] = useState<number>(1);
 
-	if (mode ==="duel")
+	// player pictures
+	const leftAvatarImage = mode === "tournament" ? currentMatch?.player1.avatar : sessionData?.userAvatar?.image
+	const rightAvatarImage = mode === "tournament" ? currentMatch?.player2?.avatar : sessionData?.guestAvatar?.image
+
+	useEffect(() => 
 	{
-		const cleanup = gameLogic(canvasRef, "duel", sessionData);
-		return () => cleanup?.();
-	}
+		if (!canvasRef.current || !mode || !sessionData) return;
 
-	if (mode === "tournament")
-	{
-		const players: PlayerData[] = [
+		if (mode === "duel")
 		{
-			username: sessionData.user,
-			avatar: sessionData.userAvatar.name,
-			score: 0,
-		},
-		...sessionData.guests.map((g: any) => ({
-			username: g.username,
-			avatar: g.avatar.name,
-			score: 0
-		}))
-		];
+			const cleanup = gameLogic(canvasRef, "duel", sessionData);
+			return () => cleanup?.();
+		}
 
-		const matchups = createMatchups(players);
-		//saveMatches();
-		setCurrentMatch(matchups[0]);
-		setMatchQue(matchups.slice(1));
+		if (mode === "tournament")
+		{
+			const players: PlayerData[] = [
+				{
+					username: sessionData.user,
+					avatar: sessionData.userAvatar.image,
+					score: 0,
+				},
+				...sessionData.guests.map((g: any) => ({
+					username: g.username,
+					avatar: g.avatar.image,
+					score: 0,
+				})),
+			];
 
-		//set the mode
-		console.log("Mode is:", mode);
- 	   console.log("Session Data:", sessionData);
-	}
-}, [mode, sessionData]);
+			const matchups = createMatchups(players);
+			setCurrentMatch(matchups[0]);
+			setMatchQue(matchups.slice(1));
 
-    //store cleanup callback and start
+			console.log("Mode is:", mode);
+			console.log("Session Data:", sessionData);
+		}
+	}, [mode, sessionData]);
 
-	//UNCOMMENT THIS TO TEST THE TOURNAMENT!!!!!!
-	/*
-	    const cleanup = gameLogic(canvasRef, mode, sessionData);
-	
-    //	const cleanup = gameLogic(canvasRef)
-
-    //cleanup when unmount
-    return () => {
-      if (cleanup && typeof cleanup === "function") {
-        cleanup();
-      }
-    };
-  }, [mode, sessionData]);
-  */
-
-  useEffect(() => {
-    if (mode !== "tournament" || !currentMatch) return;
-
-    const matchSession = 
+	useEffect(() => 
 	{
-      user: currentMatch.player1.username,
-      guest: currentMatch.player2?.username,
-      userAvatar: { name: currentMatch.player1.avatar },
-      guestAvatar: currentMatch.player2
-        ? { name: currentMatch.player2.avatar }
-        : null,
-    };
+		if (mode !== "tournament" || !currentMatch) return;
 
-    const cleanup = gameLogic(canvasRef, "duel", matchSession);
+		const matchSession = 
+		{
+			user: currentMatch.player1.username,
+			guest: currentMatch.player2?.username,
+			userAvatar: { image: currentMatch.player1.avatar },
+			guestAvatar: currentMatch.player2
+				? { image: currentMatch.player2.avatar }
+				: null,
+			gameType: sessionData?.gameType,
+		};
 
-    return () => cleanup?.();
-  }, [mode, currentMatch]);
+		const onMatchEnd = (winnerUsername: string) =>
+		{
+			console.log("Winner is:", winnerUsername);
 
-  return (
-    <>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          gap: "2rem",
-          backgroundColor: "white",
-        }}
-      >
-        {sessionData?.userAvatar?.image && (
-          <img
-            src={sessionData.userAvatar.image}
-            alt="Left Avatar"
-            style={{
-              width: "150px",
-              height: "350px",
-              objectFit: "cover",
-              borderRadius: "10px",
-            }}
-          />
-        )}
+			setPlayerScores(prevScores =>
+			{
+				const updated = { ...prevScores };
+				assignPoints(updated, winnerUsername, currentRound);
 
-        <canvas
-          ref={canvasRef}
-          width={800}
-          height={600}
-          className="border-4 border-black"
-          style={{ backgroundColor: "#87CEEB" }}
-        />
+				if (matchQue.length > 0)
+				{
+					setCurrentMatch(matchQue[0]);
+					setMatchQue(matchQue.slice(1));
+				}
+				else
+				{
+					const finalWinner = Object.keys(updated).reduce((a, b) =>
+						updated[a] > updated[b] ? a : b
+					);
+					console.log("Tournament winner is:", finalWinner);
+				//	alert(`${finalWinner} wins the Tournament!`); // this creates a popup screen
+					// return to /menu after game
+					window.location.href = "/menu";
+				}
 
-        {sessionData?.guestAvatar?.image && (
-          <img
-            src={sessionData.guestAvatar.image}
-            alt="Right Avatar"
-            style={{
-              width: "150px",
-              height: "350px",
-              objectFit: "cover",
-              borderRadius: "10px",
-            }}
-          />
-        )}
-      </div>
-    </>
-  );
+				return updated;
+			});
+		};
+
+		const cleanup = gameLogicTournament(canvasRef, matchSession, onMatchEnd);
+
+		return () => cleanup?.();
+	}, [mode, currentMatch]);
+
+	return (
+		<>
+			<div
+				style={{
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+					height: "100vh",
+					gap: "2rem",
+					backgroundColor: "white",
+				}}
+			>
+				{leftAvatarImage && (
+					<img
+						src={leftAvatarImage}
+						alt="Left Avatar"
+						style={{
+							width: "150px",
+							height: "350px",
+							objectFit: "cover",
+							borderRadius: "10px",
+						}}
+					/>
+				)}
+
+				<canvas
+					ref={canvasRef}
+					width={800}
+					height={600}
+					className="border-4 border-black"
+					style={{ backgroundColor: "#87CEEB" }}
+				/>
+
+				{rightAvatarImage && (
+					<img
+						src={rightAvatarImage}
+						alt="Right Avatar"
+						style={{
+							width: "150px",
+							height: "350px",
+							objectFit: "cover",
+							borderRadius: "10px",
+						}}
+					/>
+				)}
+			</div>
+		</>
+	);
 }
+
+
+
+
+
+/// THE BACKUP VERSION FOR DUEL::
+
+
+//export interface PlayerData 
+//{
+//	username: string;
+//	avatar: string;
+//	schore: number;
+//}
+
+//export interface Matchup
+//{
+//	player1: PlayerData;
+//	player2?: PlayerData; // outnum player safespace
+//}
+
+//export function shufflPlayers(players: PlayerData[]): PlayerData[]
+//{
+//	return players
+//		.map((p) => ({ sort: Math.random(), value: p }))
+//		.sort((a, b) => a.sort = b.sort)
+//		.map((a) => a.value)
+//}
+
+//export function createMatchups(players: PlayerData[]): Matchup[]
+//{
+//	const matchups: Matchup[] = []
+//	const shuffled = shufflPlayers(players);
+
+//	for (let i = 0; i < shuffled.length; i += 2)
+//	{
+//		const player1 = shuffled[i];
+//		const player2 = shuffled[i + 1];
+//		matchups.push({ player1, player2 })
+//	}
+//	return matchups;
+//}
+
+//export function assignPoints(
+//	PlayerScores: Record<string, number>,
+//	winner: string,
+//	round: number
+//)
+//{
+//	const points = round === 1 ? 10 : round === 2 ? 20 : 40;
+//	PlayerScores[winner] = (PlayerScores[winner] || 0) + points;
+//}

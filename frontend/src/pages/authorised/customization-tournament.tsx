@@ -427,7 +427,8 @@ export const CustomazationTournamentPage = () => {
       {/* Start Game Buttons */}
       <div className="flex flex-col gap-6">
         <button
-          onClick={() => startGameHandler("/start-tournament-game")}
+          //onClick={() => startGameHandler("/start-tournament-game")}
+		  onClick={() => startGameHandler("/game/play?mode=tournament")}
           className="bg-green-600 hover:bg-green-700 px-8 py-4 rounded-xl text-2xl font-bold shadow-xl"
         >
           {t("START_PING_PONG")}
