@@ -50,4 +50,34 @@ export const gameRoutes = async (app: FastifyInstance) => {
     const sessions = await database.db.all(`SELECT * FROM tournament_sessions`);
     return reply.send(sessions);
   });
+
+  app.post("/api/save-game-session", async (request, reply) => {
+    const { username, roundsJson, gameName } = request.body as {
+      username: string;
+      roundsJson: string; // JSON string representing the game rounds
+      gameName: string; // e.g., "ping-pong" or "tic-tac-toe"
+    };
+
+    try {
+      const idUser = await database.db.get(
+        `SELECT id FROM users WHERE username = ?`,
+        [username]
+      );
+
+      // Insert the game session into the "games" table
+      await database.db.run(
+        `
+        INSERT INTO games (id_user, rounds_json, game_name)
+        VALUES (?, ?, ?)
+        `,
+        [idUser.id, roundsJson, gameName]
+      );
+      reply.send({ success: true });
+    } catch (err) {
+      console.error("Error saving game session:", err);
+      reply
+        .status(500)
+        .send({ success: false, error: "Failed to save game session" });
+    }
+  });
 };

@@ -32,6 +32,8 @@ export const GameStats: React.FC = () => {
         setProfile(fetchedProfile);
         setProfiles(fetchedProfiles);
 
+        console.debug(fetchedProfiles);
+
         const fetchedGames = await getUserGames(fetchedProfile.username);
         const parsedGames = fetchedGames.map((game) => ({
           ...game,
@@ -56,7 +58,7 @@ export const GameStats: React.FC = () => {
     localStorage.removeItem("guestName");
     localStorage.removeItem("guests");
     localStorage.removeItem("guestCount");
-  }, [t]);
+  }, []);
 
   const renderTournamentBracket = (rounds_json: Match[][]) => {
     return (
@@ -67,7 +69,10 @@ export const GameStats: React.FC = () => {
               {t("ROUND")} {index + 1}
             </h3>
             {round.map((match, matchIndex) => (
-              <div key={matchIndex} className="match bg-gray-700 p-2 rounded-lg mb-2">
+              <div
+                key={matchIndex}
+                className="match bg-gray-700 p-2 rounded-lg mb-2"
+              >
                 <div className="player flex items-center mb-2">
                   <img
                     src="/profile-pics/default-profile.jpg"
@@ -185,20 +190,38 @@ export const GameStats: React.FC = () => {
           <table className="w-full text-left border-collapse border border-gray-600">
             <thead>
               <tr className="bg-gray-800 text-white">
-                <th className="border border-gray-600 px-4 py-2">{t("RANK")}</th>
-                <th className="border border-gray-600 px-4 py-2">{t("PLAYER")}</th>
-                <th className="border border-gray-600 px-4 py-2">{t("WINS")}</th>
-                <th className="border border-gray-600 px-4 py-2">{t("LOSSES")}</th>
-                <th className="border border-gray-600 px-4 py-2">{t("POINTS")}</th>
+                <th className="border border-gray-600 px-4 py-2">
+                  {t("RANK")}
+                </th>
+                <th className="border border-gray-600 px-4 py-2">
+                  {t("PLAYER")}
+                </th>
+                <th className="border border-gray-600 px-4 py-2">
+                  {t("WINS")}
+                </th>
+                <th className="border border-gray-600 px-4 py-2">
+                  {t("LOSSES")}
+                </th>
+                <th className="border border-gray-600 px-4 py-2">
+                  {t("POINTS")}
+                </th>
               </tr>
             </thead>
             <tbody>
               {sortedPlayers.map((player, index) => (
                 <tr key={player.username} className="hover:bg-gray-700">
-                  <td className="border border-gray-600 px-4 py-2">{index + 1}</td>
-                  <td className="border border-gray-600 px-4 py-2">{player.username}</td>
-                  <td className="border border-gray-600 px-4 py-2">{player.wins}</td>
-                  <td className="border border-gray-600 px-4 py-2">{player.losses}</td>
+                  <td className="border border-gray-600 px-4 py-2">
+                    {index + 1}
+                  </td>
+                  <td className="border border-gray-600 px-4 py-2">
+                    {player.username}
+                  </td>
+                  <td className="border border-gray-600 px-4 py-2">
+                    {player.wins}
+                  </td>
+                  <td className="border border-gray-600 px-4 py-2">
+                    {player.losses}
+                  </td>
                   <td className="border border-gray-600 px-4 py-2">
                     {player.wins * 3 - player.losses}
                   </td>

@@ -180,14 +180,14 @@ export const userRoutes = async (app: FastifyInstance) => {
 
   // app.put('/logout', async (request, reply) => {
   //   const { username } = request.body as LogoutInput
-  
+
   //   try {
   //     // Set the user status to offline when logging out
   //     await database.db.run(
   //       `UPDATE users SET online_status = 'offline' WHERE username = ?`,
   //       [username]
   //     );
-  
+
   //     return reply.send({ message: 'Logged out and status set to offline' });
   //   } catch (error) {
   //     console.error('Error updating status:', error);
@@ -232,12 +232,17 @@ export const userRoutes = async (app: FastifyInstance) => {
   app.get("/get-games/:username", async (request, reply) => {
     const { username } = request.params as { username: string };
     try {
+      const idUser = await database.db.get(
+        `SELECT id FROM users WHERE username = ?`,
+        [username]
+      );
+
       const userGames: Game[] = await database.db.all(
         `
         SELECT id_game, id_user, date, rounds_json, game_name
         FROM games WHERE id_user = ?
       `,
-        [username]
+        [idUser.id]
       );
 
       if (!userGames) {
