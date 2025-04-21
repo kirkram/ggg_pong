@@ -114,6 +114,21 @@ export const GameStats: React.FC = () => {
     return b.wins - a.wins;
   });
 
+  const adjustToTimezonePlus3 = (dateString: string): string => {
+    const date = new Date(dateString);
+    date.setHours(date.getHours() + 3); // Add 3 hours
+
+    // Format the date manually to ensure the timezone adjustment is reflected
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
+
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`; // Format as "YYYY-MM-DD HH:mm:ss"
+  };
+
   return (
     <div
       className="w-full h-full min-h-screen bg-cover bg-center text-black relative p-8"
@@ -243,7 +258,7 @@ export const GameStats: React.FC = () => {
                 onClick={() => toggleGameDetails(game.id_game)}
                 className="w-full text-left bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700"
               >
-                {game.date} - {game.game_name}
+                {adjustToTimezonePlus3(game.date)} - {game.game_name}
               </button>
               {expandedGameId === game.id_game && (
                 <div className="bg-gray-700 text-white p-4 mt-2 rounded-lg">
