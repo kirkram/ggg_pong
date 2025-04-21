@@ -430,16 +430,3 @@ export const authRoutes = async (app: FastifyInstance) => {
     }
   });
 };
-
-const googleNewUserExample = async () => {
-  const userInfo = {
-    sub: "110798276044757637162",
-    name: "K L",
-    given_name: "K",
-    family_name: "L",
-    picture:
-      "https://lh3.googleusercontent.com/a/ACg8ocKtySE3MSJ_AczPlaN7vppH6hHD0y1cNOiOZQo7faCUNT4Uxrc=s96-c",
-    email: "kossnoss@gmail.com",
-    email_verified: true,
-  };
-};
