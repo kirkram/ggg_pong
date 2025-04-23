@@ -87,20 +87,41 @@ export function drawFinalScreen(ctx: CanvasRenderingContext2D, info: FinalScreen
 	ctx.fillText(t("PRESS_SPACE_TO_MENU"), ctx.canvas.width / 2, ctx.canvas.height - 80);
   }
 
-export function drawTournamentScreen(ctx: CanvasRenderingContext2D, matchups: { round: number, pairs: [string, string][] })
-{
-	ctx.fillStyle = "#C8F7F0"
-	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+  export function drawTournamentScreen(
+	ctx: CanvasRenderingContext2D,
+	matchups: { round: number; pairs: [string, string][] }
+) {
+	ctx.fillStyle = "#C8F7F0";
+	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-	ctx.fillStyle = "black"
-	ctx.font = "24px monospace"
-	ctx.textAlign = "center"
-	ctx.fillText(`Round ${matchups.round}`, ctx.canvas.width / 2, 50)
+	ctx.fillStyle = "black";
+	ctx.font = "24px monospace";
+	ctx.textAlign = "center";
+	ctx.fillText(`Round ${matchups.round}`, ctx.canvas.width / 2, 50);
 
-	matchups.pairs.forEach((pair, index) => 
-	{
-		const y = 100 + index * 100
-		ctx.fillText(`${pair[0]} vs ${pair[1]}`, ctx.canvas.width / 2, y)
-		
-	})
+	matchups.pairs.forEach((pair, index) => {
+		const boxWidth = 200;
+		const boxHeight = 60;
+		const gap = 30;
+		const y = 100 + index * (boxHeight + gap);
+
+		const x1 = ctx.canvas.width / 2 - boxWidth - 10;
+		const x2 = ctx.canvas.width / 2 + 10;
+
+		// Left player box
+		ctx.fillStyle = "white";
+		ctx.fillRect(x1, y, boxWidth, boxHeight);
+		ctx.strokeStyle = "black";
+		ctx.lineWidth = 2;
+		ctx.strokeRect(x1, y, boxWidth, boxHeight);
+		ctx.fillStyle = "black";
+		ctx.fillText(pair[0], x1 + boxWidth / 2, y + boxHeight / 2 + 8);
+
+		// Right player box
+		ctx.fillStyle = "white";
+		ctx.fillRect(x2, y, boxWidth, boxHeight);
+		ctx.strokeRect(x2, y, boxWidth, boxHeight);
+		ctx.fillStyle = "black";
+		ctx.fillText(pair[1], x2 + boxWidth / 2, y + boxHeight / 2 + 8);
+	});
 }
