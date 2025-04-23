@@ -89,7 +89,7 @@ export function gameLogicTournament(
 
 		let paddleProgress = 0.5;
 		let paddle2Progress = 0.5;
-		const speedUp = 1.05;
+		const speedUp = 1.07;
 
 		let p1Score = 0;
 		let p2Score = 0;
@@ -257,7 +257,7 @@ export function gameLogicTournament(
 			drawBackground();
 
 			// New KEYS!
-			const paSpeed = 0.005
+			const paSpeed = 0.008
 
 			if (keysPressed["d"]) 
 				paddleProgress = Math.min(1, paddleProgress + paSpeed);
