@@ -8,6 +8,7 @@ import {
 } from "../../service/userService";
 import { UserProfile, Game, Match } from "../../service/interface";
 import GameStatsChart from "../../components/GameStatsCharts";
+import { avatars } from "../general/avatar";
 
 export const GameStats: React.FC = () => {
   const navigate = useNavigate();
@@ -60,6 +61,11 @@ export const GameStats: React.FC = () => {
     localStorage.removeItem("guestCount");
   }, []);
 
+  const findAvatar = (match_avatar: string) => {
+    const avatar = avatars.find((avatar) => avatar?.name === match_avatar);
+    return avatar ? avatar.image : "/profile-pics/default-profile.jpg";
+  };
+
   const renderTournamentBracket = (rounds_json: Match[][]) => {
     return (
       <div className="tournament-bracket grid grid-cols-4 gap-4">
@@ -75,7 +81,7 @@ export const GameStats: React.FC = () => {
               >
                 <div className="player flex items-center mb-2">
                   <img
-                    src="/profile-pics/default-profile.jpg"
+                    src={findAvatar(match.p1_avatar)}
                     alt={match.p1_username}
                     className="w-10 h-10 rounded-full mr-2"
                   />
@@ -85,7 +91,7 @@ export const GameStats: React.FC = () => {
                 </div>
                 <div className="player flex items-center">
                   <img
-                    src="/profile-pics/default-profile.jpg"
+                    src={findAvatar(match.p2_avatar)}
                     alt={match.p2_username}
                     className="w-10 h-10 rounded-full mr-2"
                   />
