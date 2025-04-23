@@ -19,3 +19,16 @@
   display: inline-block;
   animation: marquee 32s linear infinite;
 }
+
+@keyframes bgMove {
+  0% {
+    background-position: 0px;
+  }
+  100% {
+    background-position: 1000px;
+  }
+}
+
+.animate-bgMove {
+  animation: bgMove 200s linear infinite;
+}

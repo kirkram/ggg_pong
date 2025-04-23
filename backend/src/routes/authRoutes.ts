@@ -103,37 +103,6 @@ export const authRoutes = async (app: FastifyInstance) => {
     }
   });
 
-  // export const authRoutes = async (app: FastifyInstance) => {
-  //   app.post('/register', async (request, reply) => {
-  //     try {
-  //       const { username, password, email } = request.body as RegisterInput;
-
-  //       const existingUser = await database.db.get(
-  //         'SELECT * FROM users WHERE username = ? OR email = ?',
-  //         [username, email]
-  //       );
-  //       if (existingUser) {
-  //         return reply.status(400).send({ error: 'User already exists' });
-  //       }
-
-  //       const hashedPassword = await bcrypt.hash(password, 10);
-
-  //       await database.db.run(
-  //         `INSERT INTO users
-  //           (username, password, email, gender, favAvatar, language, wins, losses, profilePic)
-  //          VALUES (?, ?, ?, 'other', 'None', 'english', 0, 0, '/profile-pics/default-profile.jpg')`,
-  //         [username, hashedPassword, email]
-  //       );
-
-  //       await sendRegisterSuccessEmail(email, username);
-  //       return reply.send({ message: 'User registered successfully' });
-
-  //     } catch (err) {
-  //       console.error("🔥 Registration error:", err); // Look for this in your terminal
-  //       return reply.code(500).send({ error: 'Internal Server Error' });
-  //     }
-  //   });
-
   // Login Route
   app.post("/login", async (request, reply) => {
     const { username, password } = request.body as LoginInput;

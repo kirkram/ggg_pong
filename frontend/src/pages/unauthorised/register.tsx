@@ -2,6 +2,7 @@ import { useState } from "react";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { appRegister } from "../../service";
+import { validator } from "validator";
 
 export const RegisterPage = () => {
   const [isLoading, setIsLoading] = useState(false);
