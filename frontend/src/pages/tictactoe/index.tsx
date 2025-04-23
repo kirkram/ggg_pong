@@ -1,0 +1,1 @@
+export { TicTacToeDuel } from "./tic-tac-toe-duel";
