@@ -117,11 +117,7 @@ export const getGamestatsProfile = () => {
   if (!token) throw new Error("User not authenticated");
 
   return appClient
-    .get<UserProfile[]>("/get-all-profiles", {
-      headers: {
-        Authorization: `Bearer ${token}`, //TODO
-      },
-    })
+    .get<UserProfile[]>("/get-all-profiles", {})
     .then((res) => res.data);
 };
 
@@ -129,23 +125,13 @@ export const addGameToTable = async (file: Game) => {
   const token = localStorage.getItem("ping-pong-jwt");
   if (!token) throw new Error("User not authenticated");
 
-  return appClient
-    .post<Game>("/post-games", file, {
-      headers: {
-        Authorization: `Bearer ${token}`, //TODO
-      },
-    })
-    .then((res) => res.data);
+  return appClient.post<Game>("/post-games", file, {}).then((res) => res.data);
 };
 
 export const getUserGames = async (username: string) => {
   const token = localStorage.getItem("ping-pong-jwt");
   if (!token) throw new Error("User not authenticated");
   return appClient
-    .get<Game[]>(`/get-games/${username}`, {
-      headers: {
-        Authorization: `Bearer ${token}`, //TODO
-      },
-    })
+    .get<Game[]>(`/get-games/${username}`, {})
     .then((res) => res.data);
 };

@@ -1,4 +1,7 @@
 import { app } from "./app";
+import dotenv from "dotenv";
+dotenv.config();
+
 import { Env } from "./env";
 
 export const start = async () => {

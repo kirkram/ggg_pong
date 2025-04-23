@@ -43,6 +43,7 @@ app.decorate(
       await request.jwtVerify();
       // No need to reassign request.user manually here — Fastify JWT does it for you
     } catch (err) {
+      // console.debug("The request wasnt verified, sending reply: ", reply);
       reply.status(401).send({ error: "Unauthorized" });
     }
   }

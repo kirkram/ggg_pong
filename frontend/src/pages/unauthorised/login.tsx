@@ -13,6 +13,9 @@ export const LogInPage = () => {
   const [code, setCode] = useState("");
   const navigate = useNavigate();
 
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID; // Add your Client ID here
+  const redirectUri = "http://localhost:5173/auth/google/callback"; // The redirect URI you defined in your backend
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -38,13 +41,35 @@ export const LogInPage = () => {
       .finally(() => setIsLoading(false));
   };
 
-  console.log(error); // check if we need this
+  // Google OAuth Client ID
+  const googleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    // setIsLoading(true);
+
+    const baseUrl = "https://accounts.google.com/o/oauth2/v2/auth";
+    const params = new URLSearchParams({
+      client_id: clientId,
+      redirect_uri: redirectUri,
+      response_type: "code",
+      scope: "openid email profile",
+      include_granted_scopes: "true",
+      access_type: "offline",
+      prompt: "consent",
+    });
+
+    console.debug("in google login redirect to google page");
+    console.debug("VITE_GOOGLE_CLIENT_ID: ", clientId);
+
+    window.location.href = `${baseUrl}?${params.toString()}`;
+  };
+
+  // console.log(error); // check if we need this
 
   return (
     <div className="flex h-screen">
       {backendMessage ? (
         <>
-          <div className="w-1/2 flex flex-col justify-center p-12 bg-white">
+          <div className="w-5/13 flex flex-col justify-center p-12 bg-white max-w-2xl min-w-md mx-auto">
             <h5 className="text-4xl font-bold mb-6">{backendMessage}</h5>
             {error ? <div>error: {error.response.data.error}</div> : null}
             <form onSubmit={handleCode} className="space-y-4">
@@ -68,7 +93,7 @@ export const LogInPage = () => {
         </>
       ) : (
         <>
-          <div className="w-1/2 flex flex-col justify-center p-12 bg-white">
+          <div className="w-5/13 flex flex-col justify-center p-12 bg-white max-w-2xl min-w-md mx-auto">
             <h2 className="text-4xl font-bold mb-6">Welcome Back!</h2>
             {error ? <div>error: {error.response.data.error}</div> : null}
             <form onSubmit={handleLogin} className="space-y-4">
@@ -79,6 +104,7 @@ export const LogInPage = () => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
+                autoComplete="username"
               />
               <input
                 type="password"
@@ -87,15 +113,29 @@ export const LogInPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                autoComplete="current-password"
               />
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-blue-500 text-white py-3 rounded"
+                className="w-full bg-blue-500 text-white py-3 rounded cursor-pointer"
               >
                 Log In
               </button>
             </form>
+
+            {/* Google Auth */}
+            <button
+              className="w-full bg-green-500 mt-2 text-white py-3 rounded flex items-center justify-center gap-3 cursor-pointer"
+              onClick={googleLogin}
+            >
+              Sign in with Google
+              <img
+                src="https://www.gstatic.com/marketing-cms/assets/images/d5/dc/cfe9ce8b4425b410b49b7f2dd3f3/g.webp=s96-fcrop64=1,00000000ffffffff-rw"
+                className="h-6 w-6"
+              />
+            </button>
+
             <p className="mt-4 text-sm">
               Don't have an account?{" "}
               <span
@@ -117,7 +157,7 @@ export const LogInPage = () => {
 
       {/* Right Section */}
       <div
-        className="w-1/2 bg-cover bg-center"
+        className="w-8/13 bg-cover bg-center"
         style={{ backgroundImage: "url('background/login.png')" }}
       ></div>
     </div>

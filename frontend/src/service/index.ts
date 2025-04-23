@@ -1,5 +1,16 @@
-import axios from "axios"
-import { AppInfo, AppLoginInput, AppResponse, AppLoginCodeInput, AppLoginToken, AppRegisterInput, AppResetPassword, AppChangePassword, GameData, DuelGameData } from "./interface"
+import axios from "axios";
+import {
+  AppInfo,
+  AppLoginInput,
+  AppResponse,
+  AppLoginCodeInput,
+  AppLoginToken,
+  AppRegisterInput,
+  AppResetPassword,
+  AppChangePassword,
+  GameData,
+  DuelGameData,
+} from "./interface";
 
 export const appClient = axios.create({
   baseURL: "/app",
@@ -15,15 +26,15 @@ appClient.interceptors.request.use(
     return config;
   },
   (error) => {
+    console.debug("checking jwt in interseptor returning reject");
     return Promise.reject(error);
   }
 );
 
-// export const getAppInfo = () => appClient.get<AppInfo>('/info').then(data => data.data)
-
 export const getAppInfo = async (): Promise<AppInfo | undefined> => {
   try {
     const res = await appClient.get<AppInfo>("/info");
+    // console.debug("/info returned: ", res);
     return res.data;
   } catch (err: any) {
     if (err.response?.status === 401) {
@@ -58,7 +69,6 @@ export const startGame = (data: GameData) =>
 export const startDuelGame = (data: DuelGameData) =>
   appClient.post("/start-duel-game", data).then((res) => res.data);
 
-// export const appLogout = (data: AppLogoutInput) =>
-//   appClient.put<AppResponse>("/logout", data).then((data) => data.data);
-
-// export const appLogout = (data: AppLogoutInput) => appClient.put<AppResponse>('/logout', data).then(data => data.data);
+export const googleLoginAuth = (code: string) =>
+  appClient.get(`/auth/google/callback?code=${code}`).then((res) => res.data);
+// // export const appLogout = (data: AppLogoutInput) => appClient.put<AppResponse>('/logout', data).then(data => data.data);

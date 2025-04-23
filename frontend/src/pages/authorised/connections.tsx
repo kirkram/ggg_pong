@@ -3,14 +3,29 @@ import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { appClient } from "../../service";
 
+interface Player {
+  self_id: number;
+  id: number;
+  username: string;
+  online_status: string;
+  friendStatus: string;
+  showUnfriend?: boolean;
+}
+
+interface FriendRequest {
+  sender_id: number;
+  receiver_id: number;
+  sender_username: string;
+}
+
 export const ConnectionsPage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const [players, setPlayers] = useState([]);
-  const [friendRequests, setFriendRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
     const fetchFriendships = async () => {
@@ -43,7 +58,7 @@ export const ConnectionsPage = () => {
 
     fetchFriendships();
     const interval = setInterval(fetchFriendships, 3000);
-    return () => clearInterval(interval);    
+    return () => clearInterval(interval);
   }, [t]);
 
   useEffect(() => {
@@ -61,7 +76,7 @@ export const ConnectionsPage = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleAddFriend = async (index) => {
+  const handleAddFriend = async (index: number) => {
     const newPlayers = [...players];
     const player = newPlayers[index];
 
@@ -78,7 +93,7 @@ export const ConnectionsPage = () => {
     }
   };
 
-  const handleUnfriend = async (index) => {
+  const handleUnfriend = async (index: number) => {
     const newPlayers = [...players];
     const player = newPlayers[index];
 
@@ -92,7 +107,7 @@ export const ConnectionsPage = () => {
     setPlayers(newPlayers);
   };
 
-  const handleFriendClick = (index) => {
+  const handleFriendClick = (index: number) => {
     const newPlayers = [...players];
     const player = newPlayers[index];
 
@@ -102,7 +117,10 @@ export const ConnectionsPage = () => {
     setPlayers(newPlayers);
   };
 
-  const handleRequestAction = async (index, action) => {
+  const handleRequestAction = async (
+    index: number,
+    action: "accept" | "decline"
+  ) => {
     const newRequests = [...friendRequests];
     const request = newRequests[index];
 
@@ -164,11 +182,8 @@ export const ConnectionsPage = () => {
         <h1 className="text-5xl font-bold bg-black bg-opacity-60 px-6 py-4 rounded-lg">
           {t("CONNECTIONS_TITLE")}
         </h1>
-        <p className="mt-4 text-xl text-gray-700">
-          {t("CONNECTIONS_SUBTITLE")}
-        </p>
+        <p className="mt-4 text-xl text-gray-700">{t("CONNECTIONS_SUBTITLE")}</p>
 
-        {/* Friend Requests Section */}
         <div className="mt-8 w-3/4 text-center">
           <h2 className="text-2xl text-gray-700">{t("FRIEND_REQUESTS")}</h2>
           <div className="mt-4 space-y-2">
@@ -202,7 +217,6 @@ export const ConnectionsPage = () => {
           </div>
         </div>
 
-        {/* Player Table */}
         <table className="mt-8 w-3/4 text-center border-collapse">
           <thead>
             <tr>

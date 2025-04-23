@@ -1,17 +1,10 @@
 import { useEffect, useState } from "react";
-// import { AxiosError } from "axios"
 import { Navigate } from "react-router-dom";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AppInfoIface } from "./context/app-info/interface";
 import { getAppInfo } from "./service";
-import {
-  getUserProfile,
-  getUsernameFromToken,
-  updateProfileField,
-  uploadProfilePicture,
-} from "./service/userService";
 import { AppInfoContext } from "./context/app-info/context";
-import { authorised, unauthorised, general } from "./pages";
+import { authorised, unauthorised, general, tictactoe } from "./pages";
 import { useUserActivityTracker } from "./service/useUserActivityTracker";
 
 import PongGame from "./pages/game/PongGame";
@@ -69,8 +62,16 @@ function App() {
                 element={<general.UserProfilePage />}
               />
               <Route
-                path="/tic-tac-toe-duel"
-                element={<authorised.TicTacToeDuel />}
+                path="/tic-tac-toe-duel/:gameNumber"
+                element={<tictactoe.TicTacToeDuel />}
+              />
+              <Route
+                path="/duel-setup"
+                element={<tictactoe.DuelSetup />}
+              />
+              <Route
+                path="show_a_winner"
+                element={<tictactoe.ShowAWinner />}
               />
               // "/game/play?mode=duel"
               <Route path="/game/play" element={<PongGame />} />
@@ -88,9 +89,13 @@ function App() {
                 path="/change-password"
                 element={<unauthorised.ChangePasswordPage />}
               />
+              <Route
+                path="/auth/google/callback"
+                element={<unauthorised.GoogleCallback />}
+              />
             </>
           )}
-        </Routes> 
+        </Routes>
       </Router>
     </AppInfoContext.Provider>
   );
