@@ -70,7 +70,7 @@ export const CustomazationTournamentPage = () => {
       localStorage.removeItem("gameType"); // Clear game type
       setUserAvatar(null);
       setGuests([]);
-      setGuestCount(2); // Reset to default 2 guests
+      setGuestCount(3); // Reset to default 2 guests
       setGameType("boring"); // Reset to default game type
     }
 
@@ -427,7 +427,8 @@ export const CustomazationTournamentPage = () => {
       {/* Start Game Buttons */}
       <div className="flex flex-col gap-6">
         <button
-          onClick={() => startGameHandler("/start-tournament-game")}
+          //onClick={() => startGameHandler("/start-tournament-game")}
+		  onClick={() => startGameHandler("/game/play?mode=tournament")}
           className="bg-green-600 hover:bg-green-700 px-8 py-4 rounded-xl text-2xl font-bold shadow-xl"
         >
           {t("START_PING_PONG")}

@@ -1,371 +1,389 @@
-// gameLogic.tsx
+// gameLogicTournamnet.ts
+
 "use client";
 
 import { RefObject } from "react";
 import { loadGameAssets } from "./loadAssets";
-import { drawOpening, drawEnding, drawFinalScreen } from "./startAndEnding";
+import { drawOpening, drawEnding, drawFinalScreen, drawTournamentScreen } from "./startAndEnding";
 import {
-  forgottenItemsInit,
-  drawForgotten,
-  clearForgottenItems,
-  activeItems,
+	forgottenItemsInit,
+	drawForgotten,
+	clearForgottenItems,
+	activeItems,
 } from "./forgottenItems";
 
-//import { gameOptions } from './gameOptions'
+import { saveGameResult } from "./saveGameResult";
 
-enum GamePhase {
-  Opening,
-  Playing,
-  Ending,
-  Final,
+//export let triggerFinalScreen: null | ((name: string, avatarUrl: string) => void) = null;
+
+
+// Game phases
+enum GamePhase
+{
+	Opening,
+	TourScreen,
+	Playing,
+	Ending,
+	Final,
 }
 
-const gameState = {
-  phase: GamePhase.Opening,
-  round: 1,
-  pl1Name: "PL1", //sessionData?.player1?.name || "PL1",
-  pl2Name: "PL2", //sessionData?.player2?.name || "PL2",
-  winnerName: "winnerIsnotLoser",
-  winnerAvatar: new Image(),
+// Global game state
+const gameState =
+{
+	phase: GamePhase.Opening,
+	round: 1,
+	pl1Name: '',
+	pl2Name: '',
+	winnerName: '',
+	winnerAvatar: new Image(),
+	tournamentBracket: {
+		round: 1,
+		pairs: [] as [string, string][],
+	},
 };
 
-/*
-//this needs to be added on the previous page
-export const gameOptions = {
-	enableMadness: true,
-}
-*/
+// For smooth multiple keys
+const keysPressed: { [key: string]: boolean } = {}
+
+// Game options
+export const gameOptions =
+{
+	enableMadness: false,
+};
 
 export function gameLogicTournament(
-  canvasRef: RefObject<HTMLCanvasElement>,
-  mode?: string,
-  sessionData?: any
-) {
-  const canvas = canvasRef.current;
-  if (!canvas) return;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return;
+	canvasRef: RefObject<HTMLCanvasElement>,
+	sessionData: any,
+	onMatchEnd: (WinnerUsername: string) => void
+)
+{
+	gameState.phase = GamePhase.TourScreen;
 
-  //music
-  let animationId: number;
-  let music: HTMLAudioElement;
-  let keydownHandler: (e: KeyboardEvent) => void;
-  let stopped = false;
+	if (sessionData?.gameType === "madness") gameOptions.enableMadness = true;
+	else gameOptions.enableMadness = false;
 
-  loadGameAssets().then(({ table, paddle1, paddle2, music: loadedMusic }) => {
-    if (stopped) return;
+	const canvas = canvasRef.current;
+	if (!canvas) 
+		return;
+	const ctx = canvas.getContext("2d");
+	if (!ctx) 
+		return;
 
-    const player1Avatar = new Image();
-    player1Avatar.src = sessionData?.userAvatar?.image || "/fallback1.png";
+	if (sessionData)
+	{
+		gameState.pl1Name = sessionData.user || "Player1";
+		gameState.pl2Name = sessionData.guest || "Player2";
 
-    const player2Avatar = new Image();
-    player2Avatar.src = sessionData?.guestAvatar?.image || "/fallback2.png";
+		if (sessionData.tournamentBracket)
+			gameState.tournamentBracket = sessionData.tournamentBracket;
+	}
 
-    music = loadedMusic;
+	// Music
+	let animationId: number;
+	let music: HTMLAudioElement;
+	let keydownHandler: (e: KeyboardEvent) => void;
+	let stopped = false;
 
-    let paddleProgress = 0.5;
-    let paddle2Progress = 0.5;
-    const speedUp = 1.05;
+	loadGameAssets(
+		sessionData?.userColor,
+		sessionData?.guestColor,
+		sessionData?.gameType
+	).then(({ table, paddle1, paddle2, music: loadedMusic }) =>
+	{
+		if (stopped) return;
 
-    let p1Score = 0;
-    let p2Score = 0;
-    let p1Wins = 0;
-    let p2Wins = 0;
+		const player1Avatar = new Image();
+		player1Avatar.src = sessionData?.userAvatar?.image || "/fallback1.png";
+		const player2Avatar = new Image();
+		player2Avatar.src = sessionData?.guestAvatar?.image || "/fallback2.png";
 
-    // the values to 3D the paddles
-    const minX = -80;
-    const maxX = 100;
-    const minY = 500;
-    const maxY = 0;
-    const minScale = 1.5;
-    const maxScale = 0.5;
+		music = loadedMusic;
 
-    const ball = {
-      x: canvas.width / 2,
-      y: canvas.height / 2,
-      radius: 10,
-      dx: 20 * (Math.random() > 0.5 ? 1 : -1),
-      dy: 15 * (Math.random() > 0.5 ? 1 : -1),
-    };
+		let paddleProgress = 0.5;
+		let paddle2Progress = 0.5;
+		const speedUp = 1.07;
 
-    function drawBackground() {
-      ctx.fillStyle = "#87CEEB";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-    }
+		let p1Score = 0;
+		let p2Score = 0;
+		let p1Wins = 0;
+		let p2Wins = 0;
 
-    function drawPaddles() {
-      //count interpolation paddle1
-      const x = minX + (maxX - minX) * paddleProgress;
-      const y = minY + (maxY - minY) * paddleProgress;
-      const scale = minScale + (maxScale - minScale) * paddleProgress;
-      const paddleWidth = 80 * scale;
-      const paddleHeight = 120 * scale;
+		// 3D paddle values
+		const minX = -80;
+		const maxX = 100;
+		const minY = 500;
+		const maxY = 0;
+		const minScale = 1.5;
+		const maxScale = 0.5;
 
-      //paddle2
-      const scale2 = minScale + (maxScale - minScale) * paddle2Progress;
-      const x2 =
-        canvas.width - (minX + (maxX - minX) * paddle2Progress + 80 * scale2);
-      const y2 = minY + (maxY - minY) * paddle2Progress;
-      const paddleWidth2 = 80 * scale2;
-      const paddleHeight2 = 120 * scale2;
+		const ball =
+		{
+			x: canvas.width / 2,
+			y: canvas.height / 2,
+			radius: 10,
+			dx: 2 * (Math.random() > 0.5 ? 1 : -1),
+			dy: 1.5 * (Math.random() > 0.5 ? 1 : -1),
+		};
 
-      ctx.drawImage(paddle1, x, y, paddleWidth, paddleHeight);
-      ctx.drawImage(paddle2, x2, y2, paddleWidth2, paddleHeight2);
+		//triggerFinalScreen = (winnerName: string, avatarUrl: string) => 
+		//{
+		//	console.log("🎉 Final screen triggered with:", winnerName);
+		//	gameState.phase = GamePhase.Final;
+		//	gameState.winnerName = winnerName;
+		//	gameState.winnerAvatar = new Image();
+		//	gameState.winnerAvatar.src = avatarUrl;
 
-      return {
-        x,
-        y,
-        paddleWidth,
-        paddleHeight,
-        x2,
-        y2,
-        paddleWidth2,
-        paddleHeight2,
-      };
-    }
+		//	cancelAnimationFrame(animationId);
+		//	update();
+		//};
+		
 
-    function drawBall() {
-      //ball
-      const ballProg = 1 - (ball.y - maxY) / (minY - maxY);
-      const ballScale = minScale + (maxScale - minScale) * ballProg;
-      const ballRadius = ball.radius * ballScale;
+		function drawBackground()
+		{
+			ctx.fillStyle = "#87CEEB";
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
+		}
 
-      ctx.beginPath();
-      ctx.arc(ball.x, ball.y, ballRadius, 0, Math.PI * 2);
-      ctx.fillStyle = "white";
-      ctx.fill();
+		function drawPaddles()
+		{
+			// Interpolation for paddle1
+			const x = minX + (maxX - minX) * paddleProgress;
+			const y = minY + (maxY - minY) * paddleProgress;
+			const scale = minScale + (maxScale - minScale) * paddleProgress;
+			const paddleWidth = 80 * scale;
+			const paddleHeight = 120 * scale;
 
-      return ballRadius;
-    }
+			// paddle2
+			const scale2 = minScale + (maxScale - minScale) * paddle2Progress;
+			const x2 = canvas.width - (minX + (maxX - minX) * paddle2Progress + 80 * scale2);
+			const y2 = minY + (maxY - minY) * paddle2Progress;
+			const paddleWidth2 = 80 * scale2;
+			const paddleHeight2 = 120 * scale2;
 
-    /* 
-   			   Collision
-   			 */
-    function checkPaddleCollision(
-      x: number,
-      y: number,
-      w: number,
-      h: number,
-      isLeft: boolean
-    ) {
-      if (
-        ball.x + ball.radius >= x &&
-        ball.x - ball.radius <= x + w &&
-        ball.y >= y &&
-        ball.y <= y + h
-      ) {
-        ball.dx *= -1;
-        ball.dx *= speedUp;
-        ball.dy *= speedUp;
-        ball.x += isLeft ? 10 : -10;
-      }
-    }
+			ctx.drawImage(paddle1, x, y, paddleWidth, paddleHeight);
+			ctx.drawImage(paddle2, x2, y2, paddleWidth2, paddleHeight2);
 
-    /*
-	      Collision for ForgottenItems
-	    */
-    function checkItemCollision() {
-      for (const item of activeItems) {
-        const itemRadius = (item.image.width * item.scale) / 2;
-        const dx = ball.x - item.x;
-        const dy = ball.y - item.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
+			return { x, y, paddleWidth, paddleHeight, x2, y2, paddleWidth2, paddleHeight2 };
+		}
 
-        // Collision condition (tweak radius sum for tighter/looser collision)
-        if (dist < ball.radius + itemRadius) {
-          // Reflect the ball based on which axis was stronger
-          if (Math.abs(dx) > Math.abs(dy)) {
-            ball.dx *= -1;
-          } else {
-            ball.dy *= -1;
-          }
-          const overlap = ball.radius + itemRadius - dist;
-          const nx = dx / dist;
-          const ny = dy / dist;
-          ball.x += nx * overlap;
-          ball.y += ny * overlap;
-          ball.dx *= speedUp;
-          ball.dy *= speedUp;
-        }
-      }
-    }
+		function drawBall()
+		{
+			const ballProg = 1 - (ball.y - maxY) / (minY - maxY);
+			const ballScale = minScale + (maxScale - minScale) * ballProg;
+			const ballRadius = ball.radius * ballScale;
 
-    /*
-	      Death check
-	    */
-    function checkOutOfBounds() {
-      if (ball.x < -ball.radius || ball.x > canvas.width + ball.radius) {
-        if (ball.x < -ball.radius) p2Score++;
-        else p1Score++;
+			ctx.beginPath();
+			ctx.arc(ball.x, ball.y, ballRadius, 0, Math.PI * 2);
+			ctx.fillStyle = "white";
+			ctx.fill();
 
-        if (p1Score === 2 || p2Score === 2) {
-          gameState.phase = GamePhase.Ending;
-        }
+			return ballRadius;
+		}
 
-        ball.x = canvas.width / 2;
-        ball.y = canvas.height / 2;
-        //BALL SPEED!!!!
-        ball.dx = 2 * (Math.random() > 0.5 ? 1 : -1);
-        ball.dy = 1.5 * (Math.random() > 0.5 ? 1 : -1);
-      }
-    }
+		function checkPaddleCollision(x: number, y: number, w: number, h: number, isLeft: boolean)
+		{
+			const hitTop = y + h * 0.2;
+			const hitBottom = y + h * 0.8;
+			const paddleCenterY = y + h / 2;
 
-    // draw score
-    function drawScore() {
-      ctx.fillStyle = "white";
-      ctx.font = "40px monospace";
-      ctx.textAlign = "center";
-      ctx.fillText(`${p1Score}`, canvas.width / 2 - 80, 300);
-      ctx.fillText(`${p2Score}`, canvas.width / 2 + 60, 300);
-    }
+			const isBallApproaching =
+				(isLeft && ball.dx < 0 && ball.x >= x) ||
+				(!isLeft && ball.dx > 0 && ball.x <= x + w);
 
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+			if (
+				isBallApproaching &&
+				ball.x + ball.radius >= x &&
+				ball.x - ball.radius <= x + w &&
+				ball.y >= hitTop &&
+				ball.y <= hitBottom &&
+				ball.y < paddleCenterY
+			)
+			{
+				ball.dx *= -1;
+				ball.dx *= speedUp;
+				ball.dy *= speedUp;
+				ball.x += isLeft ? 10 : -10;
+			}
+		}
 
-      switch (gameState.phase) {
-        case GamePhase.Opening:
-          drawOpening(ctx, {
-            round: gameState.round,
-            pl1Name: gameState.pl1Name,
-            pl2Name: gameState.pl2Name,
-            pl1Avatar: paddle1,
-            pl2Avatar: paddle2,
-          });
-          return;
+		function checkItemCollision()
+		{
+			if (!gameOptions.enableMadness) return;
+			for (const item of activeItems)
+			{
+				const itemRadius = (item.image.width * item.scale) / 2;
+				const dx = ball.x - item.x;
+				const dy = ball.y - item.y;
+				const dist = Math.sqrt(dx * dx + dy * dy);
 
-        case GamePhase.Ending:
-          drawEnding(ctx, {
-            round: gameState.round,
-            pl1Name: gameState.pl1Name,
-            pl2Name: gameState.pl2Name,
-            pl1Avatar: paddle1,
-            pl2Avatar: paddle2,
-            winnerName:
-              p1Score > p2Score ? gameState.pl1Name : gameState.pl2Name,
-          });
-          return;
+				if (dist < ball.radius + itemRadius)
+				{
+					if (Math.abs(dx) > Math.abs(dy)) ball.dx *= -1;
+					else ball.dy *= -1;
 
-        case GamePhase.Final:
-          drawFinalScreen(ctx, {
-            winnerName: gameState.winnerName,
-            winnerAvatar: gameState.winnerAvatar,
-          });
+					const overlap = ball.radius + itemRadius - dist;
+					const nx = dx / dist;
+					const ny = dy / dist;
+					ball.x += nx * overlap;
+					ball.y += ny * overlap;
+					ball.dx *= speedUp;
+					ball.dy *= speedUp;
+				}
+			}
+		}
 
-          return;
-        case GamePhase.Playing:
-          break;
-      }
+		function checkOutOfBounds()
+		{
+			if (ball.x < -ball.radius || ball.x > canvas.width + ball.radius)
+			{
+				if (ball.x < -ball.radius) p2Score++;
+				else p1Score++;
 
-      drawBackground();
-      const {
-        x,
-        y,
-        paddleWidth,
-        paddleHeight,
-        x2,
-        y2,
-        paddleWidth2,
-        paddleHeight2,
-      } = drawPaddles();
-      // draw the table after the paddles to make paddles go under it
-      ctx.drawImage(table, 0, 0, canvas.width, canvas.height);
-      //if (gameOptions.enableMadness) {
-      drawForgotten(ctx);
-      //}
-      drawBall();
+				if (p1Score === 2 || p2Score === 2)
+				{
+					gameState.phase = GamePhase.Ending;
+				}
 
-      //move the BALL!!
-      ball.x += ball.dx;
-      ball.y += ball.dy;
+				ball.x = canvas.width / 2;
+				ball.y = canvas.height / 2;
+				ball.dx = 2 * (Math.random() > 0.5 ? 1 : -1);
+				ball.dy = 1.5 * (Math.random() > 0.5 ? 1 : -1);
+			}
+		}
 
-      //bounce
-      if (ball.y <= 0 || ball.y >= canvas.height) ball.dy *= -1;
+		function drawScore()
+		{
+			ctx.fillStyle = "white";
+			ctx.font = "40px monospace";
+			ctx.textAlign = "center";
+			ctx.fillText(`${p1Score}`, canvas.width / 2 - 80, 300);
+			ctx.fillText(`${p2Score}`, canvas.width / 2 + 60, 300);
+		}
 
-      checkPaddleCollision(x, y, paddleWidth, paddleHeight, true);
-      checkPaddleCollision(x2, y2, paddleWidth2, paddleHeight2, false);
-      checkItemCollision();
-      checkOutOfBounds();
-      drawScore();
-    };
+		const draw = () =>
+		{
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const update = () => {
-      draw();
-      animationId = requestAnimationFrame(update);
-    };
+			switch (gameState.phase)
+			{
+				case GamePhase.Opening:
+					drawOpening(ctx, { round: gameState.round, pl1Name: gameState.pl1Name, pl2Name: gameState.pl2Name, pl1Avatar: paddle1, pl2Avatar: paddle2 });
+					return;
+				case GamePhase.Ending:
+					drawEnding(ctx, { round: gameState.round, pl1Name: gameState.pl1Name, pl2Name: gameState.pl2Name, pl1Avatar: paddle1, pl2Avatar: paddle2, winnerName: p1Score > p2Score ? gameState.pl1Name : gameState.pl2Name });
+					return;
+				case GamePhase.TourScreen:
+					drawTournamentScreen(ctx, gameState.tournamentBracket)
+					return;
+				case GamePhase.Final:
+					drawFinalScreen(ctx, { winnerName: gameState.winnerName, winnerAvatar: gameState.winnerAvatar });
+					return;
+				case GamePhase.Playing:
+					break;
+			}
 
-    // THE KEYS ARE HERE!!
-    keydownHandler = (e: KeyboardEvent) => {
-      if (music && music.paused) {
-        music.loop = true;
-        music.volume = 0.6;
-        music.play().catch((e) => console.log("Audio failed to play:", e));
-      }
+			drawBackground();
 
-      if (e.code === "Space") {
-        if (gameState.phase === GamePhase.Opening)
-          gameState.phase = GamePhase.Playing;
-        else if (gameState.phase === GamePhase.Ending) {
-          if (p1Score > p2Score) p1Wins++;
-          else if (p2Score > p1Score) p2Wins++;
+			// New KEYS!
+			const paSpeed = 0.008
 
-          gameState.round++;
+			if (keysPressed["d"]) 
+				paddleProgress = Math.min(1, paddleProgress + paSpeed);
+			if (keysPressed["a"]) 
+				paddleProgress = Math.max(0, paddleProgress - paSpeed);
+			if (keysPressed["ArrowRight"]) 
+				paddle2Progress = Math.max(0, paddle2Progress - paSpeed);
+			if (keysPressed["ArrowLeft"]) 
+				paddle2Progress = Math.min(1, paddle2Progress + paSpeed);
 
-          if (gameState.round > 1) {
-            // && gameOptions.enableMadness) {
-            forgottenItemsInit(ctx, canvas);
-          }
+			const { x, y, paddleWidth, paddleHeight, x2, y2, paddleWidth2, paddleHeight2 } = drawPaddles();
 
-          if (gameState.round > 3) {
-            gameState.phase = GamePhase.Final;
-            gameState.winnerName =
-              p1Wins > p2Wins ? gameState.pl1Name : gameState.pl2Name;
-            gameState.winnerAvatar =
-              p1Wins > p2Wins ? player1Avatar : player2Avatar;
-          } else {
-            gameState.phase = GamePhase.Opening;
-          }
+			ctx.drawImage(table, 0, 0, canvas.width, canvas.height);
+			if (gameOptions.enableMadness) 
+				drawForgotten(ctx);
+			drawBall();
 
-          p1Score = 0;
-          p2Score = 0;
-        } else if (gameState.phase === GamePhase.Final) {
-          gameState.phase = GamePhase.Opening;
-          gameState.round = 1;
-          p1Score = 0;
-          p2Score = 0;
-          p1Wins = 0;
-          p2Wins = 0;
-          clearForgottenItems();
-        }
-        return;
-      }
+			ball.x += ball.dx;
+			ball.y += ball.dy;
 
-      if (gameState.phase !== GamePhase.Playing) return;
+			if (ball.y <= 0 || ball.y >= canvas.height) ball.dy *= -1;
 
-      if (e.key === "d") paddleProgress = Math.min(1, paddleProgress + 0.02);
-      if (e.key === "a") paddleProgress = Math.max(0, paddleProgress - 0.02);
-      if (e.key === "ArrowRight")
-        paddle2Progress = Math.max(0, paddle2Progress - 0.02);
-      if (e.key === "ArrowLeft")
-        paddle2Progress = Math.min(1, paddle2Progress + 0.02);
-    };
+			checkPaddleCollision(x, y, paddleWidth, paddleHeight, true);
+			checkPaddleCollision(x2, y2, paddleWidth2, paddleHeight2, false);
+			checkItemCollision();
+			checkOutOfBounds();
+			drawScore();
+		}
 
-    document.addEventListener("keydown", keydownHandler);
-    update();
-  });
+		const update = () =>
+		{
+			draw();
+			animationId = requestAnimationFrame(update);
+		}
 
-  //CLEANING!
-  return () => {
-    stopped = true;
-    console.log("🧹 Cleaning up game loop and music ");
-    if (animationId) cancelAnimationFrame(animationId);
-    if (music) {
-      music.pause();
-      music.currentTime = 0;
-    }
-    if (keydownHandler) document.removeEventListener("keydown", keydownHandler);
-    //if (gameState.phase === GamePhase.Final)
-    //{
-    clearForgottenItems();
-    //}
-  };
+		keydownHandler = (e: KeyboardEvent) =>
+		{
+			keysPressed[e.key] = true;
+			if (music && music.paused)
+			{
+				music.loop = true;
+				music.volume = 0.6;
+				music.play().catch((e) => console.log("Audio failed to play:", e));
+			}
+
+			if (e.code === "Space")
+			{
+				if (gameState.phase === GamePhase.TourScreen)
+					gameState.phase = GamePhase.Opening
+				else if (gameState.phase === GamePhase.Opening) 
+					gameState.phase = GamePhase.Playing;
+				else if (gameState.phase === GamePhase.Ending)
+				{
+					const winnerName = p1Score > p2Score ? gameState.pl1Name: gameState.pl2Name;
+
+					stopped = true;
+					//clean 
+					if (keydownHandler)
+						document.removeEventListener("keydown", keydownHandler)
+					//stop animations
+					if (animationId)
+						cancelAnimationFrame(animationId);
+
+					//call PongGame with the winner
+					onMatchEnd(winnerName)
+					return 
+				}
+				else if (gameState.phase === GamePhase.Final)
+				{
+					//saveGameResult({ user: sessionData.user, userAvatar: sessionData.userAvatar.name, guest: sessionData.guest, guestAvatar: sessionData.guestAvatar.name, userWins: p1Wins, guestWins: p2Wins });
+					//gameState.phase = GamePhase.Opening;
+					//gameState.round = 1;
+					//p1Score = 0;
+					//p2Score = 0;
+					//p1Wins = 0;
+					//p2Wins = 0;
+					//clearForgottenItems();
+					window.location.href = "/menu";
+				}
+			}
+		}
+
+		document.addEventListener("keydown", keydownHandler);
+		document.addEventListener("keyup", (e) => { keysPressed[e.key] = false; });
+		update();
+	});
+
+	return () =>
+	{
+		stopped = true;
+		console.log("🧹 Cleaning up game loop and music");
+		if (animationId) cancelAnimationFrame(animationId);
+		if (music)
+		{
+			music.pause();
+			music.currentTime = 0;
+		}
+		if (keydownHandler) document.removeEventListener("keydown", keydownHandler);
+		clearForgottenItems();
+	}
 }
