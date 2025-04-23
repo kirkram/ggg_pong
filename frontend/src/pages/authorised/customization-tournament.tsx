@@ -21,7 +21,7 @@ export const CustomazationTournamentPage = () => {
 
   const [guestCount, setGuestCount] = useState<number>(() => {
     const stored = localStorage.getItem("guestCount");
-    return stored ? parseInt(stored) : 2; // Default to 2 guests
+    return stored ? parseInt(stored) : 3; // Default to 3 guests
   });
 
   const [guests, setGuests] = useState<Guest[]>(() => {
@@ -277,7 +277,7 @@ export const CustomazationTournamentPage = () => {
           onChange={(e) => setGuestCount(Number(e.target.value))}
           className="text-black p-2 rounded"
         >
-          {[2, 3, 4, 5].map((n) => (
+          {[3, 7].map((n) => (
             <option key={n} value={n}>
               {n}
             </option>
