@@ -4,19 +4,24 @@
 
 import { RefObject } from "react";
 import { loadGameAssets } from "./loadAssets";
-import { drawOpening, drawEnding, drawFinalScreen } from "./startAndEnding";
+import { drawOpening, drawEnding, drawFinalScreen, drawTournamentScreen } from "./startAndEnding";
 import {
 	forgottenItemsInit,
 	drawForgotten,
 	clearForgottenItems,
 	activeItems,
 } from "./forgottenItems";
+
 import { saveGameResult } from "./saveGameResult";
+
+//export let triggerFinalScreen: null | ((name: string, avatarUrl: string) => void) = null;
+
 
 // Game phases
 enum GamePhase
 {
 	Opening,
+	TourScreen,
 	Playing,
 	Ending,
 	Final,
@@ -31,6 +36,10 @@ const gameState =
 	pl2Name: '',
 	winnerName: '',
 	winnerAvatar: new Image(),
+	tournamentBracket: {
+		round: 1,
+		pairs: [] as [string, string][],
+	},
 };
 
 // For smooth multiple keys
@@ -48,7 +57,7 @@ export function gameLogicTournament(
 	onMatchEnd: (WinnerUsername: string) => void
 )
 {
-	gameState.phase = GamePhase.Opening
+	gameState.phase = GamePhase.TourScreen;
 
 	if (sessionData?.gameType === "madness") gameOptions.enableMadness = true;
 	else gameOptions.enableMadness = false;
@@ -64,6 +73,9 @@ export function gameLogicTournament(
 	{
 		gameState.pl1Name = sessionData.user || "Player1";
 		gameState.pl2Name = sessionData.guest || "Player2";
+
+		if (sessionData.tournamentBracket)
+			gameState.tournamentBracket = sessionData.tournamentBracket;
 	}
 
 	// Music
@@ -112,6 +124,19 @@ export function gameLogicTournament(
 			dx: 2 * (Math.random() > 0.5 ? 1 : -1),
 			dy: 1.5 * (Math.random() > 0.5 ? 1 : -1),
 		};
+
+		//triggerFinalScreen = (winnerName: string, avatarUrl: string) => 
+		//{
+		//	console.log("🎉 Final screen triggered with:", winnerName);
+		//	gameState.phase = GamePhase.Final;
+		//	gameState.winnerName = winnerName;
+		//	gameState.winnerAvatar = new Image();
+		//	gameState.winnerAvatar.src = avatarUrl;
+
+		//	cancelAnimationFrame(animationId);
+		//	update();
+		//};
+		
 
 		function drawBackground()
 		{
@@ -247,6 +272,9 @@ export function gameLogicTournament(
 				case GamePhase.Ending:
 					drawEnding(ctx, { round: gameState.round, pl1Name: gameState.pl1Name, pl2Name: gameState.pl2Name, pl1Avatar: paddle1, pl2Avatar: paddle2, winnerName: p1Score > p2Score ? gameState.pl1Name : gameState.pl2Name });
 					return;
+				case GamePhase.TourScreen:
+					drawTournamentScreen(ctx, gameState.tournamentBracket)
+					return;
 				case GamePhase.Final:
 					drawFinalScreen(ctx, { winnerName: gameState.winnerName, winnerAvatar: gameState.winnerAvatar });
 					return;
@@ -305,7 +333,9 @@ export function gameLogicTournament(
 
 			if (e.code === "Space")
 			{
-				if (gameState.phase === GamePhase.Opening) 
+				if (gameState.phase === GamePhase.TourScreen)
+					gameState.phase = GamePhase.Opening
+				else if (gameState.phase === GamePhase.Opening) 
 					gameState.phase = GamePhase.Playing;
 				else if (gameState.phase === GamePhase.Ending)
 				{

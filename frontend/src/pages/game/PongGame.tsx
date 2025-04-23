@@ -12,6 +12,8 @@ import {
 	Matchup,
 } from "./tournamentManager";
 
+import { drawFinalScreen } from "./startAndEnding";
+
 export default function PongGame()
 {
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -25,14 +27,50 @@ export default function PongGame()
 
 	const [currentMatch, setCurrentMatch] = useState<Matchup | null>(null);
 	const [matchQue, setMatchQue] = useState<Matchup[]>([]);
+	const [matchups, setMatchups] = useState<Matchup[]>([]);
 
 	// FOR TOURNAMENT
 	const [playerScores, setPlayerScores] = useState<Record<string, number>>({});
 	const [currentRound, setCurrentRound] = useState<number>(1);
+	const [roundWinners, setRoundWinners] = useState<PlayerData[]>([]);
 
 	// player pictures
 	const leftAvatarImage = mode === "tournament" ? currentMatch?.player1.avatar : sessionData?.userAvatar?.image
 	const rightAvatarImage = mode === "tournament" ? currentMatch?.player2?.avatar : sessionData?.guestAvatar?.image
+
+	function showFinalScreen(winnerName: string, avatarUrl: string)
+	{
+		const canvas = canvasRef.current;
+		if (!canvas) return;
+		const ctx = canvas.getContext("2d");
+		if (!ctx) return;
+
+		const finalAvatar = new Image();
+		finalAvatar.src = avatarUrl;
+
+		finalAvatar.onload = () =>
+		{
+			const draw = () =>
+			{
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				drawFinalScreen(ctx, { winnerName, winnerAvatar: finalAvatar });
+			};
+
+			draw();
+
+			const spaceHandler = (e: KeyboardEvent) =>
+			{
+				if (e.code === "Space")
+				{
+					document.removeEventListener("keydown", spaceHandler);
+					window.location.href = "/menu";
+				}
+			};
+
+			document.addEventListener("keydown", spaceHandler);
+		};
+	}
+
 
 	useEffect(() => 
 	{
@@ -59,9 +97,10 @@ export default function PongGame()
 				})),
 			];
 
-			const matchups = createMatchups(players);
-			setCurrentMatch(matchups[0]);
-			setMatchQue(matchups.slice(1));
+			const allMatchups = createMatchups(players);
+			setMatchups(allMatchups);
+			setCurrentMatch(allMatchups[0]);
+			setMatchQue(allMatchups.slice(1));
 
 			console.log("Mode is:", mode);
 			console.log("Session Data:", sessionData);
@@ -81,6 +120,13 @@ export default function PongGame()
 				? { image: currentMatch.player2.avatar }
 				: null,
 			gameType: sessionData?.gameType,
+			tournamentBracket: {
+				round: currentRound,
+				pairs: matchups.map((m) => [
+					m.player1.username,
+					m.player2?.username || "POP",
+				]) as [string,string][],
+			}
 		};
 
 		const onMatchEnd = (winnerUsername: string) =>
@@ -92,6 +138,15 @@ export default function PongGame()
 				const updated = { ...prevScores };
 				assignPoints(updated, winnerUsername, currentRound);
 
+				const winnerData = [currentMatch.player1, currentMatch.player2].find(
+						(p) => p?.username === winnerUsername
+				)
+				
+				const updateWinners = winnerData ? [...roundWinners, winnerData] : [...roundWinners]
+
+				setRoundWinners(updateWinners)
+
+
 				if (matchQue.length > 0)
 				{
 					setCurrentMatch(matchQue[0]);
@@ -99,13 +154,31 @@ export default function PongGame()
 				}
 				else
 				{
-					const finalWinner = Object.keys(updated).reduce((a, b) =>
-						updated[a] > updated[b] ? a : b
-					);
-					console.log("Tournament winner is:", finalWinner);
-				//	alert(`${finalWinner} wins the Tournament!`); // this creates a popup screen
-					// return to /menu after game
-					window.location.href = "/menu";
+					if (updateWinners.length > 1)
+					{
+						const newMatchups = createMatchups(updateWinners)
+						setCurrentRound((prev) => prev + 1)
+						setMatchups(newMatchups)
+						setCurrentMatch(newMatchups[0])
+						setMatchQue(newMatchups.slice(1))
+						setRoundWinners([])
+					}
+					else
+					{
+					//	const finalWinner = Object.keys(updated).reduce((a, b) =>
+					//	updated[a] > updated[b] ? a : b
+					//);
+						const finalWinner = winnerUsername
+						console.log("Tournament winner is:", finalWinner);
+
+						setMatchups([])
+						setMatchQue([])
+						setCurrentMatch(null);
+
+						if (winnerData) {
+							showFinalScreen(finalWinner, winnerData.avatar)
+						}
+					}
 				}
 
 				return updated;

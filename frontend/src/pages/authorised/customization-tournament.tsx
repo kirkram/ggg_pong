@@ -70,7 +70,7 @@ export const CustomazationTournamentPage = () => {
       localStorage.removeItem("gameType"); // Clear game type
       setUserAvatar(null);
       setGuests([]);
-      setGuestCount(2); // Reset to default 2 guests
+      setGuestCount(3); // Reset to default 2 guests
       setGameType("boring"); // Reset to default game type
     }
 
