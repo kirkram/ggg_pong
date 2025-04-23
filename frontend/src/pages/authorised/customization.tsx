@@ -74,6 +74,9 @@ export const CustomazationPage = () => {
       localStorage.removeItem("guestName");
       localStorage.removeItem("userColor");
       localStorage.removeItem("guestColor");
+      localStorage.removeItem("points1");
+      localStorage.removeItem("points2");
+      localStorage.removeItem("points3");
       setUserAvatar(null);
       setGuestAvatar(null);
       setGuestName("");
@@ -365,7 +368,7 @@ export const CustomazationPage = () => {
         </button>
 
         <button
-          onClick={() => startGameHandler("/tic-tac-toe-duel")}
+          onClick={() => startGameHandler("/duel-setup")}
           className="bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-xl text-2xl font-bold shadow-xl"
         >
           {t("START_TIC_TAC_TOE")}

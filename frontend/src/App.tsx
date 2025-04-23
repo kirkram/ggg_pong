@@ -62,8 +62,16 @@ function App() {
                 element={<general.UserProfilePage />}
               />
               <Route
-                path="/tic-tac-toe-duel"
+                path="/tic-tac-toe-duel/:gameNumber"
                 element={<tictactoe.TicTacToeDuel />}
+              />
+              <Route
+                path="/duel-setup"
+                element={<tictactoe.DuelSetup />}
+              />
+              <Route
+                path="show_a_winner"
+                element={<tictactoe.ShowAWinner />}
               />
               // "/game/play?mode=duel"
               <Route path="/game/play" element={<PongGame />} />
