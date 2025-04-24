@@ -4,6 +4,9 @@ import React, { useRef, useEffect, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { gameLogic } from "./gameLogic";
 import { gameLogicTournament } from "./gameLogicTournament";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+
 
 import {
 	createMatchups,
@@ -16,7 +19,18 @@ import { drawFinalScreen } from "./startAndEnding";
 
 export default function PongGame()
 {
+	const { t } = useTranslation();
+	const navigate = useNavigate();
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+	// NOT HERE!
+	//<button
+	//	onClick={() => navigate("/customization-tournament")}
+	//	className="absolute top-6 left-6 bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg font-semibold shadow-md"
+	//>
+	//🔙 {t("BACK_TO_CUSTOM")}
+	//</button>
+
 
 	// import stuff
 	const [searchParams] = useSearchParams();
@@ -207,6 +221,12 @@ export default function PongGame()
 					backgroundColor: "white",
 				}}
 			>
+				<button
+        			onClick={() => navigate("/customization-tournament")}
+        			className="absolute top-6 left-6 bg-blue-500 hover:bg-blue-600 px-2 py-1 text-sm rounded-md font-medium shadow"
+      			>
+        		🔙 {t("BACK_TO_CUSTOM")}
+      			</button>
 				{leftAvatarImage && (
 					<img
 						src={leftAvatarImage}
