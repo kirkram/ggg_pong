@@ -129,6 +129,7 @@ export default function PongGame()
 					m.player2?.username || "POP",
 				]) as [string,string][],
 			},
+			round: currentRound,
 			userColor: currentMatch.player1.color,
 			guestColor: currentMatch.player2?.color,
 		};

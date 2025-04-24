@@ -77,6 +77,9 @@ export function gameLogicTournament(
 
 		if (sessionData.tournamentBracket)
 			gameState.tournamentBracket = sessionData.tournamentBracket;
+
+			if (sessionData.round)
+				gameState.round = sessionData.round
 	}
 
 	// Music
@@ -324,7 +327,17 @@ export function gameLogicTournament(
 				if (gameState.phase === GamePhase.TourScreen)
 					gameState.phase = GamePhase.Opening
 				else if (gameState.phase === GamePhase.Opening) 
+				{
 					gameState.phase = GamePhase.Playing;
+					if (gameOptions.enableMadness && gameState.round > 1)
+					{
+						for (let i = 0; i < 4; i++)
+						{
+							forgottenItemsInit(ctx, canvas)
+							forgottenItemsInit(ctx,canvas)
+						}
+					}
+				}
 				else if (gameState.phase === GamePhase.Ending)
 				{
 					const winnerName = p1Score > p2Score ? gameState.pl1Name: gameState.pl2Name;
