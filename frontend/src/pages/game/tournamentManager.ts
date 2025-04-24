@@ -1,9 +1,10 @@
 
 export interface PlayerData 
 {
-	username: string;
-	avatar: string;
-	schore: number;
+	username: string
+	avatar: string
+	schore: number
+	color?: string
 }
 
 export interface Matchup

@@ -13,6 +13,7 @@ import {
 } from "./forgottenItems";
 
 import { saveGameResult } from "./saveGameResult";
+import { match } from "assert";
 
 //export let triggerFinalScreen: null | ((name: string, avatarUrl: string) => void) = null;
 
@@ -76,6 +77,9 @@ export function gameLogicTournament(
 
 		if (sessionData.tournamentBracket)
 			gameState.tournamentBracket = sessionData.tournamentBracket;
+
+			if (sessionData.round)
+				gameState.round = sessionData.round
 	}
 
 	// Music
@@ -124,19 +128,6 @@ export function gameLogicTournament(
 			dx: 2 * (Math.random() > 0.5 ? 1 : -1),
 			dy: 1.5 * (Math.random() > 0.5 ? 1 : -1),
 		};
-
-		//triggerFinalScreen = (winnerName: string, avatarUrl: string) => 
-		//{
-		//	console.log("🎉 Final screen triggered with:", winnerName);
-		//	gameState.phase = GamePhase.Final;
-		//	gameState.winnerName = winnerName;
-		//	gameState.winnerAvatar = new Image();
-		//	gameState.winnerAvatar.src = avatarUrl;
-
-		//	cancelAnimationFrame(animationId);
-		//	update();
-		//};
-		
 
 		function drawBackground()
 		{
@@ -336,7 +327,17 @@ export function gameLogicTournament(
 				if (gameState.phase === GamePhase.TourScreen)
 					gameState.phase = GamePhase.Opening
 				else if (gameState.phase === GamePhase.Opening) 
+				{
 					gameState.phase = GamePhase.Playing;
+					if (gameOptions.enableMadness && gameState.round > 1)
+					{
+						for (let i = 0; i < 4; i++)
+						{
+							forgottenItemsInit(ctx, canvas)
+							forgottenItemsInit(ctx,canvas)
+						}
+					}
+				}
 				else if (gameState.phase === GamePhase.Ending)
 				{
 					const winnerName = p1Score > p2Score ? gameState.pl1Name: gameState.pl2Name;
