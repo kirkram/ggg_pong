@@ -13,6 +13,7 @@ import {
 } from "./forgottenItems";
 
 import { saveGameResult } from "./saveGameResult";
+import { match } from "assert";
 
 //export let triggerFinalScreen: null | ((name: string, avatarUrl: string) => void) = null;
 
@@ -124,19 +125,6 @@ export function gameLogicTournament(
 			dx: 2 * (Math.random() > 0.5 ? 1 : -1),
 			dy: 1.5 * (Math.random() > 0.5 ? 1 : -1),
 		};
-
-		//triggerFinalScreen = (winnerName: string, avatarUrl: string) => 
-		//{
-		//	console.log("🎉 Final screen triggered with:", winnerName);
-		//	gameState.phase = GamePhase.Final;
-		//	gameState.winnerName = winnerName;
-		//	gameState.winnerAvatar = new Image();
-		//	gameState.winnerAvatar.src = avatarUrl;
-
-		//	cancelAnimationFrame(animationId);
-		//	update();
-		//};
-		
 
 		function drawBackground()
 		{

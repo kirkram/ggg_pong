@@ -89,11 +89,13 @@ export default function PongGame()
 					username: sessionData.user,
 					avatar: sessionData.userAvatar.image,
 					score: 0,
+					color: sessionData.userColor,
 				},
 				...sessionData.guests.map((g: any) => ({
 					username: g.username,
 					avatar: g.avatar.image,
 					score: 0,
+					color: g.color,
 				})),
 			];
 
@@ -126,7 +128,9 @@ export default function PongGame()
 					m.player1.username,
 					m.player2?.username || "POP",
 				]) as [string,string][],
-			}
+			},
+			userColor: currentMatch.player1.color,
+			guestColor: currentMatch.player2?.color,
 		};
 
 		const onMatchEnd = (winnerUsername: string) =>
