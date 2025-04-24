@@ -105,7 +105,7 @@ export function gameLogicTournament(
 
 		let paddleProgress = 0.5;
 		let paddle2Progress = 0.5;
-		const speedUp = 1.07;
+		const speedUp = 1.09;
 
 		let p1Score = 0;
 		let p2Score = 0;
@@ -287,7 +287,17 @@ export function gameLogicTournament(
 			if (keysPressed["ArrowLeft"]) 
 				paddle2Progress = Math.min(1, paddle2Progress + paSpeed);
 
-			const { x, y, paddleWidth, paddleHeight, x2, y2, paddleWidth2, paddleHeight2 } = drawPaddles();
+			const {
+					x,
+					y,
+					paddleWidth,
+					paddleHeight,
+					x2,
+					y2,
+					paddleWidth2,
+					paddleHeight2,
+			} = drawPaddles();
+			
 
 			ctx.drawImage(table, 0, 0, canvas.width, canvas.height);
 			if (gameOptions.enableMadness) 

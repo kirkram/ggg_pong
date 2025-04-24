@@ -77,8 +77,8 @@ export function gameLogic(
 
     music = loadedMusic;
 
-    let paddleProgress = 1;
-    let paddle2Progress = 1;
+    let paddleProgress = 0.5;
+    let paddle2Progress = 0.5;
     const speedUp = 1.07;
 
     let p1Score = 0;
@@ -107,24 +107,24 @@ export function gameLogic(
       ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    function drawPaddles() {
-      // Interpolation for paddle1
-      const x = minX + (maxX - minX) * paddleProgress;
-      const y = minY + (maxY - minY) * paddleProgress;
-      const scale = minScale + (maxScale - minScale) * paddleProgress;
-      const paddleWidth = 80 * scale;
-      const paddleHeight = 120 * scale;
+	function drawPaddles()
+	{
+		// Interpolation for paddle1
+		const x = minX + (maxX - minX) * paddleProgress;
+		const y = minY + (maxY - minY) * paddleProgress;
+		const scale = minScale + (maxScale - minScale) * paddleProgress;
+		const paddleWidth = 80 * scale;
+		const paddleHeight = 120 * scale;
 
-      // paddle2
-      const scale2 = minScale + (maxScale - minScale) * paddle2Progress;
-      const x2 =
-        canvas.width - (minX + (maxX - minX) * paddle2Progress + 80 * scale2);
-      const y2 = minY + (maxY - minY) * paddle2Progress;
-      const paddleWidth2 = 80 * scale2;
-      const paddleHeight2 = 120 * scale2;
+		// paddle2
+		const scale2 = minScale + (maxScale - minScale) * paddle2Progress;
+		const x2 = canvas.width - (minX + (maxX - minX) * paddle2Progress + 80 * scale2);
+		const y2 = minY + (maxY - minY) * paddle2Progress;
+		const paddleWidth2 = 80 * scale2;
+		const paddleHeight2 = 120 * scale2;
 
-      ctx.drawImage(paddle1, x, y, paddleWidth, paddleHeight);
-      ctx.drawImage(paddle2, x2, y2, paddleWidth2, paddleHeight2);
+		ctx.drawImage(paddle1, x, y, paddleWidth, paddleHeight);
+		ctx.drawImage(paddle2, x2, y2, paddleWidth2, paddleHeight2);
 
       return {
         x,
