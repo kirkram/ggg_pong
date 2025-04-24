@@ -213,6 +213,11 @@ export const CustomazationTournamentPage = () => {
         return "bg-purple-500";
       case "orange":
         return "bg-orange-500";
+	  case "gray":
+		return "bg-gray-500";
+	  case "pink":
+		return "bg-pink-500";
+
       default:
         return "bg-gray-300"; // Default to gray when no color selected
     }
@@ -333,7 +338,7 @@ export const CustomazationTournamentPage = () => {
               className="p-2 rounded text-white"
             >
               <option value="">{t("NONE")}</option>
-              {["red", "green", "blue", "yellow", "purple", "orange"].map((color) => (
+              {["red", "green", "blue", "yellow", "purple", "orange", "gray", "pink"].map((color) => (
                 <option
                   key={color}
                   value={color}
@@ -407,7 +412,7 @@ export const CustomazationTournamentPage = () => {
                 className="p-2 rounded text-white"
               >
               <option value="">{t("NONE")}</option>
-              {["red", "green", "blue", "yellow", "purple", "orange"].map((color) => (
+              {["red", "green", "blue", "yellow", "purple", "orange", "gray", "pink"].map((color) => (
                 <option
                   key={color}
                   value={color}
