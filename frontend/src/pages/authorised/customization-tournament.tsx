@@ -70,7 +70,7 @@ export const CustomazationTournamentPage = () => {
       localStorage.removeItem("gameType"); // Clear game type
       setUserAvatar(null);
       setGuests([]);
-      setGuestCount(3); // Reset to default 2 guests
+      setGuestCount(3); // Reset to default 3 guests
       setGameType("boring"); // Reset to default game type
     }
 
@@ -440,7 +440,7 @@ export const CustomazationTournamentPage = () => {
         </button>
 
         <button
-          onClick={() => startGameHandler("/tic-tac-toe-tournament")}
+          onClick={() => startGameHandler("/tournament-setup")}
           className="bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-xl text-2xl font-bold shadow-xl"
         >
           {t("START_TIC_TAC_TOE")}

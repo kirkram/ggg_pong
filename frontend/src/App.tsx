@@ -66,8 +66,16 @@ function App() {
                 element={<tictactoe.TicTacToeDuel />}
               />
               <Route
+                path="/tic-tac-toe-tournament/:roundIndex"
+                element={<tictactoe.TournamentGamePage />}
+              />
+              <Route
                 path="/duel-setup"
                 element={<tictactoe.DuelSetup />}
+              />
+              <Route
+                path="/tournament-setup"
+                element={<tictactoe.TournamentSetupPage />}
               />
               <Route
                 path="show_a_winner"
