@@ -79,7 +79,7 @@ export function gameLogic(
 
     let paddleProgress = 0.5;
     let paddle2Progress = 0.5;
-    const speedUp = 1.07;
+    const speedUp = 1.09;
 
     let p1Score = 0;
     let p2Score = 0;
@@ -326,7 +326,15 @@ export function gameLogic(
           gameState.round++;
 
           if (gameState.round > 1 && gameOptions.enableMadness)
-            forgottenItemsInit(ctx, canvas);
+		  {
+            forgottenItemsInit(ctx, canvas)
+			forgottenItemsInit(ctx, canvas)
+			if (gameState.round > 2)
+			{
+				forgottenItemsInit(ctx, canvas)
+				forgottenItemsInit(ctx, canvas)
+			}
+		  }
 
           if (gameState.round > 3) {
             gameState.phase = GamePhase.Final;

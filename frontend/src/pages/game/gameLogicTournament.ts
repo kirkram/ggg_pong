@@ -78,8 +78,8 @@ export function gameLogicTournament(
 		if (sessionData.tournamentBracket)
 			gameState.tournamentBracket = sessionData.tournamentBracket;
 
-			if (sessionData.round)
-				gameState.round = sessionData.round
+			if (sessionData.tournamentBracket?.round)
+				gameState.round = sessionData.tournamentBracket.round
 	}
 
 	// Music
