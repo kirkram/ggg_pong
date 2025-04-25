@@ -108,8 +108,10 @@ export function drawFinalScreen(ctx: CanvasRenderingContext2D, info: FinalScreen
 		const x1 = ctx.canvas.width / 2 - boxWidth - 10;
 		const x2 = ctx.canvas.width / 2 + 10;
 
+		const nextPlayers = index === 0
+
 		// Left player box
-		ctx.fillStyle = "white";
+		ctx.fillStyle = nextPlayers ? "#FFD580" : "white"; // highlight current
 		ctx.fillRect(x1, y, boxWidth, boxHeight);
 		ctx.strokeStyle = "black";
 		ctx.lineWidth = 2;
@@ -118,10 +120,10 @@ export function drawFinalScreen(ctx: CanvasRenderingContext2D, info: FinalScreen
 		ctx.fillText(pair[0], x1 + boxWidth / 2, y + boxHeight / 2 + 8);
 
 		// Right player box
-		ctx.fillStyle = "white";
+		ctx.fillStyle = nextPlayers ? "#FFD580" : "white";
 		ctx.fillRect(x2, y, boxWidth, boxHeight);
 		ctx.strokeRect(x2, y, boxWidth, boxHeight);
 		ctx.fillStyle = "black";
 		ctx.fillText(pair[1], x2 + boxWidth / 2, y + boxHeight / 2 + 8);
-	});
+	})
 }
