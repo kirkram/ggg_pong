@@ -43,6 +43,7 @@ export default function PongGame()
 	// player pictures
 	const leftAvatarImage = mode === "tournament" ? currentMatch?.player1.avatar : sessionData?.userAvatar?.image
 	const rightAvatarImage = mode === "tournament" ? currentMatch?.player2?.avatar : sessionData?.guestAvatar?.image
+	//at the end
 
 	function showFinalScreen(winnerName: string, avatarUrl: string)
 	{

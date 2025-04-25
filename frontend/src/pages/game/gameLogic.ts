@@ -42,7 +42,7 @@ export const gameOptions = {
 export function gameLogic(
   canvasRef: RefObject<HTMLCanvasElement>,
   mode?: string,
-  sessionData?: any
+  sessionData?: any,
 ) {
   if (sessionData?.gameType === "madness") gameOptions.enableMadness = true;
   else gameOptions.enableMadness = false;
@@ -336,13 +336,15 @@ export function gameLogic(
 			}
 		  }
 
-          if (gameState.round > 3) {
+          if (gameState.round > 3) 
+		  {
             gameState.phase = GamePhase.Final;
             gameState.winnerName =
               p1Wins > p2Wins ? gameState.pl1Name : gameState.pl2Name;
             gameState.winnerAvatar =
               p1Wins > p2Wins ? player1Avatar : player2Avatar;
-          } else gameState.phase = GamePhase.Opening;
+          } 
+		  else gameState.phase = GamePhase.Opening;
           p1Score = 0;
           p2Score = 0;
         } else if (gameState.phase === GamePhase.Final) {
