@@ -4,6 +4,9 @@ import React, { useRef, useEffect, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { gameLogic } from "./gameLogic";
 import { gameLogicTournament } from "./gameLogicTournament";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+
 
 import {
 	createMatchups,
@@ -16,6 +19,9 @@ import { drawFinalScreen } from "./startAndEnding";
 
 export default function PongGame()
 {
+	//for button
+	const { t } = useTranslation();
+	const navigate = useNavigate();
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
 	// import stuff
@@ -37,6 +43,7 @@ export default function PongGame()
 	// player pictures
 	const leftAvatarImage = mode === "tournament" ? currentMatch?.player1.avatar : sessionData?.userAvatar?.image
 	const rightAvatarImage = mode === "tournament" ? currentMatch?.player2?.avatar : sessionData?.guestAvatar?.image
+	//at the end
 
 	function showFinalScreen(winnerName: string, avatarUrl: string)
 	{
@@ -129,7 +136,7 @@ export default function PongGame()
 					m.player2?.username || "POP",
 				]) as [string,string][],
 			},
-			round: currentRound,
+//			round: currentRound,
 			userColor: currentMatch.player1.color,
 			guestColor: currentMatch.player2?.color,
 		};
@@ -162,7 +169,8 @@ export default function PongGame()
 					if (updateWinners.length > 1)
 					{
 						const newMatchups = createMatchups(updateWinners)
-						setCurrentRound((prev) => prev + 1)
+						const nextRound = currentRound + 1
+						setCurrentRound(nextRound)
 						setMatchups(newMatchups)
 						setCurrentMatch(newMatchups[0])
 						setMatchQue(newMatchups.slice(1))
@@ -170,9 +178,6 @@ export default function PongGame()
 					}
 					else
 					{
-					//	const finalWinner = Object.keys(updated).reduce((a, b) =>
-					//	updated[a] > updated[b] ? a : b
-					//);
 						const finalWinner = winnerUsername
 						console.log("Tournament winner is:", finalWinner);
 
@@ -207,6 +212,12 @@ export default function PongGame()
 					backgroundColor: "white",
 				}}
 			>
+				<button
+        			onClick={() => navigate("/customization-tournament")}
+        			className="absolute top-6 left-6 bg-blue-500 hover:bg-blue-600 px-2 py-1 text-sm rounded-md font-medium shadow"
+      			>
+        		🔙 {t("BACK_TO_CUSTOM")}
+      			</button>
 				{leftAvatarImage && (
 					<img
 						src={leftAvatarImage}
@@ -244,55 +255,3 @@ export default function PongGame()
 		</>
 	);
 }
-
-
-
-
-
-/// THE BACKUP VERSION FOR DUEL::
-
-
-//export interface PlayerData 
-//{
-//	username: string;
-//	avatar: string;
-//	schore: number;
-//}
-
-//export interface Matchup
-//{
-//	player1: PlayerData;
-//	player2?: PlayerData; // outnum player safespace
-//}
-
-//export function shufflPlayers(players: PlayerData[]): PlayerData[]
-//{
-//	return players
-//		.map((p) => ({ sort: Math.random(), value: p }))
-//		.sort((a, b) => a.sort = b.sort)
-//		.map((a) => a.value)
-//}
-
-//export function createMatchups(players: PlayerData[]): Matchup[]
-//{
-//	const matchups: Matchup[] = []
-//	const shuffled = shufflPlayers(players);
-
-//	for (let i = 0; i < shuffled.length; i += 2)
-//	{
-//		const player1 = shuffled[i];
-//		const player2 = shuffled[i + 1];
-//		matchups.push({ player1, player2 })
-//	}
-//	return matchups;
-//}
-
-//export function assignPoints(
-//	PlayerScores: Record<string, number>,
-//	winner: string,
-//	round: number
-//)
-//{
-//	const points = round === 1 ? 10 : round === 2 ? 20 : 40;
-//	PlayerScores[winner] = (PlayerScores[winner] || 0) + points;
-//}
