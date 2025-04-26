@@ -99,10 +99,16 @@ export const CustomazationPage = () => {
     if (state?.selectedAvatar && state.target) {
       if (state.target === "user") {
         setUserAvatar(state.selectedAvatar);
-        localStorage.setItem("userAvatar", JSON.stringify(state.selectedAvatar));
+        localStorage.setItem(
+          "userAvatar",
+          JSON.stringify(state.selectedAvatar)
+        );
       } else {
         setGuestAvatar(state.selectedAvatar);
-        localStorage.setItem("guestAvatar", JSON.stringify(state.selectedAvatar));
+        localStorage.setItem(
+          "guestAvatar",
+          JSON.stringify(state.selectedAvatar)
+        );
       }
     }
   }, [location.state]);
@@ -180,10 +186,7 @@ export const CustomazationPage = () => {
   };
 
   return (
-    <div
-      className="w-full min-h-screen bg-cover bg-center text-white p-8 flex flex-col items-center"
-      style={{ backgroundImage: "url('/background/gray_background.jpg')" }}
-    >
+    <div className="w-full min-h-screen text-white p-8 flex flex-col items-center">
       <button
         onClick={() => navigate("/menu")}
         className="absolute top-6 left-6 bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg font-semibold shadow-md"
@@ -211,7 +214,9 @@ export const CustomazationPage = () => {
                 localStorage.setItem("gameType", "boring");
               }}
             />
-            <label htmlFor="boring" className="ml-2">{t("BORING_GAME")}</label>
+            <label htmlFor="boring" className="ml-2">
+              {t("BORING_GAME")}
+            </label>
           </div>
           <div>
             <input
@@ -225,7 +230,9 @@ export const CustomazationPage = () => {
                 localStorage.setItem("gameType", "madness");
               }}
             />
-            <label htmlFor="madness" className="ml-2">{t("MADNESS")}</label>
+            <label htmlFor="madness" className="ml-2">
+              {t("MADNESS")}
+            </label>
           </div>
         </div>
       </div>
@@ -248,7 +255,9 @@ export const CustomazationPage = () => {
               <p className="capitalize mb-4">{userAvatar.name}</p>
             </>
           ) : (
-            <p className="mb-4 italic text-gray-400">{t("NO_AVATAR_SELECTED")}</p>
+            <p className="mb-4 italic text-gray-400">
+              {t("NO_AVATAR_SELECTED")}
+            </p>
           )}
 
           <button
@@ -261,7 +270,9 @@ export const CustomazationPage = () => {
           {/* Color selection button */}
           <button
             onClick={() => setColorPickerOpen(!colorPickerOpen)}
-            className={`mt-4 ${getButtonColor(userColor)} px-4 py-2 rounded-lg font-semibold`}
+            className={`mt-4 ${getButtonColor(
+              userColor
+            )} px-4 py-2 rounded-lg font-semibold`}
             disabled={gameType === "boring"}
           >
             {gameType === "boring" ? t("DEFAULT") : t("CHOOSE_COLOR")}
@@ -279,16 +290,18 @@ export const CustomazationPage = () => {
                 className="p-2 rounded text-white"
               >
                 <option value="">{t("NONE")}</option>
-                {["red", "green", "blue", "yellow", "purple", "orange"].map((color) => (
-                  <option
-                    key={color}
-                    value={color}
-                    disabled={takenColors.includes(color)}
-                    className="text-black" // makes option text visible when open
-                  >
-                    {t(`COLOR_${color.toUpperCase()}`)}
-                  </option>
-                ))}
+                {["red", "green", "blue", "yellow", "purple", "orange"].map(
+                  (color) => (
+                    <option
+                      key={color}
+                      value={color}
+                      disabled={takenColors.includes(color)}
+                      className="text-black" // makes option text visible when open
+                    >
+                      {t(`COLOR_${color.toUpperCase()}`)}
+                    </option>
+                  )
+                )}
               </select>
             </div>
           )}
@@ -316,7 +329,9 @@ export const CustomazationPage = () => {
               <p className="capitalize mb-4">{guestAvatar.name}</p>
             </>
           ) : (
-            <p className="mb-4 italic text-gray-400">{t("NO_AVATAR_SELECTED")}</p>
+            <p className="mb-4 italic text-gray-400">
+              {t("NO_AVATAR_SELECTED")}
+            </p>
           )}
 
           <button
@@ -329,7 +344,9 @@ export const CustomazationPage = () => {
           {/* Guest Color selection button */}
           <button
             onClick={() => setGuestColorPickerOpen(!guestColorPickerOpen)}
-            className={`mt-4 ${getButtonColor(guestColor)} px-4 py-2 rounded-lg font-semibold`}
+            className={`mt-4 ${getButtonColor(
+              guestColor
+            )} px-4 py-2 rounded-lg font-semibold`}
             disabled={gameType === "boring"}
           >
             {gameType === "boring" ? t("DEFAULT") : t("CHOOSE_COLOR")}

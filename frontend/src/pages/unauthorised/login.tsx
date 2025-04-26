@@ -2,6 +2,7 @@ import { useState } from "react";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { appLogin, appLoginCode } from "../../service";
+import validator from "validator";
 
 export const LogInPage = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -18,13 +19,21 @@ export const LogInPage = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validator.isAlphanumeric(username)) {
+      setError({
+        response: { data: { error: "Invalid username format" } },
+      } as AxiosError);
+      return;
+    }
     setIsLoading(true);
     appLogin({ username, password })
       .then((response) => {
         setError(undefined);
         setBackendMessage(response.message);
       })
-      .catch(setError)
+      .catch((err: AxiosError) => {
+        setError(err);
+      })
       .finally(() => setIsLoading(false));
   };
 
@@ -37,7 +46,9 @@ export const LogInPage = () => {
         navigate("/");
         window.location.reload();
       })
-      .catch(setError)
+      .catch((err: AxiosError) => {
+        setError(err);
+      })
       .finally(() => setIsLoading(false));
   };
 
@@ -71,7 +82,11 @@ export const LogInPage = () => {
         <>
           <div className="w-5/13 flex flex-col justify-center p-12 bg-white max-w-2xl min-w-md mx-auto">
             <h5 className="text-4xl font-bold mb-6">{backendMessage}</h5>
-            {error ? <div>error: {error.response.data.error}</div> : null}
+            {error ? (
+              <div className="text-red-500 mb-3 -mt-4">
+                Error: {error?.response?.data?.error}
+              </div>
+            ) : null}
             <form onSubmit={handleCode} className="space-y-4">
               <input
                 type="text"
@@ -95,7 +110,11 @@ export const LogInPage = () => {
         <>
           <div className="w-5/13 flex flex-col justify-center p-12 bg-white max-w-2xl min-w-md mx-auto">
             <h2 className="text-4xl font-bold mb-6">Welcome Back!</h2>
-            {error ? <div>error: {error.response.data.error}</div> : null}
+            {error ? (
+              <div className="text-red-500 mb-3 -mt-4">
+                Error: {error?.response?.data?.error}
+              </div>
+            ) : null}
             <form onSubmit={handleLogin} className="space-y-4">
               <input
                 type="text"
