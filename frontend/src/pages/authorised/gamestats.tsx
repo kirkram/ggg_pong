@@ -108,7 +108,7 @@ export const GameStats: React.FC = () => {
   };
 
   if (loading || !profile) {
-    return <div className="text-white p-44">{t("LOADING")}</div>;
+    return <div></div>;
   }
 
   const toggleGameDetails = (id: number) => {
@@ -137,8 +137,12 @@ export const GameStats: React.FC = () => {
 
   return (
     <div
-      className="w-full h-full min-h-screen bg-cover bg-center text-black relative p-8"
-      style={{ backgroundImage: "url('/background/gray_background.jpg')" }}
+      className="w-full h-full min-h-screen text-black relative p-8"
+      style={
+        {
+          // backgroundImage: "url('/background/gray_background.jpg')",
+        }
+      }
     >
       <button
         onClick={() => navigate("/menu")}

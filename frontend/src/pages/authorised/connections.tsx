@@ -163,14 +163,11 @@ export const ConnectionsPage = () => {
     }
   };
 
-  if (loading) return <div>{t("LOADING")}</div>;
+  if (loading) return <div></div>;
   if (error) return <div>{error}</div>;
 
   return (
-    <div
-      className="flex h-screen bg-gray-900 text-white relative bg-cover bg-center"
-      style={{ backgroundImage: "url('/background/gray_background.jpg')" }}
-    >
+    <div className="flex h-screen text-white relative bg-cover bg-center">
       <button
         onClick={() => navigate("/menu")}
         className="absolute top-6 left-6 bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-white font-semibold shadow-md"
@@ -182,7 +179,9 @@ export const ConnectionsPage = () => {
         <h1 className="text-5xl font-bold bg-black bg-opacity-60 px-6 py-4 rounded-lg">
           {t("CONNECTIONS_TITLE")}
         </h1>
-        <p className="mt-4 text-xl text-gray-700">{t("CONNECTIONS_SUBTITLE")}</p>
+        <p className="mt-4 text-xl text-gray-700">
+          {t("CONNECTIONS_SUBTITLE")}
+        </p>
 
         <div className="mt-8 w-3/4 text-center">
           <h2 className="text-2xl text-gray-700">{t("FRIEND_REQUESTS")}</h2>
@@ -221,8 +220,12 @@ export const ConnectionsPage = () => {
           <thead>
             <tr>
               <th className="px-4 py-2 text-lg bg-gray-700">{t("USERNAME")}</th>
-              <th className="px-4 py-2 text-lg bg-gray-700">{t("ONLINE_STATUS")}</th>
-              <th className="px-4 py-2 text-lg bg-gray-700">{t("FRIEND_STATUS")}</th>
+              <th className="px-4 py-2 text-lg bg-gray-700">
+                {t("ONLINE_STATUS")}
+              </th>
+              <th className="px-4 py-2 text-lg bg-gray-700">
+                {t("FRIEND_STATUS")}
+              </th>
             </tr>
           </thead>
           <tbody>

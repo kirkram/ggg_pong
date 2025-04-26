@@ -13,6 +13,10 @@
   }
 }
 
+body {
+  background-image: url("/background/gray_background.jpg");
+}
+
 .animate-marquee {
   white-space: nowrap;
   overflow: hidden;
