@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { startGame } from "../../service";
+import validator from "validator";
 
 interface AvatarInfo {
   name: string;
@@ -166,6 +167,13 @@ export const CustomazationTournamentPage = () => {
 
   const startGameHandler = (targetRoute: string) => {
     const guestNames = guests.map((g) => g.username.trim().toLowerCase());
+
+    for (const name of guestNames) {
+      if (!validator.isAlphanumeric(name)) {
+        return alert(t("GUEST_MUST_SELECT_USERNAME"));
+      }
+    }
+
     const hasDuplicates = new Set(guestNames).size !== guestNames.length;
     if (hasDuplicates) {
       return alert(t("GUEST_NAMES_MUST_BE_UNIQUE"));

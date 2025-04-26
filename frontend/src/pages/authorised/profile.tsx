@@ -8,6 +8,7 @@ import {
   uploadProfilePicture,
 } from "../../service/userService";
 import { UserProfile } from "../../service/interface";
+import validator from "validator";
 
 export const ProfilePage = () => {
   const navigate = useNavigate();
@@ -23,6 +24,10 @@ export const ProfilePage = () => {
   }, []);
 
   const handleUpdate = (field: string, value: string) => {
+    if (!validator.isAlphanumeric(value)) {
+      alert(t("FIELD_NOT_ALLOWED"));
+      return;
+    }
     updateProfileField(field, value)
       .then(() => {
         if (field === "language") {
@@ -40,6 +45,16 @@ export const ProfilePage = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    const allowedMimeTypes = ["image/jpeg", "image/png"];
+    if (!allowedMimeTypes.includes(file.type)) {
+      alert("Invalid file type. Please upload a valid image file (JPEG, PNG).");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      // 5 MB limit
+      alert("File size exceeds the limit of 5 MB.");
+      return;
+    }
     try {
       const result = await uploadProfilePicture(file);
       setTimeout(() => {

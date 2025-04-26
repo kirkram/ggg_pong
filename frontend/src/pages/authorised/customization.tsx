@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { startDuelGame } from "../../service";
+import validator from "validator";
 
 export const CustomazationPage = () => {
   const navigate = useNavigate();
@@ -10,7 +11,7 @@ export const CustomazationPage = () => {
 
   // Initialize guestName from localStorage if available
   const [guestName, setGuestName] = useState(() => {
-    return localStorage.getItem("guestName") || ""; 
+    return localStorage.getItem("guestName") || "";
   });
 
   const [userAvatar, setUserAvatar] = useState<{
@@ -40,17 +41,17 @@ export const CustomazationPage = () => {
 
   const [userColor, setUserColor] = useState<string | null>(() => {
     const savedColor = localStorage.getItem("userColor");
-    return savedColor ? savedColor : ""; 
+    return savedColor ? savedColor : "";
   });
 
   const [guestColor, setGuestColor] = useState<string | null>(() => {
     const savedColor = localStorage.getItem("guestColor");
-    return savedColor ? savedColor : ""; 
+    return savedColor ? savedColor : "";
   });
 
   const [gameType, setGameType] = useState<string>(() => {
     const savedGameType = localStorage.getItem("gameType");
-    return savedGameType ? savedGameType : "boring"; 
+    return savedGameType ? savedGameType : "boring";
   });
 
   // State for color picker visibility
@@ -114,7 +115,7 @@ export const CustomazationPage = () => {
   }, [location.state]);
 
   useEffect(() => {
-    localStorage.setItem("guestName", guestName); 
+    localStorage.setItem("guestName", guestName);
   }, [guestName]);
 
   const chooseAvatar = (target: "user" | "guest") => {
@@ -125,6 +126,10 @@ export const CustomazationPage = () => {
   };
 
   const startGameHandler = (targetRoute: string) => {
+    if (!validator.isAlphanumeric(guestName)) {
+      return alert(t("GUEST_MUST_SELECT_USERNAME"));
+    }
+
     if (!userAvatar || !guestAvatar) {
       return alert(t("ALL_PLAYERS_MUST_SELECT_AVATAR"));
     }
@@ -138,9 +143,9 @@ export const CustomazationPage = () => {
     }
 
     startDuelGame({
-      user: loggedInUsername, 
+      user: loggedInUsername,
       userAvatar: userAvatar.name,
-      guest: guestName, 
+      guest: guestName,
       guestAvatar: guestAvatar.name,
       userColor,
       guestColor,
@@ -150,7 +155,7 @@ export const CustomazationPage = () => {
         navigate(targetRoute, {
           state: {
             user: loggedInUsername,
-            guest: guestName, 
+            guest: guestName,
             userAvatar,
             guestAvatar,
             userColor,
