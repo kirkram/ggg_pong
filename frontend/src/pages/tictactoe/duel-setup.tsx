@@ -7,29 +7,29 @@ export const DuelSetup = () => {
   const { t } = useTranslation();
 
   // Tracks the rounds and points for all three games
-  const [rounds1, setRounds1] = useState(0); // Number of completed rounds for Game 1
-  const [rounds2, setRounds2] = useState(0); // Number of completed rounds for Game 2
-  const [rounds3, setRounds3] = useState(0); // Number of completed rounds for Game 3
+  const [rounds1, setRounds1] = useState(0); 
+  const [rounds2, setRounds2] = useState(0); 
+  const [rounds3, setRounds3] = useState(0); 
 
   const [points1, setPoints1] = useState({
-    player1: "?", // Player 1 points for Game 1
-    player2: "?", // Player 2 points for Game 1
+    player1: "?", 
+    player2: "?", 
   });
 
   const [points2, setPoints2] = useState({
-    player1: "?", // Player 1 points for Game 2
-    player2: "?", // Player 2 points for Game 2
+    player1: "?", 
+    player2: "?", 
   });
 
   const [points3, setPoints3] = useState({
-    player1: "?", // Player 1 points for Game 3
-    player2: "?", // Player 2 points for Game 3
+    player1: "?", 
+    player2: "?", 
   });
 
-  const [userName, setUserName] = useState(""); // For logged-in user
-  const [guestName, setGuestName] = useState(""); // For guest player
-  const [userAvatar, setUserAvatar] = useState(null); // User Avatar
-  const [guestAvatar, setGuestAvatar] = useState(null); // Guest Avatar
+  const [userName, setUserName] = useState(""); 
+  const [guestName, setGuestName] = useState(""); 
+  const [userAvatar, setUserAvatar] = useState(null); 
+  const [guestAvatar, setGuestAvatar] = useState(null); 
 
   // Fetch data from localStorage when component mounts
   useEffect(() => {

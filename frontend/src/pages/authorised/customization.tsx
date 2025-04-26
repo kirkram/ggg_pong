@@ -10,7 +10,7 @@ export const CustomazationPage = () => {
 
   // Initialize guestName from localStorage if available
   const [guestName, setGuestName] = useState(() => {
-    return localStorage.getItem("guestName") || ""; // Default to empty string if no guestName exists
+    return localStorage.getItem("guestName") || ""; 
   });
 
   const [userAvatar, setUserAvatar] = useState<{
@@ -40,17 +40,17 @@ export const CustomazationPage = () => {
 
   const [userColor, setUserColor] = useState<string | null>(() => {
     const savedColor = localStorage.getItem("userColor");
-    return savedColor ? savedColor : ""; // Default to none
+    return savedColor ? savedColor : ""; 
   });
 
   const [guestColor, setGuestColor] = useState<string | null>(() => {
     const savedColor = localStorage.getItem("guestColor");
-    return savedColor ? savedColor : ""; // Default to none
+    return savedColor ? savedColor : ""; 
   });
 
   const [gameType, setGameType] = useState<string>(() => {
     const savedGameType = localStorage.getItem("gameType");
-    return savedGameType ? savedGameType : "boring"; // Default to "boring"
+    return savedGameType ? savedGameType : "boring"; 
   });
 
   // State for color picker visibility
@@ -77,6 +77,10 @@ export const CustomazationPage = () => {
       localStorage.removeItem("points1");
       localStorage.removeItem("points2");
       localStorage.removeItem("points3");
+
+      localStorage.removeItem("tournamentGuests"); // cleaning tournament data
+      localStorage.removeItem("guestCount");
+
       setUserAvatar(null);
       setGuestAvatar(null);
       setGuestName("");
@@ -104,7 +108,7 @@ export const CustomazationPage = () => {
   }, [location.state]);
 
   useEffect(() => {
-    localStorage.setItem("guestName", guestName); // Save guest's name in localStorage
+    localStorage.setItem("guestName", guestName); 
   }, [guestName]);
 
   const chooseAvatar = (target: "user" | "guest") => {
@@ -128,9 +132,9 @@ export const CustomazationPage = () => {
     }
 
     startDuelGame({
-      user: loggedInUsername, // Logged-in user's username
+      user: loggedInUsername, 
       userAvatar: userAvatar.name,
-      guest: guestName, // Guest's username from the state
+      guest: guestName, 
       guestAvatar: guestAvatar.name,
       userColor,
       guestColor,
@@ -140,7 +144,7 @@ export const CustomazationPage = () => {
         navigate(targetRoute, {
           state: {
             user: loggedInUsername,
-            guest: guestName, // Guest's name passed to the TicTacToeDuel page
+            guest: guestName, 
             userAvatar,
             guestAvatar,
             userColor,
