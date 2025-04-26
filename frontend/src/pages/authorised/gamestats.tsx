@@ -248,7 +248,7 @@ export const GameStats: React.FC = () => {
                     {player.losses}
                   </td>
                   <td className="border border-gray-600 px-4 py-2">
-                    {player.wins * 3 - player.losses}
+                    {player.wins + player.losses / 2}
                   </td>
                 </tr>
               ))}
