@@ -149,6 +149,8 @@
 	"COLOR_YELLOW": "Yellow",
 	"COLOR_PURPLE": "Purple",
 	"COLOR_ORANGE": "Orange",
+	"COLOR_GRAY": "Gray",
+	"COLOR_PINK": "Pink",
 	"DEFAULT": "Default",
 	"ALL_PLAYERS_MUST_SELECT_AVATAR": "All players must select an avatar.",
 	"GUEST_MUST_SELECT_USERNAME": "Each guest must enter a username.",

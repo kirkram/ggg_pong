@@ -54,35 +54,80 @@ export function drawEnding(ctx: CanvasRenderingContext2D, info: ScreenInfo)
 
 export function drawFinalScreen(ctx: CanvasRenderingContext2D, info: FinalScreenInfo) 
 {
-	ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  
-	// Background
-	ctx.fillStyle = "#000";
-	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  
-	// WINNER! Text
+	const canvas = ctx.canvas;
+	const centerX = canvas.width / 2;
+	const centerY = canvas.height / 2;
+
+	// Background: off-white
+	ctx.fillStyle = "#fefcf9";
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+	// "WINNER!" title
 	ctx.font = "64px Impact";
-	ctx.fillStyle = "gold";
+	ctx.fillStyle = "#d4af37"; // soft gold
 	ctx.textAlign = "center";
-	ctx.fillText(t("WINNER_TITLE"), ctx.canvas.width / 2, 100);
-  
+	ctx.fillText(t("WINNER_TITLE"), centerX, 90);
+
 	// Avatar
-	const size = 200;
+	const avatarWidth = 240;
+	const avatarHeight = 320;
 	ctx.drawImage(
-	  info.winnerAvatar,
-	  ctx.canvas.width / 2 - size / 2,
-	  ctx.canvas.height / 2 - size / 2,
-	  size,
-	  size
+		info.winnerAvatar,
+		centerX - avatarWidth / 2,
+		centerY - avatarHeight / 2,
+		avatarWidth,
+		avatarHeight
 	);
-  
-	// Name
-	ctx.font = "48px Arial";
-	ctx.fillStyle = "white";
-	ctx.fillText(info.winnerName, ctx.canvas.width / 2, ctx.canvas.height / 2 + size);
-  
-	// Prompt
-	ctx.font = "28px Arial";
-	ctx.fillStyle = "lightgray";
-	ctx.fillText(t("PRESS_SPACE_TO_MENU"), ctx.canvas.width / 2, ctx.canvas.height - 80);
-  }
+
+	// Winner's name
+	ctx.font = "42px Arial";
+	ctx.fillStyle = "#333";
+	ctx.fillText(info.winnerName, centerX, centerY + avatarHeight / 2 + 40);
+
+	// Spacebar prompt
+	ctx.font = "18px Arial";
+	ctx.fillStyle = "#888";
+	ctx.fillText(t("PRESS_SPACE_TO_MENU"), centerX, canvas.height - 40);
+}
+
+
+  export function drawTournamentScreen(
+	ctx: CanvasRenderingContext2D,
+	matchups: { round: number; pairs: [string, string][] }
+) {
+	ctx.fillStyle = "#C8F7F0";
+	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+	ctx.fillStyle = "black";
+	ctx.font = "24px monospace";
+	ctx.textAlign = "center";
+	ctx.fillText(`Round ${matchups.round}`, ctx.canvas.width / 2, 50);
+
+	matchups.pairs.forEach((pair, index) => {
+		const boxWidth = 200;
+		const boxHeight = 60;
+		const gap = 30;
+		const y = 100 + index * (boxHeight + gap);
+
+		const x1 = ctx.canvas.width / 2 - boxWidth - 10;
+		const x2 = ctx.canvas.width / 2 + 10;
+
+		const nextPlayers = index === 0
+
+		// Left player box
+		ctx.fillStyle = nextPlayers ? "#FFD580" : "white"; // highlight current
+		ctx.fillRect(x1, y, boxWidth, boxHeight);
+		ctx.strokeStyle = "black";
+		ctx.lineWidth = 2;
+		ctx.strokeRect(x1, y, boxWidth, boxHeight);
+		ctx.fillStyle = "black";
+		ctx.fillText(pair[0], x1 + boxWidth / 2, y + boxHeight / 2 + 8);
+
+		// Right player box
+		ctx.fillStyle = nextPlayers ? "#FFD580" : "white";
+		ctx.fillRect(x2, y, boxWidth, boxHeight);
+		ctx.strokeRect(x2, y, boxWidth, boxHeight);
+		ctx.fillStyle = "black";
+		ctx.fillText(pair[1], x2 + boxWidth / 2, y + boxHeight / 2 + 8);
+	})
+}

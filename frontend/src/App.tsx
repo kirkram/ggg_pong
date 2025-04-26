@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AppInfoIface } from "./context/app-info/interface";
 import { getAppInfo } from "./service";
 import { AppInfoContext } from "./context/app-info/context";
-import { authorised, unauthorised, general } from "./pages";
+import { authorised, unauthorised, general, tictactoe } from "./pages";
 import { useUserActivityTracker } from "./service/useUserActivityTracker";
 
 import PongGame from "./pages/game/PongGame";
@@ -62,8 +62,24 @@ function App() {
                 element={<general.UserProfilePage />}
               />
               <Route
-                path="/tic-tac-toe-duel"
-                element={<authorised.TicTacToeDuel />}
+                path="/tic-tac-toe-duel/:gameNumber"
+                element={<tictactoe.TicTacToeDuel />}
+              />
+              <Route
+                path="/tic-tac-toe-tournament/:roundIndex"
+                element={<tictactoe.TournamentGamePage />}
+              />
+              <Route
+                path="/duel-setup"
+                element={<tictactoe.DuelSetup />}
+              />
+              <Route
+                path="/tournament-setup"
+                element={<tictactoe.TournamentSetupPage />}
+              />
+              <Route
+                path="show_a_winner"
+                element={<tictactoe.ShowAWinner />}
               />
               // "/game/play?mode=duel"
               <Route path="/game/play" element={<PongGame />} />

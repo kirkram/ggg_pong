@@ -11,7 +11,7 @@ interface AvatarInfo {
 interface Guest {
   username: string;
   avatar: AvatarInfo | null;
-  color: string | null; // Default color is null
+  color: string | null;
 }
 
 export const CustomazationTournamentPage = () => {
@@ -21,7 +21,7 @@ export const CustomazationTournamentPage = () => {
 
   const [guestCount, setGuestCount] = useState<number>(() => {
     const stored = localStorage.getItem("guestCount");
-    return stored ? parseInt(stored) : 2; // Default to 2 guests
+    return stored ? parseInt(stored) : 3;
   });
 
   const [guests, setGuests] = useState<Guest[]>(() => {
@@ -36,18 +36,20 @@ export const CustomazationTournamentPage = () => {
 
   const [userColor, setUserColor] = useState<string | null>(() => {
     const savedColor = localStorage.getItem("userColor");
-    return savedColor ? savedColor : null; // Default to null (no color selected)
+    return savedColor ? savedColor : null;
   });
 
   const [loggedInUsername, setLoggedInUsername] = useState("");
 
   const [gameType, setGameType] = useState<string>(() => {
     const savedGameType = localStorage.getItem("gameType");
-    return savedGameType ? savedGameType : "boring"; // Default to "boring"
+    return savedGameType ? savedGameType : "boring";
   });
 
   const [colorPickerOpen, setColorPickerOpen] = useState(false); // for user
-  const [guestColorPickerOpen, setGuestColorPickerOpen] = useState<boolean[]>([]); // for guests
+  const [guestColorPickerOpen, setGuestColorPickerOpen] = useState<boolean[]>(
+    []
+  ); // for guests
 
   useEffect(() => {
     const token = localStorage.getItem("ping-pong-jwt");
@@ -67,11 +69,15 @@ export const CustomazationTournamentPage = () => {
       localStorage.removeItem("tournamentGuests");
       localStorage.removeItem("guestCount");
       localStorage.removeItem("userColor");
-      localStorage.removeItem("gameType"); // Clear game type
+      localStorage.removeItem("gameType");
+
+      localStorage.removeItem("guestAvatar"); // cleaning duel data
+      localStorage.removeItem("guestName");
+
       setUserAvatar(null);
       setGuests([]);
-      setGuestCount(2); // Reset to default 2 guests
-      setGameType("boring"); // Reset to default game type
+      setGuestCount(3);
+      setGameType("boring");
     }
 
     setInitialized(true);
@@ -81,7 +87,7 @@ export const CustomazationTournamentPage = () => {
     setGuests((prev) => {
       const updated = [...prev];
       while (updated.length < guestCount)
-        updated.push({ username: "", avatar: null, color: null }); // Default color to null
+        updated.push({ username: "", avatar: null, color: null });
       while (updated.length > guestCount) updated.pop();
       localStorage.setItem("tournamentGuests", JSON.stringify(updated));
       return updated;
@@ -138,8 +144,14 @@ export const CustomazationTournamentPage = () => {
     if (state?.selectedAvatar) {
       if (state.target === "user") {
         setUserAvatar(state.selectedAvatar);
-        localStorage.setItem("userAvatar", JSON.stringify(state.selectedAvatar));
-      } else if (state.target === "guest" && typeof state.guestIndex === "number") {
+        localStorage.setItem(
+          "userAvatar",
+          JSON.stringify(state.selectedAvatar)
+        );
+      } else if (
+        state.target === "guest" &&
+        typeof state.guestIndex === "number"
+      ) {
         setGuests((prev) => {
           const updated = [...prev];
           updated[state.guestIndex].avatar = state.selectedAvatar;
@@ -213,6 +225,11 @@ export const CustomazationTournamentPage = () => {
         return "bg-purple-500";
       case "orange":
         return "bg-orange-500";
+      case "gray":
+        return "bg-gray-500";
+      case "pink":
+        return "bg-pink-500";
+
       default:
         return "bg-gray-300"; // Default to gray when no color selected
     }
@@ -250,7 +267,9 @@ export const CustomazationTournamentPage = () => {
                 localStorage.setItem("gameType", "boring");
               }}
             />
-            <label htmlFor="boring" className="ml-2">{t("BORING_GAME")}</label>
+            <label htmlFor="boring" className="ml-2">
+              {t("BORING_GAME")}
+            </label>
           </div>
           <div>
             <input
@@ -264,7 +283,9 @@ export const CustomazationTournamentPage = () => {
                 localStorage.setItem("gameType", "madness");
               }}
             />
-            <label htmlFor="madness" className="ml-2">{t("MADNESS")}</label>
+            <label htmlFor="madness" className="ml-2">
+              {t("MADNESS")}
+            </label>
           </div>
         </div>
       </div>
@@ -277,7 +298,7 @@ export const CustomazationTournamentPage = () => {
           onChange={(e) => setGuestCount(Number(e.target.value))}
           className="text-black p-2 rounded"
         >
-          {[2, 3, 4, 5].map((n) => (
+          {[3, 7].map((n) => (
             <option key={n} value={n}>
               {n}
             </option>
@@ -315,7 +336,9 @@ export const CustomazationTournamentPage = () => {
         {/* Color selection */}
         <button
           onClick={() => setColorPickerOpen(!colorPickerOpen)}
-          className={`mt-4 ${getButtonColor(userColor)} px-4 py-2 rounded-lg font-semibold`}
+          className={`mt-4 ${getButtonColor(
+            userColor
+          )} px-4 py-2 rounded-lg font-semibold`}
           disabled={gameType === "boring"}
         >
           {gameType === "boring" ? t("DEFAULT") : t("CHOOSE_COLOR")}
@@ -328,12 +351,21 @@ export const CustomazationTournamentPage = () => {
               onChange={(e) => {
                 const selectedColor = e.target.value;
                 setUserColor(selectedColor);
-                localStorage.setItem("userColor", selectedColor); // Save color in localStorage
+                localStorage.setItem("userColor", selectedColor);
               }}
               className="p-2 rounded text-white"
             >
               <option value="">{t("NONE")}</option>
-              {["red", "green", "blue", "yellow", "purple", "orange"].map((color) => (
+              {[
+                "red",
+                "green",
+                "blue",
+                "yellow",
+                "purple",
+                "orange",
+                "gray",
+                "pink",
+              ].map((color) => (
                 <option
                   key={color}
                   value={color}
@@ -342,8 +374,7 @@ export const CustomazationTournamentPage = () => {
                 >
                   {t(`COLOR_${color.toUpperCase()}`)}
                 </option>
-                )
-              )}
+              ))}
             </select>
           </div>
         )}
@@ -355,7 +386,9 @@ export const CustomazationTournamentPage = () => {
           key={index}
           className="bg-gray-800 p-6 mb-8 w-full max-w-md rounded-xl shadow-lg flex flex-col items-center"
         >
-          <h2 className="text-2xl font-bold mb-2">👥 {t("GUEST")} {index + 1}</h2>
+          <h2 className="text-2xl font-bold mb-2">
+            👥 {t("GUEST")} {index + 1}
+          </h2>
 
           <input
             type="text"
@@ -375,7 +408,9 @@ export const CustomazationTournamentPage = () => {
               <p className="capitalize mb-4">{guest.avatar.name}</p>
             </>
           ) : (
-            <p className="mb-4 italic text-gray-400">{t("NO_AVATAR_SELECTED")}</p>
+            <p className="mb-4 italic text-gray-400">
+              {t("NO_AVATAR_SELECTED")}
+            </p>
           )}
 
           <button
@@ -388,12 +423,16 @@ export const CustomazationTournamentPage = () => {
 
           {/* Guest color selection */}
           <button
-            onClick={() => setGuestColorPickerOpen((prev) => {
-              const updated = [...prev];
-              updated[index] = !updated[index];
-              return updated;
-            })}
-            className={`mt-4 ${getButtonColor(guest.color)} px-4 py-2 rounded-lg font-semibold`}
+            onClick={() =>
+              setGuestColorPickerOpen((prev) => {
+                const updated = [...prev];
+                updated[index] = !updated[index];
+                return updated;
+              })
+            }
+            className={`mt-4 ${getButtonColor(
+              guest.color
+            )} px-4 py-2 rounded-lg font-semibold`}
             disabled={gameType === "boring"}
           >
             {gameType === "boring" ? t("DEFAULT") : t("CHOOSE_COLOR")}
@@ -406,18 +445,26 @@ export const CustomazationTournamentPage = () => {
                 onChange={(e) => handleColorChange(index, e.target.value)}
                 className="p-2 rounded text-white"
               >
-              <option value="">{t("NONE")}</option>
-              {["red", "green", "blue", "yellow", "purple", "orange"].map((color) => (
-                <option
-                  key={color}
-                  value={color}
-                  disabled={takenColors.includes(color)}
-                  className="text-black" // makes option text visible when open
-                >
-                  {t(`COLOR_${color.toUpperCase()}`)}
-                </option>
-                  )
-                )}
+                <option value="">{t("NONE")}</option>
+                {[
+                  "red",
+                  "green",
+                  "blue",
+                  "yellow",
+                  "purple",
+                  "orange",
+                  "gray",
+                  "pink",
+                ].map((color) => (
+                  <option
+                    key={color}
+                    value={color}
+                    disabled={takenColors.includes(color)}
+                    className="text-black" // makes option text visible when open
+                  >
+                    {t(`COLOR_${color.toUpperCase()}`)}
+                  </option>
+                ))}
               </select>
             </div>
           )}
@@ -427,14 +474,14 @@ export const CustomazationTournamentPage = () => {
       {/* Start Game Buttons */}
       <div className="flex flex-col gap-6">
         <button
-          onClick={() => startGameHandler("/start-tournament-game")}
+          onClick={() => startGameHandler("/game/play?mode=tournament")}
           className="bg-green-600 hover:bg-green-700 px-8 py-4 rounded-xl text-2xl font-bold shadow-xl"
         >
           {t("START_PING_PONG")}
         </button>
 
         <button
-          onClick={() => startGameHandler("/tic-tac-toe-tournament")}
+          onClick={() => startGameHandler("/tournament-setup")}
           className="bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-xl text-2xl font-bold shadow-xl"
         >
           {t("START_TIC_TAC_TOE")}
