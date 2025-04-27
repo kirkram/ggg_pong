@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { PlayerInfo, Tournament4, Tournament8 } from "./tournament_interface";
+import { PlayerInfo } from "./tournament_interface";
 import { generatePlayerData, generateTournamentData } from "./tournament_init";
 
 export const TournamentSetupPage = () => {
@@ -27,22 +27,23 @@ export const TournamentSetupPage = () => {
     const storedUserAvatar = localStorage.getItem("userAvatar");
     const storedUserColor = localStorage.getItem("userColor");
 
-    setGuestCount(storedGuestCount ? parseInt(storedGuestCount) : 3); // Default to 3 if not set
-    setUserAvatar(storedUserAvatar ? JSON.parse(storedUserAvatar) : null); // Default to null if not set
+    setGuestCount(storedGuestCount ? parseInt(storedGuestCount) : 3);
+    setUserAvatar(storedUserAvatar ? JSON.parse(storedUserAvatar) : null);
     setUserColor(storedUserColor || "#FFFFFF"); // Default to white if not set
 
     // Fetch guest information from localStorage
-    const storedGuests = JSON.parse(localStorage.getItem("tournamentGuests") || "[]");
+    const storedGuests = JSON.parse(
+      localStorage.getItem("tournamentGuests") || "[]"
+    );
     if (storedGuests && storedGuests.length > 0) {
       localStorage.setItem("tournamentGuests", JSON.stringify(storedGuests));
     }
-  }, []);  // This will run only once when the page is first loaded
+  }, []); // This will run only once when the page is first loaded
 
   // Initialize tournament data based on guest count
   useEffect(() => {
-    // Initialize the players from the stored data
-    const players = generatePlayerData(loggedInUsername, userAvatar, userColor); 
-    generateTournamentData(guestCount, players);  // This will set tournament data in localStorage
+    const players = generatePlayerData(loggedInUsername, userAvatar, userColor);
+    generateTournamentData(guestCount, players);
     const storedTournamentData = localStorage.getItem("tournamentData");
     if (storedTournamentData) {
       setTournamentData(JSON.parse(storedTournamentData));
@@ -54,27 +55,64 @@ export const TournamentSetupPage = () => {
     setCurrentCircle((prevCircle) => prevCircle + 1);
   };
 
-  // Handle game completion (to be used in GamePage)
-  const handleGameCompletion = (gameIndex: number, winner: PlayerInfo) => {
-    const updatedTournamentData = { ...tournamentData };
-    updatedTournamentData[`game${gameIndex}`].winner = winner;
-    localStorage.setItem("tournamentData", JSON.stringify(updatedTournamentData));
-    setTournamentData(updatedTournamentData);
+  const startGame = (gameIndex: number) => {
+    const gameData = tournamentData[`game${gameIndex}`]; // Get the current game data
+
+    // Pass player data to the game page via state
+    navigate(`/tic-tac-toe-tournament/${gameIndex}`, {
+      state: {
+        player1: gameData.player1,
+        player2: gameData.player2,
+        gameIndex: gameIndex,
+      },
+    });
   };
 
   const isCircleCompleted = (circleNumber: number) => {
-    if (!tournamentData) return false; // Ensure that tournamentData is defined before checking
-    const gamesInCircle = Object.values(tournamentData).filter((game: any) => game.circle === circleNumber);
-    return gamesInCircle.every((game: any) => game.winner && game.winner.username !== "?");
+    if (!tournamentData) return false;
+    const gamesInCircle = Object.values(tournamentData).filter(
+      (game: any) => game.circle === circleNumber
+    );
+    return gamesInCircle.every(
+      (game: any) => game.winner && game.winner.username !== "?"
+    );
   };
 
-  const startGame = (gameIndex: number) => {
-    // Logic to start the game goes here. You can store the game index or use it for navigation.
-    navigate(`/tic-tac-toe-tournament/${gameIndex}`);
+  // Handle game completion (to be used in GamePage)
+  const handleGameCompletion = (gameIndex: number, winner: PlayerInfo) => {
+    // Get the current game data
+    const updatedTournamentData = { ...tournamentData };
+    const game = updatedTournamentData[`game${gameIndex}`];
+
+    // Update points based on the winner
+    if (winner.username === game.player1.username) {
+      game.player1.points = "1"; // Player 1 wins
+      game.player2.points = "0"; // Player 2 loses
+    } else if (winner.username === game.player2.username) {
+      game.player1.points = "0"; // Player 1 loses
+      game.player2.points = "1"; // Player 2 wins
+    } else {
+      game.player1.points = "0"; // Tie
+      game.player2.points = "0"; // Tie
+    }
+
+    // Save the updated tournament data to localStorage
+    localStorage.setItem(
+      "tournamentData",
+      JSON.stringify(updatedTournamentData)
+    );
+    setTournamentData(updatedTournamentData);
   };
 
   return (
-    <div className="flex flex-col justify-center items-center p-4 bg-gray-900 min-h-screen">
+    <div
+      className="flex flex-col justify-center items-center p-4 bg-gray-900 min-h-screen"
+      style={{
+        backgroundImage:
+          "url('/background/360_F_339060225_w8ob8LjMJzPdEqD9UFxbE6ibcKx8dFrP.jpg')",
+        backgroundSize: "cover",
+      }}
+    >
       <button
         onClick={() => navigate("/menu")}
         className="absolute top-6 left-6 bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg font-semibold shadow-md"
@@ -82,51 +120,84 @@ export const TournamentSetupPage = () => {
         🔙 {t("BACK_TO_MENU")}
       </button>
 
-      <h1 className="text-4xl font-bold text-center mb-10">{t("TOURNAMENT_SETUP")}</h1>
-
       {/* Render Dynamic Rounds based on current circle */}
       {tournamentData &&
         Object.values(tournamentData).map((game: any, index: number) =>
           game.circle === currentCircle ? (
-            <div key={index} className="mb-6">
-              <h2>{t(`ROUND`)} {game.round}</h2>
-              <div className="flex justify-around">
-                <div>{game.player1.username}</div>
-                <div>{game.player2.username}</div>
-              </div>
-              <div className="flex justify-around mt-4">
-                {/* Player 1 */}
-                <div>
-                  <img src={game.player1.avatarimage} alt={game.player1.avatarname} width={50} />
-                  <div>{game.player1.username}</div>
-                  <div>{game.player1.points}</div>
+            <div
+              key={index}
+              className="flex justify-around items-center bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-4xl mb-6"
+            >
+              {/* Player 1 */}
+              <div className="flex flex-col items-center bg-pink-500 p-4 rounded-lg">
+                <div className="w-20 h-20 bg-pink-500 rounded-full flex justify-center items-center mb-4">
+                  {game.player1.avatarimage ? (
+                    <img
+                      src={game.player1.avatarimage}
+                      alt={game.player1.avatarname}
+                      style={{
+                        width: "50px",
+                        height: "50px",
+                        borderRadius: "50%",
+                      }}
+                    />
+                  ) : null}
                 </div>
-                {/* Player 2 */}
-                <div>
-                  <img src={game.player2.avatarimage} alt={game.player2.avatarname} width={50} />
-                  <div>{game.player2.username}</div>
-                  <div>{game.player2.points}</div>
-                </div>
+                <h3 className="text-white">{game.player1.username}</h3>
+                <p className="text-white">Points: {game.player1.points}</p>
               </div>
-              {/* Tie button */}
-              {game.player1.points === "0" && game.player2.points === "0" && (
-                <button
-                  onClick={() => handleGameCompletion(game.round, { username: "random_winner", avatarname: "", avatarimage: "", color: "", points: "1" })}
-                  className="mt-4 px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg"
-                >
-                  {t("PICK_WINNER")}
-                </button>
-              )}
 
-              {/* Start game button */}
-              {game.player1.points === "?" && game.player2.points === "?" && (
-                <button
-                  onClick={() => startGame(game.round)}
-                  className="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg"
-                >
-                  {t("START_GAME")}
-                </button>
-              )}
+              {/* Divider */}
+              <div className="text-white text-xl mx-8">vs</div>
+
+              {/* Player 2 */}
+              <div className="flex flex-col items-center bg-pink-500 p-4 rounded-lg">
+                <div className="w-20 h-20 bg-pink-500 rounded-full flex justify-center items-center mb-4">
+                  {game.player2.avatarimage ? (
+                    <img
+                      src={game.player2.avatarimage}
+                      alt={game.player2.avatarname}
+                      style={{
+                        width: "50px",
+                        height: "50px",
+                        borderRadius: "50%",
+                      }}
+                    />
+                  ) : null}
+                </div>
+                <h3 className="text-white">{game.player2.username}</h3>
+                <p className="text-white">Points: {game.player2.points}</p>
+              </div>
+
+              <div className="flex flex-col items-center mt-6">
+                {/* Start game button */}
+                {game.player1.points === "?" && game.player2.points === "?" && (
+                  <button
+                    onClick={() => startGame(game.round)}
+                    className="mt-4 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg"
+                  >
+                    {t("START_GAME")} {game.round}
+                  </button>
+                )}
+
+                {/* Tie button */}
+                {game.player1.points === "0" && game.player2.points === "0" && (
+                  <button
+                    onClick={() =>
+                      handleGameCompletion(game.round, {
+                        username: "random_winner",
+                        avatarname: "",
+                        avatarimage: "",
+                        color: "",
+                        points: "1",
+                      })
+                    }
+                    className="mt-4 px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg"
+                  >
+                    {t("PICK_WINNER")}
+                  </button>
+                )}
+              </div>
             </div>
           ) : null
         )}
