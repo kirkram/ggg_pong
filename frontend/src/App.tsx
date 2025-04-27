@@ -28,9 +28,9 @@ function App() {
 
   if (loading)
     return (
-      <div>
+      <div className="w-full h-screen bg-white">
         {" "}
-        <p className="text-4xl font-bold mb-6">App is loading</p>
+        {/* <p className="text-4xl font-bold mb-6">App is loading</p> */}
       </div>
     );
 

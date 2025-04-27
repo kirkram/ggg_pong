@@ -36,7 +36,11 @@ export const GoogleCallback = () => {
     handleGoogleCallback();
   }, [navigate]);
 
-  return <div>Processing Google Login...</div>;
+  return (
+    <div className="w-full h-screen flex relative min-h-200 min-w-150 bg-white">
+      Processing Google Login...
+    </div>
+  );
 };
 
 export default GoogleCallback;
