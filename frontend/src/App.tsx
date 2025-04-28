@@ -7,6 +7,7 @@ import { AppInfoContext } from "./context/app-info/context";
 import { authorised, unauthorised, general, tictactoe } from "./pages";
 import { useUserActivityTracker } from "./service/useUserActivityTracker";
 
+import GameEndingPage from "./pages/game/game-end-page";
 import PongGame from "./pages/game/PongGame";
 
 function App() {
@@ -74,7 +75,10 @@ function App() {
                 element={<tictactoe.ShowAWinner />}
               />
               // "/game/play?mode=duel"
-              <Route path="/game/play" element={<PongGame />} />
+              <Route path="/game/play" element={<PongGame />} 
+			  />
+			  //PONG ending page
+			  <Route path="/game/game-end-page" element={<GameEndingPage />} />
             </>
           ) : (
             <>

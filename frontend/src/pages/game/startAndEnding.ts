@@ -87,7 +87,7 @@ export function drawFinalScreen(ctx: CanvasRenderingContext2D, info: FinalScreen
 	// Spacebar prompt
 	ctx.font = "18px Arial";
 	ctx.fillStyle = "#888";
-	ctx.fillText(t("PRESS_SPACE_TO_MENU"), centerX, canvas.height - 40);
+	ctx.fillText(t("Press Space To Continue"), centerX, canvas.height - 40);
 }
 
 
