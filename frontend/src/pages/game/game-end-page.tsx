@@ -12,20 +12,26 @@ const GameEndingPage: React.FC = () => {
 
 	return (
 		<div className="flex flex-col items-center justify-center min-h-screen p-4 bg-beige">
-			<div className="flex flex-col items-center mb-10">
-				<img
-					src={`/winner/${winnerAvatar}.png`}
-					alt="Winner Avatar"
-					className="w-48 h-48 rounded-full mb-4"
-				/>
-			</div>
+			<div className="flex flex-row items-center justify-center gap-16">
+				{/* Winner on the left */}
+				<div className="flex flex-col items-center">
+					<img
+						src={`/winning/${winnerAvatar}.png`}
+						alt="Winner Avatar"
+						className="w-120 h-200 object-contain border-4 border-yellow-400 shadow-lg"
+					/>
+					<p className="mt-4 text-xl font-bold text-yellow-500">Winner</p>
+				</div>
 
-			<div className="flex flex-col items-center">
-				<img
-					src={`/loser/${loserAvatar}.png`}
-					alt="Loser Avatar"
-					className="w-24 h-24 rounded-full"
-				/>
+				{/* Loser on the right */}
+				<div className="flex flex-col items-center">
+					<img
+						src={`/losing/${loserAvatar}.png`}
+						alt="Loser Avatar"
+						className="w-80 h-160 object-contain border-4 border-gray-400 shadow-md"
+					/>
+					<p className="mt-4 text-lg font-semibold text-gray-500">Loser</p>
+				</div>
 			</div>
 
 			<button
@@ -39,6 +45,7 @@ const GameEndingPage: React.FC = () => {
 };
 
 export default GameEndingPage;
+
 
 
 
