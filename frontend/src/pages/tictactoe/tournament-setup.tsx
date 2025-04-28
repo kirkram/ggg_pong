@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { PlayerInfo } from "./tournament_interface";
-import { generatePlayerData, generateTournamentData } from "./tournament_init";
+import { generatePlayerData, generateTournamentData, checkIfCircleCompleted, updateNextCircle } from "./tournament_init";
 
 export const TournamentSetupPage = () => {
   const navigate = useNavigate();
@@ -18,19 +18,25 @@ export const TournamentSetupPage = () => {
   // Initialize player data from localStorage
   useEffect(() => {
     const token = localStorage.getItem("ping-pong-jwt");
+    let username = "";
     if (token) {
       const payload = JSON.parse(atob(token.split(".")[1]));
-      setLoggedInUsername(payload.username); // Set logged-in username from JWT token
+      username = payload.username;
+      setLoggedInUsername(username);
     }
-
+  
     const storedGuestCount = localStorage.getItem("guestCount");
     const storedUserAvatar = localStorage.getItem("userAvatar");
     const storedUserColor = localStorage.getItem("userColor");
-
-    setGuestCount(storedGuestCount ? parseInt(storedGuestCount) : 3);
-    setUserAvatar(storedUserAvatar ? JSON.parse(storedUserAvatar) : null);
-    setUserColor(storedUserColor || "#FFFFFF"); // Default to white if not set
-
+  
+    const guestCountValue = storedGuestCount ? parseInt(storedGuestCount) : 3;
+    const userAvatarValue = storedUserAvatar ? JSON.parse(storedUserAvatar) : null;
+    const userColorValue = storedUserColor || "#FFFFFF";
+  
+    setGuestCount(guestCountValue);
+    setUserAvatar(userAvatarValue);
+    setUserColor(userColorValue);
+  
     // Fetch guest information from localStorage
     const storedGuests = JSON.parse(
       localStorage.getItem("tournamentGuests") || "[]"
@@ -38,70 +44,183 @@ export const TournamentSetupPage = () => {
     if (storedGuests && storedGuests.length > 0) {
       localStorage.setItem("tournamentGuests", JSON.stringify(storedGuests));
     }
-  }, []); // This will run only once when the page is first loaded
-
-  // Initialize tournament data based on guest count
-  useEffect(() => {
-    const players = generatePlayerData(loggedInUsername, userAvatar, userColor);
-    generateTournamentData(guestCount, players);
+  
+    // After setting everything, now generate tournament
     const storedTournamentData = localStorage.getItem("tournamentData");
+  
     if (storedTournamentData) {
-      setTournamentData(JSON.parse(storedTournamentData));
+      const updatedData = JSON.parse(storedTournamentData);
+      console.log("Loaded tournament data from storage:", updatedData);
+      setTournamentData(updatedData);
+    } else if (username && userAvatarValue && userColorValue) {
+      const players = generatePlayerData(username, userAvatarValue, userColorValue);
+      const tournament = generateTournamentData(guestCountValue, players);
+      if (tournament) {
+        setTournamentData(tournament);
+        localStorage.setItem("tournamentData", JSON.stringify(tournament));
+      }
     }
-  }, [guestCount, loggedInUsername, userAvatar, userColor]);
+  }, []); // runs only once at page load
+  
+  useEffect(() => {
+    console.log("Updated currentCircle: ", currentCircle);
+  }, [currentCircle]);
+
+  // useEffect(() => {
+  //   // Ensure that the tournament data is re-filtered based on the current circle
+  //   if (tournamentData) {
+  //     const filteredData = Object.values(tournamentData).filter(
+  //       (game: any) => game.circle === currentCircle
+  //     );
+  //     console.log("Filtered tournament data for circle " + currentCircle, filteredData);
+  //     setTournamentData(filteredData);
+  //   }
+  // }, [currentCircle, tournamentData]); // Dependency on currentCircle and tournamentData
+  
+  useEffect(() => {
+    // Ensure that the tournament data is re-filtered based on the current circle
+    if (tournamentData) {
+      const filteredData = Object.values(tournamentData).filter(
+        (game: any) => game.circle === currentCircle
+      );
+      console.log("Filtered tournament data for circle " + currentCircle, filteredData);
+  
+      // Only update the state if the filtered data is different from the current tournamentData
+      if (JSON.stringify(filteredData) !== JSON.stringify(Object.values(tournamentData))) {
+        setTournamentData(filteredData);
+      }
+    }
+  }, [currentCircle, tournamentData]); // Dependency on currentCircle and tournamentData
+  
 
   // Handle moving to next circle
+  // const handleNextCircle = () => {
+  //   let prevCircle: number = currentCircle + 1;
+  //   console.log("currentCircle: " + currentCircle);
+  //   setCurrentCircle((prevCircle));
+  //   console.log("Hangle next circle: currecntCircle " + currentCircle + " guestCount " + guestCount);
+  //   updateNextCircle(currentCircle + 1, guestCount);
+  // };
   const handleNextCircle = () => {
-    setCurrentCircle((prevCircle) => prevCircle + 1);
+    let prevCircle: number = currentCircle + 1;
+    console.log("currentCircle before update: " + currentCircle);
+    setCurrentCircle(prevCircle); // This updates the state
+    
+    // Regenerate or reload tournament data here
+    const storedTournamentData = localStorage.getItem("tournamentData");
+    if (storedTournamentData) {
+      const updatedData = JSON.parse(storedTournamentData);
+      console.log("Loaded tournament data for the next circle:", updatedData);
+      setTournamentData(updatedData);
+    }
+    
+    console.log("Handle next circle: currentCircle now is " + prevCircle);
+    updateNextCircle(prevCircle, guestCount);
   };
+  
 
-  const startGame = (gameIndex: number) => {
-    const gameData = tournamentData[`game${gameIndex}`]; // Get the current game data
+  // const startGame = (gameIndex: number) => {
+  //   const gameData = tournamentData[`game${gameIndex}`]; // Get the current game data
 
+  //   // Pass player data to the game page via state
+  //   navigate(`/tic-tac-toe-tournament/${gameIndex}`, {
+  //     state: {
+  //       player1: gameData.player1,
+  //       player2: gameData.player2,
+  //       gameIndex: gameIndex,
+  //     },
+  //   });
+  // };
+  // const startGame = (gameNumber: number) => {
+  //   const gameData = tournamentData[`game${gameNumber}`]; // Get the current game data
+  
+  //   console.log("Tournament Data:", tournamentData);
+  //   console.log("Tournament Data keys:", Object.keys(tournamentData));
+
+  //   console.log("Game number is: " + gameNumber);
+  //   console.log("game data: " + gameData);
+  //   // Check if the game data and players are available
+  //   if (!gameData || !gameData.player1 || !gameData.player2) {
+  //     console.error(`Game ${gameNumber} data is missing player1 or player2.`);
+  //     return; // Exit if the data is incomplete
+  //   }
+  
+  //   // Pass player data to the game page via state
+  //   navigate(`/tic-tac-toe-tournament/${gameNumber}`, {
+  //     state: {
+  //       player1: gameData.player1,
+  //       player2: gameData.player2,
+  //       gameIndex: gameNumber,
+  //     },
+  //   });
+  // };
+  const startGame = (gameNumber: number) => {
+    // Access game using the correct keys (0, 1, etc.)
+    const gameData = tournamentData[(gameNumber - 1).toString()]; // Convert gameNumber to string to match keys
+  
+    console.log("Game number is: " + gameNumber);
+    console.log("game data:", gameData);
+  
+    // Check if the game data and players are available
+    if (!gameData || !gameData.player1 || !gameData.player2) {
+      console.error(`Game ${gameNumber} data is missing player1 or player2.`);
+      return; // Exit if the data is incomplete
+    }
+  
     // Pass player data to the game page via state
-    navigate(`/tic-tac-toe-tournament/${gameIndex}`, {
+    navigate(`/tic-tac-toe-tournament/${gameNumber}`, {
       state: {
         player1: gameData.player1,
         player2: gameData.player2,
-        gameIndex: gameIndex,
+        gameIndex: gameNumber,
       },
     });
   };
+  
+  
+
 
   const isCircleCompleted = (circleNumber: number) => {
-    if (!tournamentData) return false;
-    const gamesInCircle = Object.values(tournamentData).filter(
-      (game: any) => game.circle === circleNumber
-    );
-    return gamesInCircle.every(
-      (game: any) => game.winner && game.winner.username !== "?"
-    );
-  };
+   
+    return checkIfCircleCompleted(circleNumber, guestCount);
+  };  
 
-  // Handle game completion (to be used in GamePage)
-  const handleGameCompletion = (gameIndex: number, winner: PlayerInfo) => {
-    // Get the current game data
+  // const isCircleCompleted = (circleNumber: number) => {
+  //   if (!tournamentData) return false;
+
+  //   const gamesInCircle = Object.values(tournamentData).filter(
+  //     (game: any) => game.circle === circleNumber
+  //   );
+  //   return gamesInCircle.every(
+  //     (game: any) => game.winner && game.winner.username !== "?"
+  //   );
+  // };  
+
+
+
+  const handlePickWinner = (gameNumber: number) => {
     const updatedTournamentData = { ...tournamentData };
-    const game = updatedTournamentData[`game${gameIndex}`];
+  const game = updatedTournamentData[`game${gameNumber}`];
 
-    // Update points based on the winner
-    if (winner.username === game.player1.username) {
-      game.player1.points = "1"; // Player 1 wins
-      game.player2.points = "0"; // Player 2 loses
-    } else if (winner.username === game.player2.username) {
-      game.player1.points = "0"; // Player 1 loses
-      game.player2.points = "1"; // Player 2 wins
-    } else {
-      game.player1.points = "0"; // Tie
-      game.player2.points = "0"; // Tie
-    }
+  // Randomly choose a winner between player1 and player2
+  const randomWinner =
+    Math.random() < 0.5 ? game.player1 : game.player2;
 
-    // Save the updated tournament data to localStorage
-    localStorage.setItem(
-      "tournamentData",
-      JSON.stringify(updatedTournamentData)
-    );
-    setTournamentData(updatedTournamentData);
+  // Update winner points
+  if (randomWinner.username === game.player1.username) {
+    game.player1.points = "1"; // Winner
+    game.player2.points = "0"; // Loser
+  } else {
+    game.player1.points = "0"; // Loser
+    game.player2.points = "1"; // Winner
+  }
+
+  // Save to localStorage and update state
+  localStorage.setItem(
+    "tournamentData",
+    JSON.stringify(updatedTournamentData)
+  );
+  setTournamentData(updatedTournamentData);
   };
 
   return (
@@ -181,16 +300,10 @@ export const TournamentSetupPage = () => {
                 )}
 
                 {/* Tie button */}
-                {game.player1.points === "0" && game.player2.points === "0" && (
+                {game.player1.points === "0" && game.player2.points === "0" && ( // fix this!
                   <button
                     onClick={() =>
-                      handleGameCompletion(game.round, {
-                        username: "random_winner",
-                        avatarname: "",
-                        avatarimage: "",
-                        color: "",
-                        points: "1",
-                      })
+                      handlePickWinner(game.round)
                     }
                     className="mt-4 px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg"
                   >

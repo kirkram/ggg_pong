@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { PlayerInfo } from "./tournament_interface";
+// import { PlayerInfo } from "./tournament_interface";
 
 export const TournamentGamePage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { gameNumber } = useParams();
-  const gameIndex = parseInt(gameNumber || "1", 10);
+  const gameIndex = gameNumber ? parseInt(gameNumber, 10) : null;
 
   // Access the passed player data from navigate state
   const location = useLocation();
@@ -75,6 +75,9 @@ export const TournamentGamePage = () => {
   const checkForWinner = () => {
     for (const pattern of winPatterns) {
       const [a, b, c] = pattern;
+      if (gameType === "madness" && (blockedCells.includes(a) || blockedCells.includes(b) || blockedCells.includes(c))) {
+        continue;
+      }
       if (board[a] && board[a] === board[b] && board[a] === board[c]) {
         setWinner(board[a]);
         setIsGameOver(true);
@@ -90,7 +93,7 @@ export const TournamentGamePage = () => {
   };
 
   const handleCellClick = (index: number) => {
-    if (board[index] !== "" || isGameOver || blockedCells.includes(index))
+    if (board[index] !== "" || isGameOver || (gameType === "madness" && blockedCells.includes(index)))
       return;
 
     const newBoard = [...board];
@@ -103,59 +106,73 @@ export const TournamentGamePage = () => {
     checkForWinner();
   }, [board]);
 
-  // Handle game completion (to be used in GamePage)
-  const handleGameCompletion = (gameIndex: number, winner: PlayerInfo) => {
-    // Update the points in the current game
-    const updatedTournamentData = JSON.parse(
-      localStorage.getItem("tournamentData") || "{}"
-    );
-    updatedTournamentData[`game${gameIndex}`].player1.points =
-      winner.username === player1.username ? "1" : "0";
-    updatedTournamentData[`game${gameIndex}`].player2.points =
-      winner.username === player2.username ? "1" : "0";
-    localStorage.setItem(
-      "tournamentData",
-      JSON.stringify(updatedTournamentData)
-    );
-
-    // Proceed to next circle or back to setup page
-    if (isAllGamesCompletedForCircle(gameFromState)) {
-      navigate(`/tournament-setup`);
-    } else {
-      setTournamentData(updatedTournamentData);
-    }
-  };
-
-  const isAllGamesCompletedForCircle = (circle: number) => {
-    return Object.values(tournamentData)
-      .filter((game: any) => game.circle === circle)
-      .every((game: any) => game.winner.username !== "?");
-  };
-
-  const handlePickWinner = () => {
-    // Randomly pick a winner in case of a tie
-    const winner = Math.random() > 0.5 ? player1 : player2;
-    handleGameCompletion(gameFromState, winner);
-  };
-
+  // const handleBackToSetup = () => {
+  //   const updatedTournamentData = JSON.parse(
+  //     localStorage.getItem("tournamentData") || "{}"
+  //   );
+  
+  //   if (!player1 || !player2) {
+  //     console.error("Player data missing.");
+  //     return;
+  //   }
+  
+  //   if (!updatedTournamentData[`game${gameIndex}`]) {
+  //     console.error(`Game data for game${gameIndex} missing.`);
+  //     return;
+  //   }
+  
+  //   // Assign points based on winner
+  //   if (winner === "X") {
+  //     updatedTournamentData[`game${gameIndex}`].player1.points = "1";
+  //     updatedTournamentData[`game${gameIndex}`].player2.points = "0";
+  //   } else if (winner === "O") {
+  //     updatedTournamentData[`game${gameIndex}`].player1.points = "0";
+  //     updatedTournamentData[`game${gameIndex}`].player2.points = "1";
+  //   } else if (winner === "None") {
+  //     // Tie: 0 points each (or you can set 0.5 if you want)
+  //     updatedTournamentData[`game${gameIndex}`].player1.points = "0";
+  //     updatedTournamentData[`game${gameIndex}`].player2.points = "0";
+  //   }
+  
+  //   localStorage.setItem("tournamentData", JSON.stringify(updatedTournamentData));
+  //   navigate("/tournament-setup");
+  // };
   const handleBackToSetup = () => {
-    const updatedPoints = {
-      player1: winner === "X" ? 1 : 0,
-      player2: winner === "O" ? 1 : 0,
-    };
     const updatedTournamentData = JSON.parse(
       localStorage.getItem("tournamentData") || "{}"
     );
-    updatedTournamentData[`game${gameFromState}`].player1.points =
-      updatedPoints.player1.toString();
-    updatedTournamentData[`game${gameFromState}`].player2.points =
-      updatedPoints.player2.toString();
-    localStorage.setItem(
-      "tournamentData",
-      JSON.stringify(updatedTournamentData)
-    );
+  
+    if (!player1 || !player2) {
+      console.error("Player data missing.");
+      return;
+    }
+  
+    if (!updatedTournamentData[`game${gameIndex}`]) {
+      console.error(`Game data for game${gameIndex} missing.`);
+      return;
+    }
+  
+    // Assign points based on winner
+    if (winner === "X") {
+      updatedTournamentData[`game${gameIndex}`].player1.points = "1";
+      updatedTournamentData[`game${gameIndex}`].player2.points = "0";
+    } else if (winner === "O") {
+      updatedTournamentData[`game${gameIndex}`].player1.points = "0";
+      updatedTournamentData[`game${gameIndex}`].player2.points = "1";
+    } else if (winner === "None") {
+      updatedTournamentData[`game${gameIndex}`].player1.points = "0";
+      updatedTournamentData[`game${gameIndex}`].player2.points = "0";
+    }
+    
+    // Save updated tournament data
+    localStorage.setItem("tournamentData", JSON.stringify(updatedTournamentData));
+    console.log({ updatedTournamentData });
+    console.log('right before naviagtin back: ' + localStorage.getItem("tournamentData"));
+    // Navigate back to setup page
     navigate("/tournament-setup");
   };
+  
+  
 
   const getCellStyle = (index: number) => {
     if (blockedCells.includes(index)) {

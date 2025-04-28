@@ -66,7 +66,7 @@ function App() {
                 element={<tictactoe.TicTacToeDuel />}
               />
               <Route
-                path="/tic-tac-toe-tournament/:gameIndex"
+                path="/tic-tac-toe-tournament/:gameNumber"
                 element={<tictactoe.TournamentGamePage />}
               />
               <Route

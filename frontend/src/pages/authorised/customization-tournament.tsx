@@ -41,6 +41,8 @@ export const CustomazationTournamentPage = () => {
 
   const [loggedInUsername, setLoggedInUsername] = useState("");
 
+  const [tournamentData, setTournamentData] = useState<any>(null); //ADDED
+
   const [gameType, setGameType] = useState<string>(() => {
     const savedGameType = localStorage.getItem("gameType");
     return savedGameType ? savedGameType : "boring";
@@ -79,6 +81,9 @@ export const CustomazationTournamentPage = () => {
       setGuests([]);
       setGuestCount(3);
       setGameType("boring");
+
+      setTournamentData(null); //ADDED
+      
     }
 
     setInitialized(true);
