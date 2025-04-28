@@ -6,12 +6,8 @@ export default defineConfig(({ mode }) => {
   // Load .env files
   const env = loadEnv(mode, process.cwd(), "");
 
-  // console.log(env);
   return {
     plugins: [react(), tailwindcss()],
-    define: {
-      "process.env": env, // Optional: If you need process.env compatibility
-    },
     server: {
       proxy: {
         "/app": {
