@@ -85,7 +85,7 @@ export default function PongGame()
 
 		if (mode === "duel")
 		{
-			const cleanup = gameLogic(canvasRef, "duel", sessionData);
+			const cleanup = gameLogic(canvasRef, "duel", sessionData, navigate);
 			return () => cleanup?.();
 		}
 

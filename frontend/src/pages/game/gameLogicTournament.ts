@@ -374,7 +374,7 @@ export function gameLogicTournament(
 					//p1Wins = 0;
 					//p2Wins = 0;
 					//clearForgottenItems();
-					window.location.href = "/menu";
+					window.location.href = "/game/game-end-page";
 				}
 			}
 		}
