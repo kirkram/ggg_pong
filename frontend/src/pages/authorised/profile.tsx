@@ -28,6 +28,14 @@ export const ProfilePage = () => {
       alert(t("FIELD_NOT_ALLOWED"));
       return;
     }
+
+    if (field === "dateOfBirth") {
+      if (isNaN(Date.parse(value))) {
+        alert(t("INVALID_DATE"));
+        return;
+      }
+    }
+
     updateProfileField(field, value)
       .then(() => {
         if (field === "language") {

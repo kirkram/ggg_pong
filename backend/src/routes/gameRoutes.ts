@@ -1,5 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { database } from "../database";
+import validator from "validator";
 
 export const gameRoutes = async (app: FastifyInstance) => {
   // Duel Game Route (unchanged)
@@ -13,6 +14,10 @@ export const gameRoutes = async (app: FastifyInstance) => {
         guest: string;
         guestAvatar: string;
       };
+
+      if (!validator.isAlphanumeric(user) || !validator.isAlphanumeric(guest)) {
+        return reply.status(400).send({ error: "Invalid username format." });
+      }
 
       if (!user || !userAvatar || !guest || !guestAvatar) {
         return reply.status(400).send({ error: "Missing fields" });
@@ -80,12 +85,23 @@ export const gameRoutes = async (app: FastifyInstance) => {
         gameName: string; // e.g., "ping-pong" or "tic-tac-toe"
       };
 
+      if (!validator.isAlphanumeric(username)) {
+        return reply.status(400).send({ error: "Invalid username format." });
+      }
+
+      if (!validator.isAlphanumeric(gameName)) {
+        return reply.status(400).send({ error: "Invalid game name format." });
+      }
+
       try {
         const idUser = await database.db.get(
           `SELECT id FROM users WHERE username = ?`,
           [username]
         );
 
+        if (!idUser) {
+          return reply.status(404).send({ error: "User not found." });
+        }
         // Insert the game session into the "games" table
         await database.db.run(
           `
