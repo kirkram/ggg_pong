@@ -29,9 +29,9 @@ function App() {
 
   if (loading)
     return (
-      <div>
+      <div className="w-full h-screen bg-white">
         {" "}
-        <p className="text-4xl font-bold mb-6">App is loading</p>
+        {/* <p className="text-4xl font-bold mb-6">App is loading</p> */}
       </div>
     );
 
@@ -67,8 +67,16 @@ function App() {
                 element={<tictactoe.TicTacToeDuel />}
               />
               <Route
+                path="/tic-tac-toe-tournament/:gameIndex"
+                element={<tictactoe.TournamentGamePage />}
+              />
+              <Route
                 path="/duel-setup"
                 element={<tictactoe.DuelSetup />}
+              />
+              <Route
+                path="/tournament-setup"
+                element={<tictactoe.TournamentSetupPage />}
               />
               <Route
                 path="show_a_winner"

@@ -34,8 +34,7 @@ export const ProfilePage = () => {
       .catch(() => alert(t("FIELD_NOT_ALLOWED")));
   };
 
-  if (loading || !profile)
-    return <div className="text-white p-8">{t("LOADING")}</div>;
+  if (loading || !profile) return <div></div>;
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -52,10 +51,7 @@ export const ProfilePage = () => {
   };
 
   return (
-    <div
-      className="w-full h-full min-h-screen bg-cover bg-center text-white relative p-8"
-      style={{ backgroundImage: "url('/background/gray_background.jpg')" }}
-    >
+    <div className="w-full h-full min-h-screen text-white relative p-8">
       <button
         onClick={() => navigate("/menu")}
         className="absolute top-6 left-6 bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg font-semibold shadow-md"
@@ -118,28 +114,28 @@ export const ProfilePage = () => {
             type="date"
           />
 
-        <SelectField
-          label="gender"
-          value={profile.gender}
-          options={[
-            { value: "male", label: "GENDER_MALE" },
-            { value: "female", label: "GENDER_FEMALE" },
-            { value: "other", label: "GENDER_OTHER" },
-          ]}
-          onUpdate={handleUpdate}
-        />
+          <SelectField
+            label="gender"
+            value={profile.gender}
+            options={[
+              { value: "male", label: "GENDER_MALE" },
+              { value: "female", label: "GENDER_FEMALE" },
+              { value: "other", label: "GENDER_OTHER" },
+            ]}
+            onUpdate={handleUpdate}
+          />
 
-        <SelectField
-          label="language"
-          value={profile.language}
-          options={[
-            { value: "english", label: "LANGUAGE_ENGLISH" },
-            { value: "finnish", label: "LANGUAGE_FINNISH" },
-            { value: "serbian", label: "LANGUAGE_SERBIAN" },
-            { value: "russian", label: "LANGUAGE_RUSSIAN" },
-          ]}
-          onUpdate={handleUpdate}
-        />
+          <SelectField
+            label="language"
+            value={profile.language}
+            options={[
+              { value: "english", label: "LANGUAGE_ENGLISH" },
+              { value: "finnish", label: "LANGUAGE_FINNISH" },
+              { value: "serbian", label: "LANGUAGE_SERBIAN" },
+              { value: "russian", label: "LANGUAGE_RUSSIAN" },
+            ]}
+            onUpdate={handleUpdate}
+          />
           <SelectField
             label="favAvatar"
             value={profile.favAvatar}

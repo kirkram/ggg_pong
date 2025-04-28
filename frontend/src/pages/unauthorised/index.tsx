@@ -10,12 +10,12 @@ export const LandingPage = () => {
 
   return (
     <div
-      className="w-full h-screen bg-cover bg-center"
+      className="w-full h-screen bg-cover bg-center animate-bgMove"
       style={{
         backgroundImage: "url(/background/front_page.jpg)",
         backgroundSize: "contain",
         backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
+        // backgroundRepeat: "no-repeat",
       }}
     >
       <div className="relative h-screen w-full flex flex-col items-center justify-center text-gray-900">

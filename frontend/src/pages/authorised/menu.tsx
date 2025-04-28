@@ -25,7 +25,7 @@ export const MenuPage = () => {
 
   return (
     <>
-      <div className="w-full h-screen flex relative min-h-200 min-w-150">
+      <div className="w-full h-screen flex relative min-h-200 min-w-150 bg-white">
         {/* Left side (Content) */}
         <div className="w-2/5 h-full min-w-100 flex flex-col items-center justify-center p-7 text-gray-100 relative z-10">
           {/* News Ticker */}

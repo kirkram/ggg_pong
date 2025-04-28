@@ -13,6 +13,9 @@ export default defineConfig(({ mode }) => {
       "process.env": env, // Optional: If you need process.env compatibility
     },
     server: {
+      host: true, // Allows all hosts
+      port: 5173,
+      allowedHosts: true,
       proxy: {
         "/app": {
           changeOrigin: true,

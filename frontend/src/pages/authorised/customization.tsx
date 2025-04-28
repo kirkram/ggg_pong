@@ -10,7 +10,7 @@ export const CustomazationPage = () => {
 
   // Initialize guestName from localStorage if available
   const [guestName, setGuestName] = useState(() => {
-    return localStorage.getItem("guestName") || ""; // Default to empty string if no guestName exists
+    return localStorage.getItem("guestName") || ""; 
   });
 
   const [userAvatar, setUserAvatar] = useState<{
@@ -40,17 +40,17 @@ export const CustomazationPage = () => {
 
   const [userColor, setUserColor] = useState<string | null>(() => {
     const savedColor = localStorage.getItem("userColor");
-    return savedColor ? savedColor : ""; // Default to none
+    return savedColor ? savedColor : ""; 
   });
 
   const [guestColor, setGuestColor] = useState<string | null>(() => {
     const savedColor = localStorage.getItem("guestColor");
-    return savedColor ? savedColor : ""; // Default to none
+    return savedColor ? savedColor : ""; 
   });
 
   const [gameType, setGameType] = useState<string>(() => {
     const savedGameType = localStorage.getItem("gameType");
-    return savedGameType ? savedGameType : "boring"; // Default to "boring"
+    return savedGameType ? savedGameType : "boring"; 
   });
 
   // State for color picker visibility
@@ -77,6 +77,10 @@ export const CustomazationPage = () => {
       localStorage.removeItem("points1");
       localStorage.removeItem("points2");
       localStorage.removeItem("points3");
+
+      localStorage.removeItem("tournamentGuests"); // cleaning tournament data
+      localStorage.removeItem("guestCount");
+
       setUserAvatar(null);
       setGuestAvatar(null);
       setGuestName("");
@@ -95,16 +99,22 @@ export const CustomazationPage = () => {
     if (state?.selectedAvatar && state.target) {
       if (state.target === "user") {
         setUserAvatar(state.selectedAvatar);
-        localStorage.setItem("userAvatar", JSON.stringify(state.selectedAvatar));
+        localStorage.setItem(
+          "userAvatar",
+          JSON.stringify(state.selectedAvatar)
+        );
       } else {
         setGuestAvatar(state.selectedAvatar);
-        localStorage.setItem("guestAvatar", JSON.stringify(state.selectedAvatar));
+        localStorage.setItem(
+          "guestAvatar",
+          JSON.stringify(state.selectedAvatar)
+        );
       }
     }
   }, [location.state]);
 
   useEffect(() => {
-    localStorage.setItem("guestName", guestName); // Save guest's name in localStorage
+    localStorage.setItem("guestName", guestName); 
   }, [guestName]);
 
   const chooseAvatar = (target: "user" | "guest") => {
@@ -128,9 +138,9 @@ export const CustomazationPage = () => {
     }
 
     startDuelGame({
-      user: loggedInUsername, // Logged-in user's username
+      user: loggedInUsername, 
       userAvatar: userAvatar.name,
-      guest: guestName, // Guest's username from the state
+      guest: guestName, 
       guestAvatar: guestAvatar.name,
       userColor,
       guestColor,
@@ -140,7 +150,7 @@ export const CustomazationPage = () => {
         navigate(targetRoute, {
           state: {
             user: loggedInUsername,
-            guest: guestName, // Guest's name passed to the TicTacToeDuel page
+            guest: guestName, 
             userAvatar,
             guestAvatar,
             userColor,
@@ -176,10 +186,7 @@ export const CustomazationPage = () => {
   };
 
   return (
-    <div
-      className="w-full min-h-screen bg-cover bg-center text-white p-8 flex flex-col items-center"
-      style={{ backgroundImage: "url('/background/gray_background.jpg')" }}
-    >
+    <div className="w-full min-h-screen text-white p-8 flex flex-col items-center">
       <button
         onClick={() => navigate("/menu")}
         className="absolute top-6 left-6 bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg font-semibold shadow-md"
@@ -207,7 +214,9 @@ export const CustomazationPage = () => {
                 localStorage.setItem("gameType", "boring");
               }}
             />
-            <label htmlFor="boring" className="ml-2">{t("BORING_GAME")}</label>
+            <label htmlFor="boring" className="ml-2">
+              {t("BORING_GAME")}
+            </label>
           </div>
           <div>
             <input
@@ -221,7 +230,9 @@ export const CustomazationPage = () => {
                 localStorage.setItem("gameType", "madness");
               }}
             />
-            <label htmlFor="madness" className="ml-2">{t("MADNESS")}</label>
+            <label htmlFor="madness" className="ml-2">
+              {t("MADNESS")}
+            </label>
           </div>
         </div>
       </div>
@@ -244,7 +255,9 @@ export const CustomazationPage = () => {
               <p className="capitalize mb-4">{userAvatar.name}</p>
             </>
           ) : (
-            <p className="mb-4 italic text-gray-400">{t("NO_AVATAR_SELECTED")}</p>
+            <p className="mb-4 italic text-gray-400">
+              {t("NO_AVATAR_SELECTED")}
+            </p>
           )}
 
           <button
@@ -257,7 +270,9 @@ export const CustomazationPage = () => {
           {/* Color selection button */}
           <button
             onClick={() => setColorPickerOpen(!colorPickerOpen)}
-            className={`mt-4 ${getButtonColor(userColor)} px-4 py-2 rounded-lg font-semibold`}
+            className={`mt-4 ${getButtonColor(
+              userColor
+            )} px-4 py-2 rounded-lg font-semibold`}
             disabled={gameType === "boring"}
           >
             {gameType === "boring" ? t("DEFAULT") : t("CHOOSE_COLOR")}
@@ -275,16 +290,18 @@ export const CustomazationPage = () => {
                 className="p-2 rounded text-white"
               >
                 <option value="">{t("NONE")}</option>
-                {["red", "green", "blue", "yellow", "purple", "orange"].map((color) => (
-                  <option
-                    key={color}
-                    value={color}
-                    disabled={takenColors.includes(color)}
-                    className="text-black" // makes option text visible when open
-                  >
-                    {t(`COLOR_${color.toUpperCase()}`)}
-                  </option>
-                ))}
+                {["red", "green", "blue", "yellow", "purple", "orange"].map(
+                  (color) => (
+                    <option
+                      key={color}
+                      value={color}
+                      disabled={takenColors.includes(color)}
+                      className="text-black" // makes option text visible when open
+                    >
+                      {t(`COLOR_${color.toUpperCase()}`)}
+                    </option>
+                  )
+                )}
               </select>
             </div>
           )}
@@ -312,7 +329,9 @@ export const CustomazationPage = () => {
               <p className="capitalize mb-4">{guestAvatar.name}</p>
             </>
           ) : (
-            <p className="mb-4 italic text-gray-400">{t("NO_AVATAR_SELECTED")}</p>
+            <p className="mb-4 italic text-gray-400">
+              {t("NO_AVATAR_SELECTED")}
+            </p>
           )}
 
           <button
@@ -325,7 +344,9 @@ export const CustomazationPage = () => {
           {/* Guest Color selection button */}
           <button
             onClick={() => setGuestColorPickerOpen(!guestColorPickerOpen)}
-            className={`mt-4 ${getButtonColor(guestColor)} px-4 py-2 rounded-lg font-semibold`}
+            className={`mt-4 ${getButtonColor(
+              guestColor
+            )} px-4 py-2 rounded-lg font-semibold`}
             disabled={gameType === "boring"}
           >
             {gameType === "boring" ? t("DEFAULT") : t("CHOOSE_COLOR")}

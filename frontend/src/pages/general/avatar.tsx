@@ -7,7 +7,7 @@ interface Avatar {
   description: string;
 }
 
-const avatars: Avatar[] = [
+export const avatars: Avatar[] = [
   {
     name: "QueenOfTheSpoons",
     image: "/avatars/queen_of_spoons/6f6e1f9c-7ea1-4902-a844-a3292cc6954d.png",
@@ -151,9 +151,7 @@ export const AvatarPage = () => {
                 alt={avatar.name}
                 className="w-full max-h-[400px] object-contain mb-4 rounded-md border-4 border-gray-700"
               />
-              <h2 className="text-2xl font-bold mb-2">
-                 {avatar.name}
-              </h2>
+              <h2 className="text-2xl font-bold mb-2">{avatar.name}</h2>
               <p className="text-gray-300 text-sm">{t(avatar.description)}</p>
               {isTaken && (
                 <p className="mt-2 text-red-400 text-sm font-semibold">
