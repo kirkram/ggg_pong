@@ -1,87 +1,35 @@
-import React, { useEffect, useState } from "react";
-import { appClient } from "../../service/index";
-
-type Player = {
-	name: string;
-	avatar: string;
-	wins: number;
-};
+import { useLocation, useNavigate } from "react-router-dom";
 
 const GameEndingPage: React.FC = () => {
-	
-	const [winner, setWinner] = useState<Player | null>(null);
-	const [losers, setLosers] = useState<Player[]>([]);
-	const [loading, setLoading] = useState(true);
+	const location = useLocation();
+	const navigate = useNavigate();
 
-	useEffect(() => {
-		const fetchGameResult = async () => {
-			try {
-				const token = localStorage.getItem("ping-pong-jwt");
-				if (!token) throw new Error("User not authenticated");
+	const { winnerAvatar, loserAvatar } = location.state || {};
 
-				const response = await appClient.get(`/api/get-latest-game-session`, {
-					headers: { "Content-Type": "application/json" },
-				});
-
-				const session = response.data?.rounds?.[0]?.[0];
-				if (!session) throw new Error("Invalid session data");
-
-				const players = [
-					{ name: session.p1_username, avatar: session.p1_avatar, wins: session.p1_wins },
-					{ name: session.p2_username, avatar: session.p2_avatar, wins: session.p2_wins },
-				];
-
-				const sortedPlayers = players.sort((a, b) => b.wins - a.wins);
-				setWinner(sortedPlayers[0]);
-				setLosers(sortedPlayers.slice(1));
-
-			} catch (error) {
-				console.error("❌ Error fetching game result:", error);
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchGameResult();
-	}, []);
-
-	const handleBackToMenu = () => {
-		window.location.href = "/menu";
-	};
-
-	if (loading) {
-		return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
-	}
-
-	if (!winner) {
-		return <div className="flex justify-center items-center min-h-screen">No game data found.</div>;
+	if (!winnerAvatar || !loserAvatar) {
+		return <div>No game data found.</div>;
 	}
 
 	return (
 		<div className="flex flex-col items-center justify-center min-h-screen p-4 bg-beige">
-			<h1 className="text-4xl font-bold mb-6">🏆 {winner.name} Wins! 🏆</h1>
+			<div className="flex flex-col items-center mb-10">
+				<img
+					src={`/winner/${winnerAvatar}.png`}
+					alt="Winner Avatar"
+					className="w-48 h-48 rounded-full mb-4"
+				/>
+			</div>
 
-			<img
-				src={winner.avatar}
-				alt={`${winner.name} Avatar`}
-				className="w-48 h-48 rounded-full mb-4"
-			/>
-
-			<div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-				{losers.map((loser, index) => (
-					<div key={index} className="flex flex-col items-center">
-						<img
-							src={loser.avatar}
-							alt={`${loser.name} Avatar`}
-							className="w-24 h-24 rounded-full"
-						/>
-						<p className="mt-2 text-lg">{loser.name}</p>
-					</div>
-				))}
+			<div className="flex flex-col items-center">
+				<img
+					src={`/loser/${loserAvatar}.png`}
+					alt="Loser Avatar"
+					className="w-24 h-24 rounded-full"
+				/>
 			</div>
 
 			<button
-				onClick={handleBackToMenu}
+				onClick={() => navigate("/menu")}
 				className="mt-10 px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-700 text-xl"
 			>
 				Back to Menu
@@ -91,6 +39,7 @@ const GameEndingPage: React.FC = () => {
 };
 
 export default GameEndingPage;
+
 
 
 
