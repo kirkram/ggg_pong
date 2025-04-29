@@ -71,6 +71,7 @@ export const CustomazationTournamentPage = () => {
       localStorage.removeItem("guestCount");
       localStorage.removeItem("userColor");
       localStorage.removeItem("gameType");
+      localStorage.removeItem("tournamentData");
 
       localStorage.removeItem("guestAvatar"); // cleaning duel data
       localStorage.removeItem("guestName");
