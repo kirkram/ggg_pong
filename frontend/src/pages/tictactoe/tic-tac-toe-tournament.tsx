@@ -237,7 +237,7 @@ export const TournamentGamePage = () => {
           ? winner === "None"
             ? t("ITS_A_TIE")
             : `${winner} ${t("WINS")} 🎉`
-          : `${t("ITS_TURN", { player: currentPlayer === "X" ? t("PLAYER") + " 1" : t("GUEST_PLAYER") })}`}
+          : `${t("ITS_TURN", { player: currentPlayer === "X" ? "X" : "O" })}`}
       </div>
 
       {isGameOver && (
