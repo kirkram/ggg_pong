@@ -43,6 +43,7 @@ export function gameLogic(
   canvasRef: RefObject<HTMLCanvasElement>,
   mode?: string,
   sessionData?: any,
+  navigate?: (path: string, options?: any) => void,
 ) {
   if (sessionData?.gameType === "madness") gameOptions.enableMadness = true;
   else gameOptions.enableMadness = false;
@@ -364,7 +365,22 @@ export function gameLogic(
           p1Wins = 0;
           p2Wins = 0;
           clearForgottenItems();
-          window.location.href = "/menu";
+
+		  if (navigate)
+		  {
+			if (navigate) {
+				navigate("/game/game-end-page", {
+					state: {
+						winnerName: p1Wins > p2Wins ? sessionData.user : sessionData.guest,
+						winnerAvatar: p1Wins > p2Wins ? sessionData.userAvatar.name : sessionData.guestAvatar.name,
+						loserName: p1Wins > p2Wins ? sessionData.guest : sessionData.user,
+						loserAvatar: p1Wins > p2Wins ? sessionData.guestAvatar.name : sessionData.userAvatar.name,
+					},
+				});
+			}
+		  }
+
+        //  window.location.href = "/game/game-end-page";
         }
       }
     };
