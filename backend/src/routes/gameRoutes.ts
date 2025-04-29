@@ -111,17 +111,21 @@ export const gameRoutes = async (app: FastifyInstance) => {
     "/api/save-game-session",
     { preHandler: [app.authenticate] },
     async (request, reply) => {
-      const { username, roundsJson, gameName } = request.body as {
+      const { username, rounds, gameName } = request.body as {
         username: string;
-        roundsJson: string; // JSON string representing the game rounds
+        rounds: string; // JSON string representing the game rounds
         gameName: string; // e.g., "ping-pong" or "tic-tac-toe"
       };
 
       if (!validator.isAlphanumeric(username)) {
-        console.debug("/api/save-game-session: Invalid username");
+        console.debug("/api/save-game-session: Invalid username: ", username);
         return reply.status(400).send({ error: "Invalid username format." });
       }
 
+      if (gameName !== "ping-pong" && gameName !== "tic-tac-toe") {
+        console.debug("/api/save-game-session: Invalid gamename: ", gameName);
+        return reply.status(400).send({ error: "Invalid gamename format." });
+      }
       try {
         const idUser = await database.db.get(
           `SELECT id FROM users WHERE username = ?`,
@@ -138,11 +142,11 @@ export const gameRoutes = async (app: FastifyInstance) => {
         INSERT INTO games (id_user, rounds_json, game_name)
         VALUES (?, ?, ?)
         `,
-          [idUser.id, roundsJson, gameName]
+          [idUser.id, rounds, gameName]
         );
 
-        // Parse the roundsJson to calculate wins and losses for p1_username
-        const rounds = JSON.parse(roundsJson) as Array<
+        // Parse the rounds to calculate wins and losses for p1_username
+        const roundsParse = JSON.parse(rounds) as Array<
           Array<{
             p1_username: string;
             p2_username: string;
@@ -154,7 +158,7 @@ export const gameRoutes = async (app: FastifyInstance) => {
         const userStats: Record<string, { wins: number; losses: number }> = {};
 
         // Aggregate wins and losses for each p1_username that exists in the database
-        for (const round of rounds) {
+        for (const round of roundsParse) {
           for (const match of round) {
             // Check if p1_username exists in the database
             const p1User = await database.db.get(
