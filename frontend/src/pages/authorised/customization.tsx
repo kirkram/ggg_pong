@@ -137,6 +137,10 @@ export const CustomazationPage = () => {
       return alert(t("ALL_PLAYERS_MUST_SELECT_COLOR"));
     }
 
+    if (guestName === loggedInUsername) {
+      return alert(t("GUEST_AND_USERNAME_CAN'T_BE_THE_SAME"));
+    }
+
     startDuelGame({
       user: loggedInUsername, 
       userAvatar: userAvatar.name,

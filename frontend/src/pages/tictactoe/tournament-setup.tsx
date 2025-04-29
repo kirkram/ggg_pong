@@ -186,9 +186,10 @@ export const TournamentSetupPage = () => {
           );
         })}
 
-      <button onClick={handleNextCircle} className="mt-6 px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg">
+      {checkIfCircleCompleted(currentCircle, guestCount) === 1 &&<button onClick={handleNextCircle} className="mt-6 px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg">
         {t("NEXT_CIRCLE")}
       </button>
+      }
     </div>
   );
 };

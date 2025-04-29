@@ -177,6 +177,9 @@ export const CustomazationTournamentPage = () => {
     if (hasDuplicates) {
       return alert(t("GUEST_NAMES_MUST_BE_UNIQUE"));
     }
+    if (guests.some((g) => g.username === loggedInUsername)) {
+      return alert(t("GUEST_AND_USERNAME_CAN'T_BE_THE_SAME"));
+    }
 
     if (!userAvatar || guests.some((g) => !g.avatar)) {
       return alert(t("ALL_PLAYERS_MUST_SELECT_AVATAR"));

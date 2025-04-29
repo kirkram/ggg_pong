@@ -172,13 +172,14 @@ export const DuelSetup = () => {
       </div>
 
       <div className="flex flex-col items-center mt-6">
-        <button
+        {(points.player1 === "?" || points.player2 === "?") && <button
           onClick={() => startGame(gameNumber)}
-          disabled={points.player1 !== "?" && points.player2 !== "?"} // Disable if the game has already been played
+          // disabled={points.player1 !== "?" && points.player2 !== "?"} // Disable if the game has already been played
           className="mt-4 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg"
         >
           Start Game {gameNumber}
         </button>
+        }
         {points.player1 === 0 && points.player2 === 0 && (
           <button
             onClick={() => handlePickWinner(gameNumber)}
