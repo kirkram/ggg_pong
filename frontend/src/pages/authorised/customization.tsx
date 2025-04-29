@@ -370,6 +370,7 @@ export const CustomazationPage = () => {
                       key={color}
                       value={color}
                       disabled={takenColors.includes(color)}
+                      className="text-black" // makes option text visible when open
                     >
                       {color.charAt(0).toUpperCase() + color.slice(1)}
                     </option>
