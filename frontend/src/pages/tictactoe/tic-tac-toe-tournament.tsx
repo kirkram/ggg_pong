@@ -106,37 +106,6 @@ export const TournamentGamePage = () => {
     checkForWinner();
   }, [board]);
 
-  // const handleBackToSetup = () => {
-  //   const updatedTournamentData = JSON.parse(
-  //     localStorage.getItem("tournamentData") || "{}"
-  //   );
-  
-  //   if (!player1 || !player2) {
-  //     console.error("Player data missing.");
-  //     return;
-  //   }
-  
-  //   if (!updatedTournamentData[`game${gameIndex}`]) {
-  //     console.error(`Game data for game${gameIndex} missing.`);
-  //     return;
-  //   }
-  
-  //   // Assign points based on winner
-  //   if (winner === "X") {
-  //     updatedTournamentData[`game${gameIndex}`].player1.points = "1";
-  //     updatedTournamentData[`game${gameIndex}`].player2.points = "0";
-  //   } else if (winner === "O") {
-  //     updatedTournamentData[`game${gameIndex}`].player1.points = "0";
-  //     updatedTournamentData[`game${gameIndex}`].player2.points = "1";
-  //   } else if (winner === "None") {
-  //     // Tie: 0 points each (or you can set 0.5 if you want)
-  //     updatedTournamentData[`game${gameIndex}`].player1.points = "0";
-  //     updatedTournamentData[`game${gameIndex}`].player2.points = "0";
-  //   }
-  
-  //   localStorage.setItem("tournamentData", JSON.stringify(updatedTournamentData));
-  //   navigate("/tournament-setup");
-  // };
   const handleBackToSetup = () => {
     const updatedTournamentData = JSON.parse(
       localStorage.getItem("tournamentData") || "{}"
@@ -146,6 +115,8 @@ export const TournamentGamePage = () => {
       console.error("Player data missing.");
       return;
     }
+
+    console.log(`Game index in tournament ${gameIndex}`);
   
     if (!updatedTournamentData[`game${gameIndex}`]) {
       console.error(`Game data for game${gameIndex} missing.`);
@@ -174,6 +145,19 @@ export const TournamentGamePage = () => {
   
   
 
+  // const getCellStyle = (index: number) => {
+  //   if (blockedCells.includes(index)) {
+  //     return {
+  //       backgroundImage: `url(${getBlockedCellImage(index)})`,
+  //       backgroundSize: "contain",
+  //       backgroundPosition: "center",
+  //       backgroundRepeat: "no-repeat",
+  //     };
+  //   }
+  //   return board[index] === "X"
+  //     ? { backgroundColor: "lightblue" }
+  //     : { backgroundColor: "lightpink" };
+  // };
   const getCellStyle = (index: number) => {
     if (blockedCells.includes(index)) {
       return {
@@ -183,10 +167,21 @@ export const TournamentGamePage = () => {
         backgroundRepeat: "no-repeat",
       };
     }
-    return board[index] === "X"
-      ? { backgroundColor: "lightblue" }
-      : { backgroundColor: "lightpink" };
+    const cellValue = board[index];
+    if (cellValue !== "X" && cellValue !== "O") return {};
+    try {
+      const color =
+        cellValue === "X" ? player1.color || "lightblue" : player2.color || "lightpink";
+
+      console.log("Cell value: " + cellValue + ", player1.color: " + player1.color + ", player2.color: " + player2.color)
+  
+      return { backgroundColor: color };
+    } catch (e) {
+      console.error("Failed to parse currentGameData:", e);
+      return {};
+    }
   };
+  
 
   const getBlockedCellImage = (index: number) => {
     if (index === 4) return "/game_assets/cup.png";

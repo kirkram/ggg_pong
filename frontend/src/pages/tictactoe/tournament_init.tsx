@@ -219,7 +219,7 @@ export const updateNextCircle = (circleNumber: number, guestCount: number) => {
   if (guestCount === 7 && circleNumber === 4)
     players8winner();
 
-  console.log("Updating players:", localStorage.getItem("tournamentData"));
+  console.log("Updated players [AT END updateNextCircle]:", localStorage.getItem("tournamentData"));
 };
 
 // functions for checking if circle is completed

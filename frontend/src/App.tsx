@@ -81,6 +81,10 @@ function App() {
                 path="show_a_winner"
                 element={<tictactoe.ShowAWinner />}
               />
+              <Route
+                path="show_a_tournament_winner"
+                element={<tictactoe.ShowATournamentWinner />}
+              />
               // "/game/play?mode=duel"
               <Route path="/game/play" element={<PongGame />} />
             </>
