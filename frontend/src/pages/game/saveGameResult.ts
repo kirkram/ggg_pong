@@ -43,10 +43,16 @@ export async function saveGameResult(params: {
           },
         }
       )
-      .then((res) => res.data);
+      .then((res) => res.data)
+      .catch((err) => {
+        console.debug("error with saving game sesh: ", err);
+        throw err;
+      });
 
-    if (!response.ok) {
-      throw new Error("Failed to save game session");
+    if (!response || response.error) {
+      throw new Error(
+        "Failed to save game session. Res: " + JSON.stringify(response)
+      );
     }
 
     console.log("✅ Game session saved successfully!");
