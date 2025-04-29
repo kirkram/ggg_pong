@@ -62,30 +62,30 @@ export const DuelSetup = () => {
     }
   }, []);
 
-  const handleGameComplete = (gameNumber, winner) => {
-    if (gameNumber === 1) {
-      setRounds1((prevRounds) => prevRounds + 1);
-      setPoints1((prevPoints) => ({
-        ...prevPoints,
-        [winner]: prevPoints[winner] === "?" ? 1 : prevPoints[winner] + 1,
-      }));
-      localStorage.setItem("points1", JSON.stringify(points1));
-    } else if (gameNumber === 2) {
-      setRounds2((prevRounds) => prevRounds + 1);
-      setPoints2((prevPoints) => ({
-        ...prevPoints,
-        [winner]: prevPoints[winner] === "?" ? 1 : prevPoints[winner] + 1,
-      }));
-      localStorage.setItem("points2", JSON.stringify(points2));
-    } else if (gameNumber === 3) {
-      setRounds3((prevRounds) => prevRounds + 1);
-      setPoints3((prevPoints) => ({
-        ...prevPoints,
-        [winner]: prevPoints[winner] === "?" ? 1 : prevPoints[winner] + 1,
-      }));
-      localStorage.setItem("points3", JSON.stringify(points3));
-    }
-  };
+  // const handleGameComplete = (gameNumber, winner) => {
+  //   if (gameNumber === 1) {
+  //     setRounds1((prevRounds) => prevRounds + 1);
+  //     setPoints1((prevPoints) => ({
+  //       ...prevPoints,
+  //       [winner]: prevPoints[winner] === "?" ? 1 : prevPoints[winner] + 1,
+  //     }));
+  //     localStorage.setItem("points1", JSON.stringify(points1));
+  //   } else if (gameNumber === 2) {
+  //     setRounds2((prevRounds) => prevRounds + 1);
+  //     setPoints2((prevPoints) => ({
+  //       ...prevPoints,
+  //       [winner]: prevPoints[winner] === "?" ? 1 : prevPoints[winner] + 1,
+  //     }));
+  //     localStorage.setItem("points2", JSON.stringify(points2));
+  //   } else if (gameNumber === 3) {
+  //     setRounds3((prevRounds) => prevRounds + 1);
+  //     setPoints3((prevPoints) => ({
+  //       ...prevPoints,
+  //       [winner]: prevPoints[winner] === "?" ? 1 : prevPoints[winner] + 1,
+  //     }));
+  //     localStorage.setItem("points3", JSON.stringify(points3));
+  //   }
+  // };
 
   const handlePickWinner = (gameNumber) => {
     // Randomly pick a winner
@@ -172,13 +172,14 @@ export const DuelSetup = () => {
       </div>
 
       <div className="flex flex-col items-center mt-6">
-        <button
+        {(points.player1 === "?" || points.player2 === "?") && <button
           onClick={() => startGame(gameNumber)}
-          disabled={points.player1 !== "?" && points.player2 !== "?"} // Disable if the game has already been played
+          // disabled={points.player1 !== "?" && points.player2 !== "?"} // Disable if the game has already been played
           className="mt-4 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg"
         >
           Start Game {gameNumber}
         </button>
+        }
         {points.player1 === 0 && points.player2 === 0 && (
           <button
             onClick={() => handlePickWinner(gameNumber)}

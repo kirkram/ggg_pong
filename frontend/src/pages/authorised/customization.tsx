@@ -142,6 +142,10 @@ export const CustomazationPage = () => {
       return alert(t("ALL_PLAYERS_MUST_SELECT_COLOR"));
     }
 
+    if (guestName === loggedInUsername) {
+      return alert(t("GUEST_AND_USERNAME_CAN'T_BE_THE_SAME"));
+    }
+
     startDuelGame({
       user: loggedInUsername,
       userAvatar: userAvatar.name,
@@ -375,6 +379,7 @@ export const CustomazationPage = () => {
                       key={color}
                       value={color}
                       disabled={takenColors.includes(color)}
+                      className="text-black" // makes option text visible when open
                     >
                       {color.charAt(0).toUpperCase() + color.slice(1)}
                     </option>

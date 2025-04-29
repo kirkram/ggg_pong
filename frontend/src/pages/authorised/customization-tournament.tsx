@@ -42,6 +42,8 @@ export const CustomazationTournamentPage = () => {
 
   const [loggedInUsername, setLoggedInUsername] = useState("");
 
+  const [tournamentData, setTournamentData] = useState<any>(null); //ADDED
+
   const [gameType, setGameType] = useState<string>(() => {
     const savedGameType = localStorage.getItem("gameType");
     return savedGameType ? savedGameType : "boring";
@@ -72,6 +74,7 @@ export const CustomazationTournamentPage = () => {
       localStorage.removeItem("userColor");
       localStorage.removeItem("gameType");
       localStorage.removeItem("tournamentData");
+      localStorage.removeItem("currentCircle");
 
       localStorage.removeItem("guestAvatar"); // cleaning duel data
       localStorage.removeItem("guestName");
@@ -80,6 +83,9 @@ export const CustomazationTournamentPage = () => {
       setGuests([]);
       setGuestCount(3);
       setGameType("boring");
+
+      setTournamentData(null); //ADDED
+      
     }
 
     setInitialized(true);
@@ -178,6 +184,9 @@ export const CustomazationTournamentPage = () => {
     const hasDuplicates = new Set(guestNames).size !== guestNames.length;
     if (hasDuplicates) {
       return alert(t("GUEST_NAMES_MUST_BE_UNIQUE"));
+    }
+    if (guests.some((g) => g.username === loggedInUsername)) {
+      return alert(t("GUEST_AND_USERNAME_CAN'T_BE_THE_SAME"));
     }
 
     if (!userAvatar || guests.some((g) => !g.avatar)) {

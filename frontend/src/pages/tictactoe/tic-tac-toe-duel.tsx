@@ -109,12 +109,12 @@ export const TicTacToeDuel = () => {
     setCurrentPlayer(currentPlayer === "X" ? "O" : "X");
   };
 
-  const handleRestart = () => {
-    setBoard(gameType === "boring" ? Array(9).fill("") : Array(20).fill(""));
-    setCurrentPlayer("X");
-    setWinner("None");
-    setIsGameOver(false);
-  };
+  // const handleRestart = () => {
+  //   setBoard(gameType === "boring" ? Array(9).fill("") : Array(20).fill(""));
+  //   setCurrentPlayer("X");
+  //   setWinner("None");
+  //   setIsGameOver(false);
+  // };
 
   useEffect(() => {
     checkForWinner();
@@ -237,7 +237,7 @@ export const TicTacToeDuel = () => {
           ? winner === "None"
             ? t("ITS_A_TIE")
             : `${winner} ${t("WINS")} 🎉`
-          : `${t("ITS_TURN", { player: currentPlayer === "X" ? t("PLAYER") + " 1" : t("GUEST_PLAYER") })}`}
+          : `${t("ITS_TURN", { player: currentPlayer === "X" ? "X" : "O" })}`}
       </div>
 
       {isGameOver && (
