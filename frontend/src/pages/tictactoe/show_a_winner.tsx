@@ -34,12 +34,6 @@ export const ShowAWinner = () => {
       points1.player1 + points2.player1 + points3.player1;
     const totalPointsPlayer2 =
       points1.player2 + points2.player2 + points3.player2;
-  useEffect(() => {
-    // Determine winner and loser based on points
-    const totalPointsPlayer1 =
-      points1.player1 + points2.player1 + points3.player1;
-    const totalPointsPlayer2 =
-      points1.player2 + points2.player2 + points3.player2;
 
     if (totalPointsPlayer1 > totalPointsPlayer2) {
       setWinner("player1");
