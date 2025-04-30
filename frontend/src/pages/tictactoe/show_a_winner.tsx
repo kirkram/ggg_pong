@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { saveGameResult } from "../game/saveGameResult";
 import { useTranslation } from "react-i18next";
 
 export const ShowAWinner = () => {
@@ -18,11 +19,21 @@ export const ShowAWinner = () => {
   const [loser, setLoser] = useState(null);
 
   useEffect(() => {
-    if (!userAvatar || !guestAvatar) {
-      console.error("User or Guest Avatar is missing in localStorage");
+    if (!points1 || !points2 || !points3 || !userAvatar || !guestAvatar) {
+      if (!userAvatar || !guestAvatar) {
+        console.error("User or Guest Avatar is missing in localStorage");
+      }
+      navigate("/menu");
+      return;
     }
   }, [userAvatar, guestAvatar]);
 
+  useEffect(() => {
+    // Determine winner and loser based on points
+    const totalPointsPlayer1 =
+      points1.player1 + points2.player1 + points3.player1;
+    const totalPointsPlayer2 =
+      points1.player2 + points2.player2 + points3.player2;
   useEffect(() => {
     // Determine winner and loser based on points
     const totalPointsPlayer1 =
@@ -40,21 +51,51 @@ export const ShowAWinner = () => {
       setWinner("tie");
       setLoser("tie");
     }
+    if (!winner || !loser) {
+      console.debug("ShowAWinner: winner or loser state hasnt loaded yet");
+      return;
+    }
+
+    saveResults();
   }, [points1, points2, points3]);
+
+  const fallbackAvatar =
+    "/avatars/queen_of_spoons/6f6e1f9c-7ea1-4902-a844-a3292cc6954d.png";
 
   const getAvatarPath = (player, status) => {
     const avatarName =
       player === "player1" ? userAvatar?.name : guestAvatar?.name;
+    // If avatarName is found, construct the path for winner/loser images
+    return avatarName ? `/${status}/${avatarName}.png` : fallbackAvatar;
+  };
 
-    return avatarName
-      ? `/${status}/${avatarName}.png`
-      : "/path/to/default-avatar.png";
+  const saveResults = async () => {
+    const userWins = winner === "player1" ? 1 : 0;
+    const guestWins = winner === "player2" ? 1 : 0;
+
+    saveGameResult({
+      username: userName || "",
+      guest_name: guestName || "",
+      userAvatar: userAvatar?.name || "",
+      guestAvatar: guestAvatar?.name || "",
+      userWins,
+      guestWins,
+      gameName: "tic-tac-toe",
+      // rounds_json: JSON.stringify(tournamentResults),
+    });
+    localStorage.removeItem("userAvatar");
+    localStorage.removeItem("guestAvatar");
+    localStorage.removeItem("points1");
+    localStorage.removeItem("points2");
+    localStorage.removeItem("points3");
   };
 
   return (
     <div
       className="flex flex-col justify-center items-center p-4 bg-gray-900 min-h-screen"
       style={{
+        backgroundImage:
+          "url('/background/360_F_339060225_w8ob8LjMJzPdEqD9UFxbE6ibcKx8dFrP.jpg')",
         backgroundImage:
           "url('/background/360_F_339060225_w8ob8LjMJzPdEqD9UFxbE6ibcKx8dFrP.jpg')",
         backgroundSize: "cover",
@@ -83,7 +124,12 @@ export const ShowAWinner = () => {
                 winner === "player1" ? "player1" : "player2",
                 "winning"
               )}
+              src={getAvatarPath(
+                winner === "player1" ? "player1" : "player2",
+                "winning"
+              )}
               alt="Winner Avatar"
+              className="w-96 h-96 object-contain mb-4"
               className="w-96 h-96 object-contain mb-4"
             />
             <p className="text-black">{t("WINNER")}</p>

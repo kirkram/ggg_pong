@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { saveGameResult } from "../game/saveGameResult";
 import { useTranslation } from "react-i18next";
 
 type Winner = {
@@ -22,20 +23,55 @@ export const ShowATournamentWinner = () => {
 
     try {
       const data = JSON.parse(storedTournamentData);
-      if (!data.winner) {
+      if (!data.winner || data.winner === "?") {
         console.error("No winner found in tournament data");
         return;
       }
       setWinner(data.winner);
+      saveResults();
     } catch (error) {
       console.error("Failed to parse tournament data:", error);
     }
   }, []);
 
+  const fallbackAvatar =
+    "/avatars/queen_of_spoons/6f6e1f9c-7ea1-4902-a844-a3292cc6954d.png";
+
   const getAvatarPath = (avatarname: string) => {
-    return avatarname
-      ? `/winning/${avatarname}.png`
-      : "/path/to/default-avatar.png";
+    return avatarname ? `/winning/${avatarname}.png` : fallbackAvatar;
+  };
+
+  const saveResults = async () => {
+    const saveRounds = JSON.parse(
+      localStorage.getItem("tournamentData") || "{}"
+    );
+
+    const convertRounds = Object.entries(saveRounds)
+      .filter(([key]) => key !== "winner")
+      .map(([key, game]) => {
+        return [
+          {
+            p1_username: game.player1.username,
+            p2_username: game.player2.username,
+            p1_avatar: game.player1.avatarname,
+            p2_avatar: game.player2.avatarname,
+            p1_wins: game.player1.points === "1" ? 1 : 0,
+            p2_wins: game.player2.points === "1" ? 1 : 0,
+          },
+        ];
+      });
+
+    saveGameResult({
+      username: convertRounds[0][0].p1_username || "",
+      guest_name: "",
+      userAvatar: "",
+      guestAvatar: "",
+      userWins: 0,
+      guestWins: 0,
+      gameName: "tic-tac-toe",
+      rounds_json: JSON.stringify(convertRounds),
+    });
+    localStorage.removeItem("tournamentData");
   };
 
   if (!winner) {
