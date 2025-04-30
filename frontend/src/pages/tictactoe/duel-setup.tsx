@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -114,7 +114,7 @@ export const DuelSetup = () => {
     navigate(`/tic-tac-toe-duel/${gameNumber}`);
   };
 
-  const defaultAvatar =
+  const fallbackAvatar =
     "/avatars/queen_of_spoons/6f6e1f9c-7ea1-4902-a844-a3292cc6954d.png";
 
   // Reusable component for displaying each game
@@ -124,7 +124,7 @@ export const DuelSetup = () => {
       <div className="flex flex-col items-center bg-pink-500 p-4 rounded-lg">
         <div className="w-20 h-20 bg-pink-500 rounded-full flex justify-center items-center mb-4">
           <img
-            src={userAvatar?.image || defaultAvatar}
+            src={userAvatar?.image || fallbackAvatar}
             alt="Player 1 Avatar"
             style={{ width: "50px", height: "50px", borderRadius: "50%" }}
           />
@@ -140,7 +140,7 @@ export const DuelSetup = () => {
       <div className="flex flex-col items-center bg-pink-500 p-4 rounded-lg">
         <div className="w-20 h-20 bg-pink-500 rounded-full flex justify-center items-center mb-4">
           <img
-            src={guestAvatar?.image || defaultAvatar}
+            src={guestAvatar?.image || fallbackAvatar}
             alt="Player 2 Avatar"
             style={{ width: "50px", height: "50px", borderRadius: "50%" }}
           />

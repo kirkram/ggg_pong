@@ -50,6 +50,9 @@ export const ShowAWinner = () => {
     saveResults();
   }, [points1, points2, points3]);
 
+  const fallbackAvatar =
+    "/avatars/queen_of_spoons/6f6e1f9c-7ea1-4902-a844-a3292cc6954d.png";
+
   const getAvatarPath = (player, status) => {
     const avatarName =
       player === "player1" ? userAvatar?.name : guestAvatar?.name;
@@ -58,9 +61,7 @@ export const ShowAWinner = () => {
     console.log(`Avatar Name: ${avatarName}`);
 
     // If avatarName is found, construct the path for winner/loser images
-    return avatarName
-      ? `/${status}/${avatarName}.png`
-      : "/path/to/default-avatar.png";
+    return avatarName ? `/${status}/${avatarName}.png` : fallbackAvatar;
   };
 
   const saveResults = async () => {
