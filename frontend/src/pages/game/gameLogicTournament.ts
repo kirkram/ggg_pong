@@ -46,6 +46,8 @@ const gameState =
 // For smooth multiple keys
 const keysPressed: { [key: string]: boolean } = {}
 
+let waitingForFinalKeyPress = false;
+
 // Game options
 export const gameOptions =
 {
@@ -55,7 +57,8 @@ export const gameOptions =
 export function gameLogicTournament(
 	canvasRef: RefObject<HTMLCanvasElement>,
 	sessionData: any,
-	onMatchEnd: (WinnerUsername: string) => void
+	onMatchEnd: (WinnerUsername: string) => void,
+	navigate?: (path: string, options?: any) => void
 )
 {
 	gameState.phase = GamePhase.TourScreen;
@@ -366,15 +369,28 @@ export function gameLogicTournament(
 				}
 				else if (gameState.phase === GamePhase.Final)
 				{
-					//saveGameResult({ user: sessionData.user, userAvatar: sessionData.userAvatar.name, guest: sessionData.guest, guestAvatar: sessionData.guestAvatar.name, userWins: p1Wins, guestWins: p2Wins });
-					//gameState.phase = GamePhase.Opening;
-					//gameState.round = 1;
-					//p1Score = 0;
-					//p2Score = 0;
-					//p1Wins = 0;
-					//p2Wins = 0;
-					//clearForgottenItems();
-					window.location.href = "/game/game-end-page";
+					waitingForFinalKeyPress = true;
+					//window.location.href = "/game/game-end-page";
+					//if (navigate) {
+					//	navigate("/game/game-end-page", 
+					//	{
+					//	  state: 
+					//	  {
+					//		winnerName:
+					//		  p1Wins > p2Wins ? sessionData.user : sessionData.guest,
+					//		winnerAvatar:
+					//		  p1Wins > p2Wins
+					//			? sessionData.userAvatar.name
+					//			: sessionData.guestAvatar.name,
+					//		loserName:
+					//		  p1Wins > p2Wins ? sessionData.guest : sessionData.user,
+					//		loserAvatar:
+					//		  p1Wins > p2Wins
+					//			? sessionData.guestAvatar.name
+					//			: sessionData.userAvatar.name,
+					//	  	},
+					//		});
+					//	}
 				}
 			}
 		}
@@ -397,4 +413,31 @@ export function gameLogicTournament(
 		if (keydownHandler) document.removeEventListener("keydown", keydownHandler);
 		clearForgottenItems();
 	}
+}
+
+export function handleFinalKeyPress(
+	navigate?: (path: string, options?: any) => void,
+	sessionData?: any
+) 
+{
+	if (!waitingForFinalKeyPress || !navigate || !sessionData)
+		return;
+
+	waitingForFinalKeyPress = false;
+
+	navigate("/game/game-end-page", 
+	{
+		state: 
+		{
+			winnerName:
+				sessionData.user,
+			winnerAvatar:
+				sessionData.userAvatar?.name || "Unknown",
+			loserName:
+				sessionData.guest,
+			loserAvatar:
+				sessionData.guestAvatar?.name || "Unknown",
+		}
+	});
+	window.location.href = "/game/game-end-page";
 }
