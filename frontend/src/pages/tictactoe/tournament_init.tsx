@@ -1,6 +1,5 @@
 import { PlayerInfo, Tournament4, Tournament8, GameInfo } from "./tournament_interface";
 
-// Function to generate player data based on localStorage
 export const generatePlayerData = (loggedInUsername: string, userAvatar: any, userColor: string | null) => {
   const players: PlayerInfo[] = [{
     username: loggedInUsername,
@@ -24,7 +23,6 @@ export const generatePlayerData = (loggedInUsername: string, userAvatar: any, us
   return players;
 };
 
-// Function to generate Tournament4 data (for 4 players)
 export const generateTournament4 = (players: PlayerInfo[]): Tournament4 => {
   return {
     game1: {
@@ -49,7 +47,6 @@ export const generateTournament4 = (players: PlayerInfo[]): Tournament4 => {
   };
 };
 
-// Function to generate Tournament8 data (for 8 players)
 export const generateTournament8 = (players: PlayerInfo[]): Tournament8 => {
   return {
     game1: {
@@ -127,9 +124,6 @@ const players4Circle2 = () => {
   updatedTournamentData[`game3`].player1 = winner1;
   updatedTournamentData[`game3`].player2 = winner2;
 
-  // updatedTournamentData[`game3`].player1.points = "?";
-  // updatedTournamentData[`game3`].player2.points = "?";
-
   localStorage.setItem("tournamentData", JSON.stringify(updatedTournamentData));
 
   console.log("Updating players [players4Circle2]:", updatedTournamentData);
@@ -154,11 +148,6 @@ const players8Circle2 = () => {
   updatedTournamentData[`game5`].player2 = winner2;
   updatedTournamentData[`game6`].player1 = winner3;
   updatedTournamentData[`game6`].player2 = winner4;
-
-  // updatedTournamentData[`game5`].player1.points = "?";
-  // updatedTournamentData[`game5`].player2.points = "?";
-  // updatedTournamentData[`game6`].player1.points = "?";
-  // updatedTournamentData[`game6`].player2.points = "?";
 
   localStorage.setItem("tournamentData", JSON.stringify(updatedTournamentData));
 };
@@ -188,9 +177,6 @@ const players8Circle3 = () => {
   
   updatedTournamentData[`game7`].player1 = winner1;
   updatedTournamentData[`game7`].player2 = winner2;
-
-  // updatedTournamentData[`game7`].player1.points = "?";
-  // updatedTournamentData[`game7`].player2.points = "?";
 
   localStorage.setItem("tournamentData", JSON.stringify(updatedTournamentData));
 };

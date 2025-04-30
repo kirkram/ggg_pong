@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 export const ShowAWinner = () => {
   const navigate = useNavigate();
 
-  // Fetch avatar and points data from localStorage
   const userAvatar = JSON.parse(localStorage.getItem("userAvatar"));
   const guestAvatar = JSON.parse(localStorage.getItem("guestAvatar"));
   const points1 = JSON.parse(localStorage.getItem("points1"));
@@ -16,19 +15,16 @@ export const ShowAWinner = () => {
   const [winner, setWinner] = useState(null);
   const [loser, setLoser] = useState(null);
 
-  // Debugging: Ensure avatars are being correctly loaded
   useEffect(() => {
     if (!userAvatar || !guestAvatar) {
       console.error("User or Guest Avatar is missing in localStorage");
     }
   }, [userAvatar, guestAvatar]);
 
-  useEffect(() => {
-    // Calculate total points for Player 1 and Player 2
+  useEffect(() => { // Determine winner and loser based on points
     const totalPointsPlayer1 = points1.player1 + points2.player1 + points3.player1;
     const totalPointsPlayer2 = points1.player2 + points2.player2 + points3.player2;
 
-    // Determine winner and loser based on points
     if (totalPointsPlayer1 > totalPointsPlayer2) {
       setWinner("player1");
       setLoser("player2");
@@ -44,10 +40,6 @@ export const ShowAWinner = () => {
   const getAvatarPath = (player, status) => {
     const avatarName = player === "player1" ? userAvatar?.name : guestAvatar?.name;
 
-    // Debugging: Check avatar names
-    console.log(`Avatar Name: ${avatarName}`);
-
-    // If avatarName is found, construct the path for winner/loser images
     return avatarName
       ? `/${status}/${avatarName}.png`
       : "/path/to/default-avatar.png";
@@ -82,7 +74,7 @@ export const ShowAWinner = () => {
             <img
               src={getAvatarPath(winner === "player1" ? "player1" : "player2", "winning")}
               alt="Winner Avatar"
-              className="w-96 h-96 object-contain mb-4" // Make image bigger and maintain aspect ratio
+              className="w-96 h-96 object-contain mb-4" 
             />
             <p className="text-black">Winner</p>
           </div>
@@ -95,7 +87,7 @@ export const ShowAWinner = () => {
             <img
               src={getAvatarPath(loser === "player1" ? "player1" : "player2", "losing")}
               alt="Loser Avatar"
-              className="w-96 h-96 object-contain mb-4" // Make image bigger and maintain aspect ratio
+              className="w-96 h-96 object-contain mb-4" 
             />
             <p className="text-black">Loser</p>
           </div>

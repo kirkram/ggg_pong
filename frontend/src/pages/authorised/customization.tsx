@@ -54,7 +54,6 @@ export const CustomazationPage = () => {
     return savedGameType ? savedGameType : "boring";
   });
 
-  // State for color picker visibility
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
   const [guestColorPickerOpen, setGuestColorPickerOpen] = useState(false);
 
@@ -62,7 +61,7 @@ export const CustomazationPage = () => {
     const token = localStorage.getItem("ping-pong-jwt");
     if (token) {
       const payload = JSON.parse(atob(token.split(".")[1]));
-      setLoggedInUsername(payload.username); // Get logged-in username from the JWT token
+      setLoggedInUsername(payload.username);
     }
   }, []);
 
@@ -171,10 +170,8 @@ export const CustomazationPage = () => {
       .catch((err) => alert(`${t("FAILED_TO_START_GAME")}: ${err.message}`));
   };
 
-  // Colors already taken by user and guest
   const takenColors = [userColor, guestColor];
 
-  // Helper function to get the button's color based on the selected color
   const getButtonColor = (color: string | null) => {
     switch (color) {
       case "red":
