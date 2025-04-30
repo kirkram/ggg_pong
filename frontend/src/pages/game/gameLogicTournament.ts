@@ -46,7 +46,13 @@ const gameState =
 // For smooth multiple keys
 const keysPressed: { [key: string]: boolean } = {}
 
+//save winner and loser
 let waitingForFinalKeyPress = false;
+let finalWinnerName = "";
+let finalWinnerAvatarName = "";
+let finalLoserName = "";
+let finalLoserAvatarName = "";
+
 
 // Game options
 export const gameOptions =
@@ -415,6 +421,21 @@ export function gameLogicTournament(
 	}
 }
 
+
+export function setFinalResult(
+	winnerName: string,
+	winnerAvatarName: string,
+	loserName: string,
+	loserAvatarName: string
+) 
+{
+	finalWinnerName = winnerName;
+	finalWinnerAvatarName = winnerAvatarName;
+	finalLoserName = loserName;
+	finalLoserAvatarName = loserAvatarName;
+	waitingForFinalKeyPress = true;
+}
+
 export function handleFinalKeyPress(
 	navigate?: (path: string, options?: any) => void,
 	sessionData?: any
@@ -430,14 +451,16 @@ export function handleFinalKeyPress(
 		state: 
 		{
 			winnerName:
-				sessionData.user,
+				finalWinnerName,
 			winnerAvatar:
-				sessionData.userAvatar?.name || "Unknown",
+				finalWinnerAvatarName,
 			loserName:
-				sessionData.guest,
+				finalLoserName,
 			loserAvatar:
-				sessionData.guestAvatar?.name || "Unknown",
+				finalLoserAvatarName,
 		}
 	});
-	window.location.href = "/game/game-end-page";
+//	window.location.href = "/game/game-end-page";
 }
+
+

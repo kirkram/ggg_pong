@@ -76,7 +76,7 @@ export default function PongGame() {
         if (e.code === "Space") 
 		{
         	document.removeEventListener("keydown", spaceHandler)
-			window.location.href = "/game/game-end-page"; // this should not be here!
+//			window.location.href = "/game/game-end-page"; // this should not be here!
 			handleFinalKeyPress(navigate, sessionData)
 		  
         }
@@ -211,9 +211,28 @@ export default function PongGame() {
               rounds_json: JSON.stringify(tournamentResults),
             });
 
-            if (winnerData) {
-              showFinalScreen(finalWinner, winnerData.avatar);
-            }
+            if (winnerData) if (winnerData) {
+				const loserData = [currentMatch.player1, currentMatch.player2].find(
+					(p) => p?.username !== finalWinner
+				);
+			
+				// Find avatar names by image URL
+				const winnerAvatarObj = avatars.find(a => a.image === winnerData.avatar);
+				const loserAvatarObj = avatars.find(a => a.image === loserData?.avatar);
+			
+				// Store final winner/loser details
+				import("./gameLogicTournament").then((mod) => {
+					mod.setFinalResult(
+						finalWinner,
+						winnerAvatarObj?.name || "Unknown",
+						loserData?.username || "Unknown",
+						loserAvatarObj?.name || "Unknown"
+					);
+				});
+			
+				showFinalScreen(finalWinner, winnerData.avatar);
+			}
+			
           }
         }
 
