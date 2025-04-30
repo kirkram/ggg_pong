@@ -228,7 +228,6 @@ export const CustomazationTournamentPage = () => {
       .catch((err) => alert(t("START_GAME_FAILED") + ": " + err.message));
   };
 
-  // Helper function to get the button's color based on the selected color
   const getButtonColor = (color: string | null) => {
     switch (color) {
       case "red":
@@ -249,7 +248,7 @@ export const CustomazationTournamentPage = () => {
         return "bg-pink-500";
 
       default:
-        return "bg-gray-300"; // Default to gray when no color selected
+        return "bg-gray-300";
     }
   };
 
@@ -388,7 +387,7 @@ export const CustomazationTournamentPage = () => {
                   key={color}
                   value={color}
                   disabled={takenColors.includes(color)}
-                  className="text-black" // makes option text visible when open
+                  className="text-black"
                 >
                   {t(`COLOR_${color.toUpperCase()}`)}
                 </option>
@@ -478,7 +477,7 @@ export const CustomazationTournamentPage = () => {
                     key={color}
                     value={color}
                     disabled={takenColors.includes(color)}
-                    className="text-black" // makes option text visible when open
+                    className="text-black"
                   >
                     {t(`COLOR_${color.toUpperCase()}`)}
                   </option>
