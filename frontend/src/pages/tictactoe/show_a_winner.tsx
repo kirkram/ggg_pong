@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { saveGameResult } from "../game/saveGameResult";
 
 export const ShowAWinner = () => {
   const navigate = useNavigate();
@@ -16,17 +17,19 @@ export const ShowAWinner = () => {
   const [winner, setWinner] = useState(null);
   const [loser, setLoser] = useState(null);
 
-  // Debugging: Ensure avatars are being correctly loaded
-  useEffect(() => {
-    if (!userAvatar || !guestAvatar) {
-      console.error("User or Guest Avatar is missing in localStorage");
-    }
-  }, [userAvatar, guestAvatar]);
-
   useEffect(() => {
     // Calculate total points for Player 1 and Player 2
-    const totalPointsPlayer1 = points1.player1 + points2.player1 + points3.player1;
-    const totalPointsPlayer2 = points1.player2 + points2.player2 + points3.player2;
+    if (!points1 || !points2 || !points3 || !userAvatar || !guestAvatar) {
+      if (!userAvatar || !guestAvatar) {
+        console.error("User or Guest Avatar is missing in localStorage");
+      }
+      navigate("/menu");
+      return;
+    }
+    const totalPointsPlayer1 =
+      points1.player1 + points2.player1 + points3.player1;
+    const totalPointsPlayer2 =
+      points1.player2 + points2.player2 + points3.player2;
 
     // Determine winner and loser based on points
     if (totalPointsPlayer1 > totalPointsPlayer2) {
@@ -39,10 +42,17 @@ export const ShowAWinner = () => {
       setWinner("tie");
       setLoser("tie");
     }
+    if (!winner || !loser) {
+      console.debug("ShowAWinner: winner or loser state hasnt loaded yet");
+      return;
+    }
+
+    saveResults();
   }, [points1, points2, points3]);
 
   const getAvatarPath = (player, status) => {
-    const avatarName = player === "player1" ? userAvatar?.name : guestAvatar?.name;
+    const avatarName =
+      player === "player1" ? userAvatar?.name : guestAvatar?.name;
 
     // Debugging: Check avatar names
     console.log(`Avatar Name: ${avatarName}`);
@@ -53,11 +63,33 @@ export const ShowAWinner = () => {
       : "/path/to/default-avatar.png";
   };
 
+  const saveResults = async () => {
+    const userWins = winner === "player1" ? 1 : 0;
+    const guestWins = winner === "player2" ? 1 : 0;
+
+    saveGameResult({
+      username: userName || "",
+      guest_name: guestName || "",
+      userAvatar: userAvatar?.name || "",
+      guestAvatar: guestAvatar?.name || "",
+      userWins,
+      guestWins,
+      gameName: "tic-tac-toe",
+      // rounds_json: JSON.stringify(tournamentResults),
+    });
+    localStorage.removeItem("userAvatar");
+    localStorage.removeItem("guestAvatar");
+    localStorage.removeItem("points1");
+    localStorage.removeItem("points2");
+    localStorage.removeItem("points3");
+  };
+
   return (
     <div
       className="flex flex-col justify-center items-center p-4 bg-gray-900 min-h-screen"
       style={{
-        backgroundImage: "url('/background/360_F_339060225_w8ob8LjMJzPdEqD9UFxbE6ibcKx8dFrP.jpg')",
+        backgroundImage:
+          "url('/background/360_F_339060225_w8ob8LjMJzPdEqD9UFxbE6ibcKx8dFrP.jpg')",
         backgroundSize: "cover",
       }}
     >
@@ -80,7 +112,10 @@ export const ShowAWinner = () => {
               {winner === "player1" ? userName : guestName} Wins!
             </h2>
             <img
-              src={getAvatarPath(winner === "player1" ? "player1" : "player2", "winning")}
+              src={getAvatarPath(
+                winner === "player1" ? "player1" : "player2",
+                "winning"
+              )}
               alt="Winner Avatar"
               className="w-96 h-96 object-contain mb-4" // Make image bigger and maintain aspect ratio
             />
@@ -93,7 +128,10 @@ export const ShowAWinner = () => {
               {loser === "player1" ? userName : guestName} Loses!
             </h2>
             <img
-              src={getAvatarPath(loser === "player1" ? "player1" : "player2", "losing")}
+              src={getAvatarPath(
+                loser === "player1" ? "player1" : "player2",
+                "losing"
+              )}
               alt="Loser Avatar"
               className="w-96 h-96 object-contain mb-4" // Make image bigger and maintain aspect ratio
             />

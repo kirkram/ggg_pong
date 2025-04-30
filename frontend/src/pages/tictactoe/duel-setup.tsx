@@ -7,29 +7,29 @@ export const DuelSetup = () => {
   const { t } = useTranslation();
 
   // Tracks the rounds and points for all three games
-  const [rounds1, setRounds1] = useState(0); 
-  const [rounds2, setRounds2] = useState(0); 
-  const [rounds3, setRounds3] = useState(0); 
+  const [rounds1, setRounds1] = useState(0);
+  const [rounds2, setRounds2] = useState(0);
+  const [rounds3, setRounds3] = useState(0);
 
   const [points1, setPoints1] = useState({
-    player1: "?", 
-    player2: "?", 
+    player1: "?",
+    player2: "?",
   });
 
   const [points2, setPoints2] = useState({
-    player1: "?", 
-    player2: "?", 
+    player1: "?",
+    player2: "?",
   });
 
   const [points3, setPoints3] = useState({
-    player1: "?", 
-    player2: "?", 
+    player1: "?",
+    player2: "?",
   });
 
-  const [userName, setUserName] = useState(""); 
-  const [guestName, setGuestName] = useState(""); 
-  const [userAvatar, setUserAvatar] = useState(null); 
-  const [guestAvatar, setGuestAvatar] = useState(null); 
+  const [userName, setUserName] = useState("");
+  const [guestName, setGuestName] = useState("");
+  const [userAvatar, setUserAvatar] = useState(undefined);
+  const [guestAvatar, setGuestAvatar] = useState(null);
 
   // Fetch data from localStorage when component mounts
   useEffect(() => {
@@ -61,31 +61,6 @@ export const DuelSetup = () => {
       setPoints3(updatedPoints3); // Update points after a game for Game 3
     }
   }, []);
-
-  // const handleGameComplete = (gameNumber, winner) => {
-  //   if (gameNumber === 1) {
-  //     setRounds1((prevRounds) => prevRounds + 1);
-  //     setPoints1((prevPoints) => ({
-  //       ...prevPoints,
-  //       [winner]: prevPoints[winner] === "?" ? 1 : prevPoints[winner] + 1,
-  //     }));
-  //     localStorage.setItem("points1", JSON.stringify(points1));
-  //   } else if (gameNumber === 2) {
-  //     setRounds2((prevRounds) => prevRounds + 1);
-  //     setPoints2((prevPoints) => ({
-  //       ...prevPoints,
-  //       [winner]: prevPoints[winner] === "?" ? 1 : prevPoints[winner] + 1,
-  //     }));
-  //     localStorage.setItem("points2", JSON.stringify(points2));
-  //   } else if (gameNumber === 3) {
-  //     setRounds3((prevRounds) => prevRounds + 1);
-  //     setPoints3((prevPoints) => ({
-  //       ...prevPoints,
-  //       [winner]: prevPoints[winner] === "?" ? 1 : prevPoints[winner] + 1,
-  //     }));
-  //     localStorage.setItem("points3", JSON.stringify(points3));
-  //   }
-  // };
 
   const handlePickWinner = (gameNumber) => {
     // Randomly pick a winner
@@ -139,6 +114,9 @@ export const DuelSetup = () => {
     navigate(`/tic-tac-toe-duel/${gameNumber}`);
   };
 
+  const defaultAvatar =
+    "/avatars/queen_of_spoons/6f6e1f9c-7ea1-4902-a844-a3292cc6954d.png";
+
   // Reusable component for displaying each game
   const GameCard = ({ gameNumber, points, setPoints, rounds, setRounds }) => (
     <div className="flex justify-around items-center bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-4xl mb-6">
@@ -146,7 +124,7 @@ export const DuelSetup = () => {
       <div className="flex flex-col items-center bg-pink-500 p-4 rounded-lg">
         <div className="w-20 h-20 bg-pink-500 rounded-full flex justify-center items-center mb-4">
           <img
-            src={userAvatar?.image || "/path/to/default-avatar"}
+            src={userAvatar?.image || defaultAvatar}
             alt="Player 1 Avatar"
             style={{ width: "50px", height: "50px", borderRadius: "50%" }}
           />
@@ -162,7 +140,7 @@ export const DuelSetup = () => {
       <div className="flex flex-col items-center bg-pink-500 p-4 rounded-lg">
         <div className="w-20 h-20 bg-pink-500 rounded-full flex justify-center items-center mb-4">
           <img
-            src={guestAvatar?.image || "/path/to/default-avatar"}
+            src={guestAvatar?.image || defaultAvatar}
             alt="Player 2 Avatar"
             style={{ width: "50px", height: "50px", borderRadius: "50%" }}
           />
@@ -172,14 +150,15 @@ export const DuelSetup = () => {
       </div>
 
       <div className="flex flex-col items-center mt-6">
-        {(points.player1 === "?" || points.player2 === "?") && <button
-          onClick={() => startGame(gameNumber)}
-          // disabled={points.player1 !== "?" && points.player2 !== "?"} // Disable if the game has already been played
-          className="mt-4 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg"
-        >
-          Start Game {gameNumber}
-        </button>
-        }
+        {(points.player1 === "?" || points.player2 === "?") && (
+          <button
+            onClick={() => startGame(gameNumber)}
+            // disabled={points.player1 !== "?" && points.player2 !== "?"} // Disable if the game has already been played
+            className="mt-4 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg"
+          >
+            Start Game {gameNumber}
+          </button>
+        )}
         {points.player1 === 0 && points.player2 === 0 && (
           <button
             onClick={() => handlePickWinner(gameNumber)}
@@ -195,22 +174,33 @@ export const DuelSetup = () => {
   // Check if all 3 games have been completed and have a winner or tie
   const isAllGamesCompleted = () => {
     return (
-      (points1.player1 !== "?" && points1.player2 !== "?") &&
-      (points2.player1 !== "?" && points2.player2 !== "?") &&
-      (points3.player1 !== "?" && points3.player2 !== "?") &&
-      (points1.player1 !== points1.player2) &&
-      (points2.player1 !== points2.player2) &&
-      (points3.player1 !== points3.player2)
+      points1.player1 !== "?" &&
+      points1.player2 !== "?" &&
+      points2.player1 !== "?" &&
+      points2.player2 !== "?" &&
+      points3.player1 !== "?" &&
+      points3.player2 !== "?" &&
+      points1.player1 !== points1.player2 &&
+      points2.player1 !== points2.player2 &&
+      points3.player1 !== points3.player2
     );
   };
 
   return (
-    <div className="flex flex-col justify-center items-center p-4 bg-gray-900 min-h-screen"
-    style={{ backgroundImage: "url('/background/360_F_339060225_w8ob8LjMJzPdEqD9UFxbE6ibcKx8dFrP.jpg')",
-    backgroundSize: "cover" }}>
-       <button onClick={() => navigate("/menu")} className="absolute top-6 left-6 bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg font-semibold shadow-md">
-         🔙 {t("BACK_TO_MENU")}
-       </button>
+    <div
+      className="flex flex-col justify-center items-center p-4 bg-gray-900 min-h-screen"
+      style={{
+        backgroundImage:
+          "url('/background/360_F_339060225_w8ob8LjMJzPdEqD9UFxbE6ibcKx8dFrP.jpg')",
+        backgroundSize: "cover",
+      }}
+    >
+      <button
+        onClick={() => navigate("/menu")}
+        className="absolute top-6 left-6 bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg font-semibold shadow-md"
+      >
+        🔙 {t("BACK_TO_MENU")}
+      </button>
 
       {/* Game 1 */}
       <GameCard
@@ -241,7 +231,9 @@ export const DuelSetup = () => {
 
       {isAllGamesCompleted() && (
         <button
-          onClick={() => navigate("/show_a_winner")}
+          onClick={() => {
+            navigate("/show_a_winner");
+          }}
           className="mt-6 px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg"
         >
           Show the Winner
