@@ -16,7 +16,6 @@ export const ShowATournamentWinner = () => {
     const storedTournamentData = localStorage.getItem("tournamentData");
     if (!storedTournamentData) {
       console.error("No tournament data found");
-      navigate("/menu");
       return;
     }
 
@@ -33,10 +32,11 @@ export const ShowATournamentWinner = () => {
     }
   }, []);
 
+  const fallbackAvatar =
+    "/avatars/queen_of_spoons/6f6e1f9c-7ea1-4902-a844-a3292cc6954d.png";
+
   const getAvatarPath = (avatarname: string) => {
-    return avatarname
-      ? `/winning/${avatarname}.png`
-      : "/path/to/default-avatar.png";
+    return avatarname ? `/winning/${avatarname}.png` : fallbackAvatar;
   };
 
   const saveResults = async () => {

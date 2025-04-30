@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { generatePlayerData, generateTournamentData, checkIfCircleCompleted, updateNextCircle } from "./tournament_init";
@@ -87,19 +87,17 @@ export const TournamentSetupPage = () => {
       return;
     }
   
-    // Randomly choose a winner
-    const randomWinner = Math.random() < 0.5 ? game.player1 : game.player2;
+    const randomWinner = Math.random() < 0.5 ? game.player1 : game.player2; // Randomly choose a winner
   
     // Assign points
     if (randomWinner.username === game.player1.username) {
-      game.player1.points = "1"; // Winner
-      game.player2.points = "0"; // Loser
+      game.player1.points = "1"; 
+      game.player2.points = "0"; 
     } else {
-      game.player1.points = "0"; // Loser
-      game.player2.points = "1"; // Winner
+      game.player1.points = "0"; 
+      game.player2.points = "1"; 
     }
   
-    // Save to localStorage and update state
     localStorage.setItem("tournamentData", JSON.stringify(updatedTournamentData));
     setTournamentData(updatedTournamentData);
   };

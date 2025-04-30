@@ -31,7 +31,6 @@ export const DuelSetup = () => {
   const [userAvatar, setUserAvatar] = useState(undefined);
   const [guestAvatar, setGuestAvatar] = useState(null);
 
-  // Fetch data from localStorage when component mounts
   useEffect(() => {
     const token = localStorage.getItem("ping-pong-jwt");
     if (token) {
@@ -39,10 +38,8 @@ export const DuelSetup = () => {
       setUserName(payload.username); // Set logged-in username from JWT token
     }
 
-    // Get guestName from localStorage
     setGuestName(localStorage.getItem("guestName") || "Guest");
 
-    // Get user and guest avatars from localStorage
     setUserAvatar(JSON.parse(localStorage.getItem("userAvatar")) || null);
     setGuestAvatar(JSON.parse(localStorage.getItem("guestAvatar")) || null);
 
@@ -52,26 +49,25 @@ export const DuelSetup = () => {
     const updatedPoints3 = JSON.parse(localStorage.getItem("points3"));
 
     if (updatedPoints1) {
-      setPoints1(updatedPoints1); // Update points after a game for Game 1
+      setPoints1(updatedPoints1);
     }
     if (updatedPoints2) {
-      setPoints2(updatedPoints2); // Update points after a game for Game 2
+      setPoints2(updatedPoints2);
     }
     if (updatedPoints3) {
-      setPoints3(updatedPoints3); // Update points after a game for Game 3
+      setPoints3(updatedPoints3);
     }
   }, []);
 
-  const handlePickWinner = (gameNumber) => {
-    // Randomly pick a winner
-    const winner = Math.random() > 0.5 ? "player1" : "player2";
+  const handlePickWinner = (gameNumber: number) => {
+    const winner = Math.random() > 0.5 ? "player1" : "player2"; // Randomly pick a winner
     if (gameNumber === 1) {
       setPoints1((prevPoints) => {
         const updatedPoints = {
           ...prevPoints,
           [winner]: prevPoints[winner] === "?" ? 1 : prevPoints[winner] + 1,
         };
-        localStorage.setItem("points1", JSON.stringify(updatedPoints)); // Save result to localStorage
+        localStorage.setItem("points1", JSON.stringify(updatedPoints));
         return updatedPoints;
       });
     } else if (gameNumber === 2) {
@@ -80,7 +76,7 @@ export const DuelSetup = () => {
           ...prevPoints,
           [winner]: prevPoints[winner] === "?" ? 1 : prevPoints[winner] + 1,
         };
-        localStorage.setItem("points2", JSON.stringify(updatedPoints)); // Save result to localStorage
+        localStorage.setItem("points2", JSON.stringify(updatedPoints));
         return updatedPoints;
       });
     } else if (gameNumber === 3) {
@@ -89,14 +85,13 @@ export const DuelSetup = () => {
           ...prevPoints,
           [winner]: prevPoints[winner] === "?" ? 1 : prevPoints[winner] + 1,
         };
-        localStorage.setItem("points3", JSON.stringify(updatedPoints)); // Save result to localStorage
+        localStorage.setItem("points3", JSON.stringify(updatedPoints));
         return updatedPoints;
       });
     }
   };
 
-  const startGame = (gameNumber) => {
-    // Save relevant data to localStorage
+  const startGame = (gameNumber: number) => {
     localStorage.setItem("userName", userName);
     localStorage.setItem("guestName", guestName);
     localStorage.setItem("userAvatar", JSON.stringify(userAvatar));
@@ -110,7 +105,6 @@ export const DuelSetup = () => {
       localStorage.setItem("points3", JSON.stringify(points3));
     }
 
-    // Navigate to TicTacToe game page
     navigate(`/tic-tac-toe-duel/${gameNumber}`);
   };
 
@@ -153,7 +147,6 @@ export const DuelSetup = () => {
         {(points.player1 === "?" || points.player2 === "?") && (
           <button
             onClick={() => startGame(gameNumber)}
-            // disabled={points.player1 !== "?" && points.player2 !== "?"} // Disable if the game has already been played
             className="mt-4 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg"
           >
             Start Game {gameNumber}
