@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export const ShowAWinner = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const userAvatar = JSON.parse(localStorage.getItem("userAvatar"));
   const guestAvatar = JSON.parse(localStorage.getItem("guestAvatar"));
@@ -21,9 +23,12 @@ export const ShowAWinner = () => {
     }
   }, [userAvatar, guestAvatar]);
 
-  useEffect(() => { // Determine winner and loser based on points
-    const totalPointsPlayer1 = points1.player1 + points2.player1 + points3.player1;
-    const totalPointsPlayer2 = points1.player2 + points2.player2 + points3.player2;
+  useEffect(() => {
+    // Determine winner and loser based on points
+    const totalPointsPlayer1 =
+      points1.player1 + points2.player1 + points3.player1;
+    const totalPointsPlayer2 =
+      points1.player2 + points2.player2 + points3.player2;
 
     if (totalPointsPlayer1 > totalPointsPlayer2) {
       setWinner("player1");
@@ -38,7 +43,8 @@ export const ShowAWinner = () => {
   }, [points1, points2, points3]);
 
   const getAvatarPath = (player, status) => {
-    const avatarName = player === "player1" ? userAvatar?.name : guestAvatar?.name;
+    const avatarName =
+      player === "player1" ? userAvatar?.name : guestAvatar?.name;
 
     return avatarName
       ? `/${status}/${avatarName}.png`
@@ -49,7 +55,8 @@ export const ShowAWinner = () => {
     <div
       className="flex flex-col justify-center items-center p-4 bg-gray-900 min-h-screen"
       style={{
-        backgroundImage: "url('/background/360_F_339060225_w8ob8LjMJzPdEqD9UFxbE6ibcKx8dFrP.jpg')",
+        backgroundImage:
+          "url('/background/360_F_339060225_w8ob8LjMJzPdEqD9UFxbE6ibcKx8dFrP.jpg')",
         backgroundSize: "cover",
       }}
     >
@@ -57,39 +64,45 @@ export const ShowAWinner = () => {
         onClick={() => navigate("/menu")}
         className="absolute top-6 left-6 bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg font-semibold shadow-md"
       >
-        🔙 Back to Menu
+        🔙 {t("BACK_TO_MENU")}
       </button>
 
-      <h1 className="text-4xl text-black mt-8 mb-4">Game Over</h1>
+      <h1 className="text-4xl text-black mt-8 mb-4">{t("GAME_OVER")}</h1>
 
       {winner === "tie" ? (
-        <div className="text-black text-2xl">It's a tie! No winner.</div>
+        <div className="text-black text-2xl">{t("ITS_A_TIE")}</div>
       ) : (
         <div className="flex justify-around items-center w-full max-w-5xl">
           {/* Winner Section */}
           <div className="flex flex-col items-center">
             <h2 className="text-black text-xl mb-4">
-              {winner === "player1" ? userName : guestName} Wins!
+              {winner === "player1" ? userName : guestName} {t("IS_WINNER")}
             </h2>
             <img
-              src={getAvatarPath(winner === "player1" ? "player1" : "player2", "winning")}
+              src={getAvatarPath(
+                winner === "player1" ? "player1" : "player2",
+                "winning"
+              )}
               alt="Winner Avatar"
-              className="w-96 h-96 object-contain mb-4" 
+              className="w-96 h-96 object-contain mb-4"
             />
-            <p className="text-black">Winner</p>
+            <p className="text-black">{t("WINNER")}</p>
           </div>
 
           {/* Loser Section */}
           <div className="flex flex-col items-center">
             <h2 className="text-black text-xl mb-4">
-              {loser === "player1" ? userName : guestName} Loses!
+              {loser === "player1" ? userName : guestName} {t("LOSES")}
             </h2>
             <img
-              src={getAvatarPath(loser === "player1" ? "player1" : "player2", "losing")}
+              src={getAvatarPath(
+                loser === "player1" ? "player1" : "player2",
+                "losing"
+              )}
               alt="Loser Avatar"
-              className="w-96 h-96 object-contain mb-4" 
+              className="w-96 h-96 object-contain mb-4"
             />
-            <p className="text-black">Loser</p>
+            <p className="text-black">{t("LOSER")}</p>
           </div>
         </div>
       )}

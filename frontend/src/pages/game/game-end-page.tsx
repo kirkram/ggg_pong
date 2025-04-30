@@ -1,8 +1,10 @@
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const GameEndingPage: React.FC = () => {
 	const location = useLocation();
 	const navigate = useNavigate();
+	const { t } = useTranslation();
 
 	const { winnerAvatar, loserAvatar } = location.state || {};
 
@@ -20,7 +22,7 @@ const GameEndingPage: React.FC = () => {
 						alt="Winner Avatar"
 						className="w-120 h-200 object-contain border-4 border-yellow-400 shadow-lg"
 					/>
-					<p className="mt-4 text-xl font-bold text-yellow-500">Winner</p>
+					<p className="mt-4 text-xl font-bold text-yellow-500">{t("WINNER")}</p>
 				</div>
 
 				{/* Loser on the right */}
@@ -30,7 +32,7 @@ const GameEndingPage: React.FC = () => {
 						alt="Loser Avatar"
 						className="w-80 h-160 object-contain border-4 border-gray-400 shadow-md"
 					/>
-					<p className="mt-4 text-lg font-semibold text-gray-500">Loser</p>
+					<p className="mt-4 text-lg font-semibold text-gray-500">{t("LOSER")}</p>
 				</div>
 			</div>
 
@@ -38,7 +40,7 @@ const GameEndingPage: React.FC = () => {
 				onClick={() => navigate("/menu")}
 				className="mt-10 px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-700 text-xl"
 			>
-				Back to Menu
+				{t("BACK_TO_MENU")}
 			</button>
 		</div>
 	);

@@ -6,29 +6,29 @@ export const DuelSetup = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const [rounds1, setRounds1] = useState(0); 
-  const [rounds2, setRounds2] = useState(0); 
-  const [rounds3, setRounds3] = useState(0); 
+  const [rounds1, setRounds1] = useState(0);
+  const [rounds2, setRounds2] = useState(0);
+  const [rounds3, setRounds3] = useState(0);
 
   const [points1, setPoints1] = useState({
-    player1: "?", 
-    player2: "?", 
+    player1: "?",
+    player2: "?",
   });
 
   const [points2, setPoints2] = useState({
-    player1: "?", 
-    player2: "?", 
+    player1: "?",
+    player2: "?",
   });
 
   const [points3, setPoints3] = useState({
-    player1: "?", 
-    player2: "?", 
+    player1: "?",
+    player2: "?",
   });
 
-  const [userName, setUserName] = useState(""); 
-  const [guestName, setGuestName] = useState(""); 
-  const [userAvatar, setUserAvatar] = useState(null); 
-  const [guestAvatar, setGuestAvatar] = useState(null); 
+  const [userName, setUserName] = useState("");
+  const [guestName, setGuestName] = useState("");
+  const [userAvatar, setUserAvatar] = useState(null);
+  const [guestAvatar, setGuestAvatar] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("ping-pong-jwt");
@@ -38,7 +38,7 @@ export const DuelSetup = () => {
     }
 
     setGuestName(localStorage.getItem("guestName") || "Guest");
-    
+
     setUserAvatar(JSON.parse(localStorage.getItem("userAvatar")) || null);
     setGuestAvatar(JSON.parse(localStorage.getItem("guestAvatar")) || null);
 
@@ -48,13 +48,13 @@ export const DuelSetup = () => {
     const updatedPoints3 = JSON.parse(localStorage.getItem("points3"));
 
     if (updatedPoints1) {
-      setPoints1(updatedPoints1); 
+      setPoints1(updatedPoints1);
     }
     if (updatedPoints2) {
-      setPoints2(updatedPoints2); 
+      setPoints2(updatedPoints2);
     }
     if (updatedPoints3) {
-      setPoints3(updatedPoints3); 
+      setPoints3(updatedPoints3);
     }
   }, []);
 
@@ -66,7 +66,7 @@ export const DuelSetup = () => {
           ...prevPoints,
           [winner]: prevPoints[winner] === "?" ? 1 : prevPoints[winner] + 1,
         };
-        localStorage.setItem("points1", JSON.stringify(updatedPoints)); 
+        localStorage.setItem("points1", JSON.stringify(updatedPoints));
         return updatedPoints;
       });
     } else if (gameNumber === 2) {
@@ -84,7 +84,7 @@ export const DuelSetup = () => {
           ...prevPoints,
           [winner]: prevPoints[winner] === "?" ? 1 : prevPoints[winner] + 1,
         };
-        localStorage.setItem("points3", JSON.stringify(updatedPoints)); 
+        localStorage.setItem("points3", JSON.stringify(updatedPoints));
         return updatedPoints;
       });
     }
@@ -107,6 +107,7 @@ export const DuelSetup = () => {
     navigate(`/tic-tac-toe-duel/${gameNumber}`);
   };
 
+  // ctx.fillText(`${t("ROUND")} ${info.round}`, ctx.canvas.width / 2, 100);
   // Reusable component for displaying each game
   const GameCard = ({ gameNumber, points, setPoints, rounds, setRounds }) => (
     <div className="flex justify-around items-center bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-4xl mb-6">
@@ -120,9 +121,10 @@ export const DuelSetup = () => {
           />
         </div>
         <h3 className="text-white">{userName || "Player 1"}</h3>
-        <p className="text-white">Points: {points.player1}</p>
+        <p className="text-white">
+          {t("POINTS")}: {points.player1}
+        </p>
       </div>
-
       {/* Divider */}
       <div className="text-white text-xl mx-8">vs</div>
 
@@ -136,17 +138,20 @@ export const DuelSetup = () => {
           />
         </div>
         <h3 className="text-white">{guestName}</h3>
-        <p className="text-white">Points: {points.player2}</p>
+        <p className="text-white">
+          {t("POINTS")}: {points.player2}
+        </p>
       </div>
 
       <div className="flex flex-col items-center mt-6">
-        {(points.player1 === "?" || points.player2 === "?") && <button
-          onClick={() => startGame(gameNumber)}
-          className="mt-4 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg"
-        >
-          Start Game {gameNumber}
-        </button>
-        }
+        {(points.player1 === "?" || points.player2 === "?") && (
+          <button
+            onClick={() => startGame(gameNumber)}
+            className="mt-4 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg"
+          >
+            {t("START_GAME", { num: gameNumber })}
+          </button>
+        )}
         {points.player1 === 0 && points.player2 === 0 && (
           <button
             onClick={() => handlePickWinner(gameNumber)}
@@ -162,22 +167,33 @@ export const DuelSetup = () => {
   // Check if all 3 games have been completed and have a winner or tie
   const isAllGamesCompleted = () => {
     return (
-      (points1.player1 !== "?" && points1.player2 !== "?") &&
-      (points2.player1 !== "?" && points2.player2 !== "?") &&
-      (points3.player1 !== "?" && points3.player2 !== "?") &&
-      (points1.player1 !== points1.player2) &&
-      (points2.player1 !== points2.player2) &&
-      (points3.player1 !== points3.player2)
+      points1.player1 !== "?" &&
+      points1.player2 !== "?" &&
+      points2.player1 !== "?" &&
+      points2.player2 !== "?" &&
+      points3.player1 !== "?" &&
+      points3.player2 !== "?" &&
+      points1.player1 !== points1.player2 &&
+      points2.player1 !== points2.player2 &&
+      points3.player1 !== points3.player2
     );
   };
 
   return (
-    <div className="flex flex-col justify-center items-center p-4 bg-gray-900 min-h-screen"
-    style={{ backgroundImage: "url('/background/360_F_339060225_w8ob8LjMJzPdEqD9UFxbE6ibcKx8dFrP.jpg')",
-    backgroundSize: "cover" }}>
-       <button onClick={() => navigate("/menu")} className="absolute top-6 left-6 bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg font-semibold shadow-md">
-         🔙 {t("BACK_TO_MENU")}
-       </button>
+    <div
+      className="flex flex-col justify-center items-center p-4 bg-gray-900 min-h-screen"
+      style={{
+        backgroundImage:
+          "url('/background/360_F_339060225_w8ob8LjMJzPdEqD9UFxbE6ibcKx8dFrP.jpg')",
+        backgroundSize: "cover",
+      }}
+    >
+      <button
+        onClick={() => navigate("/menu")}
+        className="absolute top-6 left-6 bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg font-semibold shadow-md"
+      >
+        🔙 {t("BACK_TO_MENU")}
+      </button>
 
       {/* Game 1 */}
       <GameCard
@@ -211,7 +227,7 @@ export const DuelSetup = () => {
           onClick={() => navigate("/show_a_winner")}
           className="mt-6 px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg"
         >
-          Show the Winner
+          {t("SHOW_THE_WINNER")}
         </button>
       )}
     </div>

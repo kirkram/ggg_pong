@@ -70,7 +70,7 @@
   "LOSSES": "Häviöt",
   "GAME_LEADERBOARD": "Tulostaulukko",
   "RANK": "Sija",
-  "POINTS": "Pisteet",
+  "POINTS": "Pisteet:",
   "GAME_HISTORY": "Pelihistoria",
   "GAME_DETAILS": "Peliyksityiskohdat",
   "ROUND": "Kierros",
@@ -160,5 +160,14 @@
   "WINNER_TITLE": "🏆 VOITTAJA! 🏆",
   "PRESS_SPACE_TO_MENU": "Paina välilyöntiä palataksesi valikkoon",
   "SOMEONE": "Joku",
-  "GUEST_NAMES_MUST_BE_UNIQUE": "Vieraiden käyttäjänimien täytyy olla ainutlaatuisia!"
+  "GUEST_NAMES_MUST_BE_UNIQUE": "Vieraiden käyttäjänimien täytyy olla ainutlaatuisia!",
+  "START_GAME": "Aloita peli",
+  "BACK_TO_SETUP": "Takaisin asetuksiin",
+  "SHOW_THE_WINNER": "Näytä voittaja",
+  "WINNER": "Voittaja",
+  "LOSER": "Häviäjä",
+  "GAME_OVER": "Peli ohi",
+  "IS_WINNER": "Voittaa!",
+  "LOSES": "Häviää!",
+  "NEXT_CIRCLE": "Seuraava ympyrä"
 }
