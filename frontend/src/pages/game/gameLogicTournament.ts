@@ -125,7 +125,7 @@ export function gameLogicTournament(
 			x: canvas.width / 2,
 			y: canvas.height / 2,
 			radius: 10,
-			dx: 2 * (Math.random() > 0.5 ? 1 : -1),
+			dx: 3 * (Math.random() > 0.5 ? 1 : -1), // ADJUST '3' TO MAKE FASTER BALL
 			dy: 1.5 * (Math.random() > 0.5 ? 1 : -1),
 		};
 

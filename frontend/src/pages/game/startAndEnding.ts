@@ -20,14 +20,18 @@ export function drawOpening(ctx: CanvasRenderingContext2D, info: Screen)
 	ctx.textAlign = "center"
 	ctx.fillText(`${t("ROUND")} ${info.round}`, ctx.canvas.width / 2, 100);
 
-	const avatarSize = 100
-	ctx.drawImage(info.pl1Avatar, 100, ctx.canvas.height / 2 - avatarSize / 2, avatarSize, avatarSize)
-	ctx.drawImage(info.pl2Avatar, ctx.canvas.width - 200, ctx.canvas.height / 2 - avatarSize / 2, avatarSize, avatarSize)
+	const avatarSize = 120
+	const avatarY = ctx.canvas.height / 2 - 150;
+	ctx.drawImage(info.pl1Avatar, 100, avatarY, avatarSize, avatarSize)
+	ctx.drawImage(info.pl2Avatar, ctx.canvas.width - 200,  avatarY, avatarSize, avatarSize)
 
-	ctx.font = "32px Arial"
-	ctx.fillText(info.pl1Name, 150, ctx.canvas.height / 2 + avatarSize + 30)
-	ctx.fillText("vs", ctx.canvas.width / 2, ctx.canvas.height / 2 + 20)
-	ctx.fillText(info.pl2Name, ctx.canvas.width - 150, ctx.canvas.height / 2 + avatarSize + 30)
+	ctx.font = "32px Arial";
+	ctx.fillText(info.pl1Name, 150, avatarY + avatarSize + 70);
+	ctx.fillText("vs", ctx.canvas.width / 2, avatarY + avatarSize / 2);
+	ctx.fillText(info.pl2Name, ctx.canvas.width - 150, avatarY + avatarSize + 70);
+
+	ctx.font = "24px Arial"
+	ctx.fillText("Move: A  D                                      Move: ←  →", ctx.canvas.width / 2, avatarY + avatarSize + 140);
   
 	// Press space
 	ctx.font = "28px Arial"
