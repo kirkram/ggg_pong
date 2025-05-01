@@ -296,7 +296,7 @@ export const CustomazationPage = () => {
                 className="p-2 rounded text-white"
               >
                 <option value="">{t("NONE")}</option>
-                {["red", "green", "blue", "yellow", "purple", "orange"].map(
+                {["red", "green", "blue", "yellow", "purple", "orange", "gray", "pink"].map(
                   (color) => (
                     <option
                       key={color}
@@ -370,7 +370,7 @@ export const CustomazationPage = () => {
                 className="p-2 rounded text-white"
               >
                 <option value="">{t("NONE")}</option>
-                {["red", "green", "blue", "yellow", "purple", "orange"].map(
+                {["red", "green", "blue", "yellow", "purple", "orange", "gray", "pink"].map(
                   (color) => (
                     <option
                       key={color}
@@ -378,7 +378,7 @@ export const CustomazationPage = () => {
                       disabled={takenColors.includes(color)}
                       className="text-black" // makes option text visible when open
                     >
-                      {color.charAt(0).toUpperCase() + color.slice(1)}
+                      {t(`COLOR_${color.toUpperCase()}`)}
                     </option>
                   )
                 )}

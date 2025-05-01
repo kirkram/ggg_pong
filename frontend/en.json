@@ -171,5 +171,6 @@
   "GAME_OVER": "Game Over",
   "IS_WINNER": "Wins!",
   "LOSES": "Loses!",
-  "NEXT_CIRCLE": "Next Circle"
+  "NEXT_CIRCLE": "Next Circle",
+  "PICK_WINNER": "Pick winner"
 }

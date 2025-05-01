@@ -39,7 +39,7 @@
   "SUCCESS": "Uspešno",
   "UNAUTHORIZED": "Neautorizovano",
   "CONNECTIONS_TITLE": "Veze Bande 🤝",
-  "CONNECTIONS_SUBTITLE": "Pronađi ekipu, izazovi rivale. Loajalnost nije zagarantovana.",
+  "CONNECTIONS_SUBTITLE": "Pronađi ekipu, izazovi rivale. Lojalnost nije zagarantovana.",
   "FRIEND_REQUESTS": "Zahtevi za prijateljstvo",
   "NO_PENDING_REQUESTS": "Nema zahteva na čekanju.",
   "ADD_FRIEND": "Dodaj prijatelja",
@@ -70,7 +70,7 @@
   "LOSSES": "Porazi",
   "GAME_LEADERBOARD": "Rang lista igre",
   "RANK": "Rang",
-  "POINTS": "Poeni:",
+  "POINTS": "Poeni",
   "GAME_HISTORY": "Istorija igara",
   "GAME_DETAILS": "Detalji igre",
   "ROUND": "Runda",
@@ -149,6 +149,8 @@
   "COLOR_YELLOW": "Žuta",
   "COLOR_PURPLE": "Ljubičasta",
   "COLOR_ORANGE": "Narandžasta",
+  "COLOR_GRAY": "Siva",
+  "COLOR_PINK": "Roze",
   "DEFAULT": "Podrazumevano",
   "ALL_PLAYERS_MUST_SELECT_AVATAR": "Svi igrači moraju izabrati avatar.",
   "GUEST_MUST_SELECT_USERNAME": "Svaki gost mora da unese važeće korisničko ime.",
@@ -169,5 +171,6 @@
   "GAME_OVER": "Kraj igre",
   "IS_WINNER": "Pobeđuje!",
   "LOSES": "Gubi!",
-  "NEXT_CIRCLE": "Sledeća runda"
+  "NEXT_CIRCLE": "Sledeća runda",
+  "PICK_WINNER": "Izaberi pobednika"
 }

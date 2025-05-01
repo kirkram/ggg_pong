@@ -118,12 +118,7 @@ export const ShowAWinner = () => {
                 winner === "player1" ? "player1" : "player2",
                 "winning"
               )}
-              src={getAvatarPath(
-                winner === "player1" ? "player1" : "player2",
-                "winning"
-              )}
               alt="Winner Avatar"
-              className="w-96 h-96 object-contain mb-4"
               className="w-96 h-96 object-contain mb-4"
             />
             <p className="text-black">{t("WINNER")}</p>

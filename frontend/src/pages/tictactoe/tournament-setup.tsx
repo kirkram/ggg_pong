@@ -177,6 +177,7 @@ export const TournamentSetupPage = () => {
                   )}
                 </div>
                 <h3 className="text-white">{game.player1.username}</h3>
+                <p className="text-white">{t("POINTS")}: {game.player1.points}</p>
               </div>
 
               <div className="text-white text-xl mx-8">vs</div>
@@ -192,7 +193,7 @@ export const TournamentSetupPage = () => {
                   )}
                 </div>
                 <h3 className="text-white">{game.player2.username}</h3>
-                <p className="text-white">{t("POINTS")} {game.player2.points}</p>
+                <p className="text-white">{t("POINTS")}: {game.player2.points}</p>
               </div>
 
               <div className="flex flex-col items-center mt-6">
