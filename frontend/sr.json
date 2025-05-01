@@ -149,6 +149,8 @@
   "COLOR_YELLOW": "Žuta",
   "COLOR_PURPLE": "Ljubičasta",
   "COLOR_ORANGE": "Narandžasta",
+  "COLOR_GRAY": "Siva",
+  "COLOR_PINK": "Roze",
   "DEFAULT": "Podrazumevano",
   "ALL_PLAYERS_MUST_SELECT_AVATAR": "Svi igrači moraju izabrati avatar.",
   "GUEST_MUST_SELECT_USERNAME": "Svaki gost mora da unese važeće korisničko ime.",
@@ -169,5 +171,6 @@
   "GAME_OVER": "Kraj igre",
   "IS_WINNER": "Pobeđuje!",
   "LOSES": "Gubi!",
-  "NEXT_CIRCLE": "Sledeća runda"
+  "NEXT_CIRCLE": "Sledeća runda",
+  "PICK_WINNER": "Izaberi pobednika"
 }
