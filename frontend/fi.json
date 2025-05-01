@@ -149,6 +149,8 @@
   "COLOR_YELLOW": "Keltainen",
   "COLOR_PURPLE": "Violetti",
   "COLOR_ORANGE": "Oranssi",
+  "COLOR_GRAY": "Harmaa",
+  "COLOR_PINK": "Pinkki",
   "DEFAULT": "Oletus",
   "ALL_PLAYERS_MUST_SELECT_AVATAR": "Kaikkien pelaajien on valittava avatar.",
   "GUEST_MUST_SELECT_USERNAME": "Jokaisen vieraan on annettava kelvollinen käyttäjätunnus.",

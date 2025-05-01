@@ -149,6 +149,8 @@
   "COLOR_YELLOW": "Жёлтый",
   "COLOR_PURPLE": "Фиолетовый",
   "COLOR_ORANGE": "Оранжевый",
+  "COLOR_GRAY": "Серый",
+  "COLOR_PINK": "Розовый",
   "DEFAULT": "По умолчанию",
   "ALL_PLAYERS_MUST_SELECT_AVATAR": "Все игроки должны выбрать аватар.",
   "GUEST_MUST_SELECT_USERNAME": "Каждый гость должен ввести правильное имя пользователя.",
