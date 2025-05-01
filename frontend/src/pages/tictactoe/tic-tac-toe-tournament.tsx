@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-// import { PlayerInfo } from "./tournament_interface";
 
 export const TournamentGamePage = () => {
   const navigate = useNavigate();
@@ -19,7 +18,6 @@ export const TournamentGamePage = () => {
   const [currentPlayer, setCurrentPlayer] = useState<"X" | "O">("X");
   const [winner, setWinner] = useState<"X" | "O" | "None">("None");
   const [isGameOver, setIsGameOver] = useState(false);
-  const [isTie, setIsTie] = useState(false);
   const [gameType, setGameType] = useState(
     localStorage.getItem("gameType") || "boring"
   );
@@ -28,10 +26,9 @@ export const TournamentGamePage = () => {
 
   // Check if it's a "madness" or "boring" game
   const isMadnessGame = gameType === "madness";
-  const gridSize = isMadnessGame ? 20 : 9;
-  const gridCols = isMadnessGame ? 5 : 3;
+  const gridSize = isMadnessGame ? 25 : 9;
 
-  const blockedCells = isMadnessGame ? [4, 6, 15, 18] : [];
+  const blockedCells = isMadnessGame ? [4, 6, 15, 23] : [];
 
   useEffect(() => {
     setBoard(Array(gridSize).fill(""));
@@ -42,24 +39,17 @@ export const TournamentGamePage = () => {
 
   const winPatterns = isMadnessGame
     ? [
-        [0, 1, 2],
-        [1, 2, 3],
-        [7, 8, 9],
-        [10, 11, 12],
-        [11, 12, 13],
-        [12, 13, 14],
-        [0, 5, 10],
-        [2, 7, 12],
-        [7, 12, 17],
-        [3, 8, 13],
-        [9, 14, 19],
-        [1, 7, 13],
-        [2, 8, 14],
-        [5, 11, 17],
-        [7, 13, 19],
-        [3, 7, 11],
-        [8, 12, 16],
-        [9, 13, 17],
+        [0, 1, 2, 3],
+        [10, 11, 12, 13],
+        [11, 12, 13, 14],
+        [16, 17, 18, 19],
+        [1, 7, 13, 19],
+        [8, 12, 16, 20],
+        [9, 13, 17, 21],
+        [2, 7, 12, 17],
+        [7, 12, 17, 22],
+        [3, 8, 13, 18],
+        [9, 14, 19, 24],
       ]
     : [
         [0, 1, 2],
@@ -73,27 +63,47 @@ export const TournamentGamePage = () => {
       ];
 
   const checkForWinner = () => {
-    for (const pattern of winPatterns) {
-      const [a, b, c] = pattern;
-      if (gameType === "madness" && (blockedCells.includes(a) || blockedCells.includes(b) || blockedCells.includes(c))) {
-        continue;
+    if (gameType === "boring") {
+      for (const pattern of winPatterns) {
+        const [a, b, c] = pattern;
+        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+          setWinner(board[a]);
+          setIsGameOver(true); // Stop the game when a winner is found
+          return;
+        }
       }
-      if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-        setWinner(board[a]);
-        setIsGameOver(true);
-        return;
+    } else {
+      for (const pattern of winPatterns) {
+        const [a, b, c, d] = pattern;
+        if (blockedCells.includes(a) ||
+            blockedCells.includes(b) ||
+            blockedCells.includes(c)
+        ) {
+          continue;
+        }
+        if (board[a] && board[a] === board[b] && board[a] === board[c] && board[a] === board[d]) {
+          setWinner(board[a]);
+          setIsGameOver(true); // Stop the game when a winner is found
+          return;
+        }
       }
     }
 
-    if (!board.includes("") && !isGameOver) {
-      setIsTie(true);
+    const remainingEmptyCells = board.filter(
+      (cell, index) => cell === "" && !blockedCells.includes(index)
+    );
+    if (remainingEmptyCells.length === 0 && !isGameOver) {
       setWinner("None");
-      setIsGameOver(true);
+      setIsGameOver(true); // Declare the game a tie if no empty spaces left
     }
   };
 
   const handleCellClick = (index: number) => {
-    if (board[index] !== "" || isGameOver || (gameType === "madness" && blockedCells.includes(index)))
+    if (
+      board[index] !== "" ||
+      isGameOver ||
+      (gameType === "madness" && blockedCells.includes(index))
+    )
       return;
 
     const newBoard = [...board];
@@ -110,19 +120,19 @@ export const TournamentGamePage = () => {
     const updatedTournamentData = JSON.parse(
       localStorage.getItem("tournamentData") || "{}"
     );
-  
+
     if (!player1 || !player2) {
       console.error("Player data missing.");
       return;
     }
 
     console.log(`Game index in tournament ${gameIndex}`);
-  
+
     if (!updatedTournamentData[`game${gameIndex}`]) {
       console.error(`Game data for game${gameIndex} missing.`);
       return;
     }
-  
+
     // Assign points based on winner
     if (winner === "X") {
       updatedTournamentData[`game${gameIndex}`].player1.points = "1";
@@ -134,30 +144,15 @@ export const TournamentGamePage = () => {
       updatedTournamentData[`game${gameIndex}`].player1.points = "0";
       updatedTournamentData[`game${gameIndex}`].player2.points = "0";
     }
-    
+
     // Save updated tournament data
-    localStorage.setItem("tournamentData", JSON.stringify(updatedTournamentData));
-    console.log({ updatedTournamentData });
-    console.log('right before naviagtin back: ' + localStorage.getItem("tournamentData"));
-    // Navigate back to setup page
+    localStorage.setItem(
+      "tournamentData",
+      JSON.stringify(updatedTournamentData)
+    );
     navigate("/tournament-setup");
   };
-  
-  
 
-  // const getCellStyle = (index: number) => {
-  //   if (blockedCells.includes(index)) {
-  //     return {
-  //       backgroundImage: `url(${getBlockedCellImage(index)})`,
-  //       backgroundSize: "contain",
-  //       backgroundPosition: "center",
-  //       backgroundRepeat: "no-repeat",
-  //     };
-  //   }
-  //   return board[index] === "X"
-  //     ? { backgroundColor: "lightblue" }
-  //     : { backgroundColor: "lightpink" };
-  // };
   const getCellStyle = (index: number) => {
     if (blockedCells.includes(index)) {
       return {
@@ -171,23 +166,31 @@ export const TournamentGamePage = () => {
     if (cellValue !== "X" && cellValue !== "O") return {};
     try {
       const color =
-        cellValue === "X" ? player1.color || "lightblue" : player2.color || "lightpink";
+        cellValue === "X"
+          ? player1.color || "lightpink"
+          : player2.color || "lightpink";
 
-      console.log("Cell value: " + cellValue + ", player1.color: " + player1.color + ", player2.color: " + player2.color)
-  
+      console.log(
+        "Cell value: " +
+          cellValue +
+          ", player1.color: " +
+          player1.color +
+          ", player2.color: " +
+          player2.color
+      );
+
       return { backgroundColor: color };
     } catch (e) {
       console.error("Failed to parse currentGameData:", e);
       return {};
     }
   };
-  
 
   const getBlockedCellImage = (index: number) => {
     if (index === 4) return "/game_assets/cup.png";
     if (index === 6) return "/game_assets/spoon.png";
     if (index === 15) return "/game_assets/cup2.png";
-    if (index === 18) return "/game_assets/gp.png";
+    if (index === 23) return "/game_assets/gp.png";
     return "";
   };
 
@@ -199,19 +202,30 @@ export const TournamentGamePage = () => {
           "url('/background/360_F_339060225_w8ob8LjMJzPdEqD9UFxbE6ibcKx8dFrP.jpg')",
       }}
     >
-      <h1 className="text-4xl font-bold text-center mb-10">{t("START_TIC_TAC_TOE")}</h1>
-
+      <h1 className="text-4xl font-bold text-center mb-10">
+        {t("START_TIC_TAC_TOE")}
+      </h1>
 
       <div className="flex flex-row items-center justify-center gap-12 min-h-[650px]">
         {/* Player Section */}
         <div className="bg-gray-800 p-12 w-96 rounded-xl shadow-lg flex flex-col items-center">
-          <h2 className="text-3xl font-bold mb-4">X 👤 {player1.username || "Player 1"}</h2>
-          <img src={player1.avatarimage} alt={player1.avatarname} className="w-full h-full max-w-[250px] max-h-[250px] object-contain border-4 border-blue-400 mb-4" />
+          <h2 className="text-3xl font-bold mb-4">
+            X 👤 {player1.username || "Player 1"}
+          </h2>
+          <img
+            src={player1.avatarimage}
+            alt={player1.avatarname}
+            className="w-full h-full max-w-[250px] max-h-[250px] object-contain border-4 border-blue-400 mb-4"
+          />
           <p className="capitalize mb-6 text-xl">{player1.avatarname}</p>
         </div>
 
         {/* Game Board Section */}
-        <div className={`grid ${gameType === "boring" ? "grid-cols-3" : "grid-cols-5"} gap-6 mb-6 max-w-[500px]`}>
+        <div
+          className={`grid ${
+            gameType === "boring" ? "grid-cols-3" : "grid-cols-5"
+          } gap-6 mb-6 max-w-[500px]`}
+        >
           {board.map((cell, index) => (
             <button
               key={index}
@@ -226,8 +240,14 @@ export const TournamentGamePage = () => {
 
         {/* Guest Section */}
         <div className="bg-gray-800 p-12 w-96 rounded-xl shadow-lg flex flex-col items-center">
-          <h2 className="text-3xl font-bold mb-4">O 👥 {player2.username || "Guest"}</h2>
-          <img src={player2.avatarimage} alt={player2.avatarname} className="w-full h-full max-w-[250px] max-h-[250px] object-contain border-4 border-pink-400 mb-4" />
+          <h2 className="text-3xl font-bold mb-4">
+            O 👥 {player2.username || "Guest"}
+          </h2>
+          <img
+            src={player2.avatarimage}
+            alt={player2.avatarname}
+            className="w-full h-full max-w-[250px] max-h-[250px] object-contain border-4 border-pink-400 mb-4"
+          />
           <p className="capitalize mb-6 text-xl">{player2.avatarname}</p>
         </div>
       </div>
