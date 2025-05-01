@@ -7,6 +7,7 @@ export const DuelSetup = () => {
   const { t } = useTranslation();
 
   // Tracks the rounds and points for all three games
+  // Tracks the rounds and points for all three games
   const [rounds1, setRounds1] = useState(0);
   const [rounds2, setRounds2] = useState(0);
   const [rounds3, setRounds3] = useState(0);
@@ -124,9 +125,10 @@ export const DuelSetup = () => {
           />
         </div>
         <h3 className="text-white">{userName || "Player 1"}</h3>
-        <p className="text-white">Points: {points.player1}</p>
+        <p className="text-white">
+          {t("POINTS")}: {points.player1}
+        </p>
       </div>
-
       {/* Divider */}
       <div className="text-white text-xl mx-8">vs</div>
 
@@ -140,7 +142,9 @@ export const DuelSetup = () => {
           />
         </div>
         <h3 className="text-white">{guestName}</h3>
-        <p className="text-white">Points: {points.player2}</p>
+        <p className="text-white">
+          {t("POINTS")}: {points.player2}
+        </p>
       </div>
 
       <div className="flex flex-col items-center mt-6">
@@ -149,7 +153,7 @@ export const DuelSetup = () => {
             onClick={() => startGame(gameNumber)}
             className="mt-4 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg"
           >
-            Start Game {gameNumber}
+            {t("START_GAME", { gameNumber })}
           </button>
         )}
         {points.player1 === 0 && points.player2 === 0 && (
@@ -229,7 +233,7 @@ export const DuelSetup = () => {
           }}
           className="mt-6 px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg"
         >
-          Show the Winner
+          {t("SHOW_THE_WINNER")}
         </button>
       )}
     </div>

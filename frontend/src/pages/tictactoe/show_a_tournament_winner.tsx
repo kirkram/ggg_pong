@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { saveGameResult } from "../game/saveGameResult";
+import { useTranslation } from "react-i18next";
 
 type Winner = {
   username: string;
@@ -9,6 +10,7 @@ type Winner = {
 };
 
 export const ShowATournamentWinner = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [winner, setWinner] = useState<Winner | null>(null);
 
@@ -93,21 +95,21 @@ export const ShowATournamentWinner = () => {
         onClick={() => navigate("/menu")}
         className="absolute top-6 left-6 bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg font-semibold shadow-md"
       >
-        🔙 Back to Menu
+        🔙 {t("BACK_TO_MENU")}
       </button>
 
-      <h1 className="text-5xl font-bold text-black mt-12 mb-8">🏆 Game Over</h1>
+      <h1 className="text-5xl font-bold text-black mt-12 mb-8">🏆 {t("GAME_OVER")}</h1>
 
       <div className="flex flex-col items-center bg-white bg-opacity-80 p-8 rounded-2xl shadow-xl">
         <h2 className="text-3xl font-semibold text-green-800 mb-4">
-          {winner.username} Wins!
+          {winner.username} {t("IS_WINNER")}
         </h2>
         <img
           src={getAvatarPath(winner.avatarname)}
           alt="Winner Avatar"
           className="w-72 h-72 object-contain mb-4"
         />
-        <p className="text-xl text-gray-800">Points: {winner.points}</p>
+        <p className="text-xl text-gray-800">{t("POINTS")} {winner.points}</p>
       </div>
     </div>
   );

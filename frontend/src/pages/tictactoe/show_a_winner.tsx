@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { saveGameResult } from "../game/saveGameResult";
+import { useTranslation } from "react-i18next";
 
 export const ShowAWinner = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const userAvatar = JSON.parse(localStorage.getItem("userAvatar"));
   const guestAvatar = JSON.parse(localStorage.getItem("guestAvatar"));
@@ -88,6 +90,8 @@ export const ShowAWinner = () => {
       style={{
         backgroundImage:
           "url('/background/360_F_339060225_w8ob8LjMJzPdEqD9UFxbE6ibcKx8dFrP.jpg')",
+        backgroundImage:
+          "url('/background/360_F_339060225_w8ob8LjMJzPdEqD9UFxbE6ibcKx8dFrP.jpg')",
         backgroundSize: "cover",
       }}
     >
@@ -95,35 +99,40 @@ export const ShowAWinner = () => {
         onClick={() => navigate("/menu")}
         className="absolute top-6 left-6 bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg font-semibold shadow-md"
       >
-        🔙 Back to Menu
+        🔙 {t("BACK_TO_MENU")}
       </button>
 
-      <h1 className="text-4xl text-black mt-8 mb-4">Game Over</h1>
+      <h1 className="text-4xl text-black mt-8 mb-4">{t("GAME_OVER")}</h1>
 
       {winner === "tie" ? (
-        <div className="text-black text-2xl">It's a tie! No winner.</div>
+        <div className="text-black text-2xl">{t("ITS_A_TIE")}</div>
       ) : (
         <div className="flex justify-around items-center w-full max-w-5xl">
           {/* Winner Section */}
           <div className="flex flex-col items-center">
             <h2 className="text-black text-xl mb-4">
-              {winner === "player1" ? userName : guestName} Wins!
+              {winner === "player1" ? userName : guestName} {t("IS_WINNER")}
             </h2>
             <img
               src={getAvatarPath(
                 winner === "player1" ? "player1" : "player2",
                 "winning"
               )}
+              src={getAvatarPath(
+                winner === "player1" ? "player1" : "player2",
+                "winning"
+              )}
               alt="Winner Avatar"
               className="w-96 h-96 object-contain mb-4"
+              className="w-96 h-96 object-contain mb-4"
             />
-            <p className="text-black">Winner</p>
+            <p className="text-black">{t("WINNER")}</p>
           </div>
 
           {/* Loser Section */}
           <div className="flex flex-col items-center">
             <h2 className="text-black text-xl mb-4">
-              {loser === "player1" ? userName : guestName} Loses!
+              {loser === "player1" ? userName : guestName} {t("LOSES")}
             </h2>
             <img
               src={getAvatarPath(
@@ -133,7 +142,7 @@ export const ShowAWinner = () => {
               alt="Loser Avatar"
               className="w-96 h-96 object-contain mb-4"
             />
-            <p className="text-black">Loser</p>
+            <p className="text-black">{t("LOSER")}</p>
           </div>
         </div>
       )}
