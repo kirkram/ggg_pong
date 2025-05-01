@@ -27,6 +27,9 @@ export const RegisterPage = () => {
     if (password.length < 6) {
       return "Password must be at least 6 characters long.";
     }
+    if (/\s/.test(password)) {
+      return "Password must not contain spaces.";
+    }
     return undefined;
   };
 
