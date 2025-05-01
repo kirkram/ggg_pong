@@ -46,7 +46,15 @@ const gameState = {
 };
 
 // For smooth multiple keys
-const keysPressed: { [key: string]: boolean } = {};
+const keysPressed: { [key: string]: boolean } = {}
+
+//save winner and loser
+let waitingForFinalKeyPress = false;
+let finalWinnerName = "";
+let finalWinnerAvatarName = "";
+let finalLoserName = "";
+let finalLoserAvatarName = "";
+
 
 // Game options
 export const gameOptions = {
@@ -54,11 +62,13 @@ export const gameOptions = {
 };
 
 export function gameLogicTournament(
-  canvasRef: RefObject<HTMLCanvasElement>,
-  sessionData: any,
-  onMatchEnd: (WinnerUsername: string) => void
-) {
-  gameState.phase = GamePhase.TourScreen;
+	canvasRef: RefObject<HTMLCanvasElement>,
+	sessionData: any,
+	onMatchEnd: (WinnerUsername: string) => void,
+	navigate?: (path: string, options?: any) => void
+)
+{
+	gameState.phase = GamePhase.TourScreen;
 
   if (sessionData?.gameType === "madness") gameOptions.enableMadness = true;
   else gameOptions.enableMadness = false;
@@ -116,13 +126,14 @@ export function gameLogicTournament(
     const minScale = 1.5;
     const maxScale = 0.5;
 
-    const ball = {
-      x: canvas.width / 2,
-      y: canvas.height / 2,
-      radius: 10,
-      dx: 2 * (Math.random() > 0.5 ? 1 : -1),
-      dy: 1.5 * (Math.random() > 0.5 ? 1 : -1),
-    };
+		const ball =
+		{
+			x: canvas.width / 2,
+			y: canvas.height / 2,
+			radius: 10,
+			dx: 3 * (Math.random() > 0.5 ? 1 : -1), // ADJUST '3' TO MAKE FASTER BALL
+			dy: 1.5 * (Math.random() > 0.5 ? 1 : -1),
+		};
 
     function drawBackground() {
       ctx.fillStyle = "#87CEEB";
@@ -363,14 +374,15 @@ export function gameLogicTournament(
           //stop animations
           if (animationId) cancelAnimationFrame(animationId);
 
-          //call PongGame with the winner
-          onMatchEnd(winnerName);
-          return;
-        } else if (gameState.phase === GamePhase.Final) {
-          window.location.href = "/game/game-end-page";
-        }
-      }
-    };
+					//call PongGame with the winner
+					onMatchEnd(winnerName)
+					return 
+				}
+				else if (gameState.phase === GamePhase.Final) {
+					waitingForFinalKeyPress = true;
+				}
+			}
+		}
 
     document.addEventListener("keydown", keydownHandler);
     document.addEventListener("keyup", (e) => {
@@ -379,15 +391,61 @@ export function gameLogicTournament(
     update();
   });
 
-  return () => {
-    stopped = true;
-    console.log("🧹 Cleaning up game loop and music");
-    if (animationId) cancelAnimationFrame(animationId);
-    if (music) {
-      music.pause();
-      music.currentTime = 0;
-    }
-    if (keydownHandler) document.removeEventListener("keydown", keydownHandler);
-    clearForgottenItems();
-  };
+	return () =>
+	{
+		stopped = true;
+		console.log("🧹 Cleaning up game loop and music");
+		if (animationId) cancelAnimationFrame(animationId);
+		if (music)
+		{
+			music.pause();
+			music.currentTime = 0;
+		}
+		if (keydownHandler) document.removeEventListener("keydown", keydownHandler);
+		clearForgottenItems();
+	}
 }
+
+
+export function setFinalResult(
+	winnerName: string,
+	winnerAvatarName: string,
+	loserName: string,
+	loserAvatarName: string
+) 
+{
+	finalWinnerName = winnerName;
+	finalWinnerAvatarName = winnerAvatarName;
+	finalLoserName = loserName;
+	finalLoserAvatarName = loserAvatarName;
+	waitingForFinalKeyPress = true;
+}
+
+export function handleFinalKeyPress(
+	navigate?: (path: string, options?: any) => void,
+	sessionData?: any
+) 
+{
+	if (!waitingForFinalKeyPress || !navigate || !sessionData)
+		return;
+
+	waitingForFinalKeyPress = false;
+
+	navigate("/game/game-end-page", 
+	{
+		state: 
+		{
+			winnerName:
+				finalWinnerName,
+			winnerAvatar:
+				finalWinnerAvatarName,
+			loserName:
+				finalLoserName,
+			loserAvatar:
+				finalLoserAvatarName,
+		}
+	});
+//	window.location.href = "/game/game-end-page";
+}
+
+
