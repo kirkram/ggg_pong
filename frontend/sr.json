@@ -172,5 +172,6 @@
   "IS_WINNER": "Pobeđuje!",
   "LOSES": "Gubi!",
   "NEXT_CIRCLE": "Sledeća runda",
-  "PICK_WINNER": "Izaberi pobednika"
+  "PICK_WINNER": "Izaberi pobednika",
+  "MOVE_KEYS_INFO": "Kretanje: A  D                                      Kretanje: ←  →"
 }

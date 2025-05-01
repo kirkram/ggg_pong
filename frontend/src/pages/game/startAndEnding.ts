@@ -29,7 +29,7 @@ export function drawOpening(ctx: CanvasRenderingContext2D, info: Screen) {
 	ctx.fillText(info.pl2Name, ctx.canvas.width - 150, avatarY + avatarSize + 70);
 
 	ctx.font = "24px Arial"
-	ctx.fillText("Move: A  D                                      Move: ←  →", ctx.canvas.width / 2, avatarY + avatarSize + 140);
+  ctx.fillText(t("MOVE_KEYS_INFO"), ctx.canvas.width / 2, avatarY + avatarSize + 140);
   
 	// Press space
 	ctx.font = "28px Arial"

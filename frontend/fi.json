@@ -172,5 +172,6 @@
   "IS_WINNER": "Voittaa!",
   "LOSES": "Häviää!",
   "NEXT_CIRCLE": "Seuraava ympyrä",
-  "PICK_WINNER": "Valitse voittaja"
+  "PICK_WINNER": "Valitse voittaja",
+  "MOVE_KEYS_INFO": "Liiku: A  D                                      Liiku: ←  →"
 }
