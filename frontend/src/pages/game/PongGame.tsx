@@ -8,6 +8,8 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { saveGameResult } from "./saveGameResult";
 import { avatars } from "../general/avatar";
+import { handleFinalKeyPress } from "./gameLogicTournament";
+
 
 import {
   createMatchups,
@@ -64,16 +66,19 @@ export default function PongGame() {
 
     finalAvatar.onload = () => {
       const draw = () => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawFinalScreen(ctx, { winnerName, winnerAvatar: finalAvatar });
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        drawFinalScreen(ctx, { winnerName, winnerAvatar: finalAvatar })
       };
 
       draw();
 
       const spaceHandler = (e: KeyboardEvent) => {
-        if (e.code === "Space") {
-          document.removeEventListener("keydown", spaceHandler);
-          window.location.href = "/menu";
+        if (e.code === "Space") 
+		{
+        	document.removeEventListener("keydown", spaceHandler)
+//			window.location.href = "/game/game-end-page"; // this should not be here!
+			handleFinalKeyPress(navigate, sessionData)
+		  
         }
       };
 
@@ -206,9 +211,28 @@ export default function PongGame() {
               rounds_json: JSON.stringify(tournamentResults),
             });
 
-            if (winnerData) {
-              showFinalScreen(finalWinner, winnerData.avatar);
-            }
+            if (winnerData) if (winnerData) {
+				const loserData = [currentMatch.player1, currentMatch.player2].find(
+					(p) => p?.username !== finalWinner
+				);
+			
+				// Find avatar names by image URL
+				const winnerAvatarObj = avatars.find(a => a.image === winnerData.avatar);
+				const loserAvatarObj = avatars.find(a => a.image === loserData?.avatar);
+			
+				// Store final winner/loser details
+				import("./gameLogicTournament").then((mod) => {
+					mod.setFinalResult(
+						finalWinner,
+						winnerAvatarObj?.name || "Unknown",
+						loserData?.username || "Unknown",
+						loserAvatarObj?.name || "Unknown"
+					);
+				});
+			
+				showFinalScreen(finalWinner, winnerData.avatar);
+			}
+			
           }
         }
 
@@ -216,7 +240,7 @@ export default function PongGame() {
       });
     };
 
-    const cleanup = gameLogicTournament(canvasRef, matchSession, onMatchEnd);
+    const cleanup = gameLogicTournament(canvasRef, matchSession, onMatchEnd, navigate);
 
     return () => cleanup?.();
   }, [mode, currentMatch]);
