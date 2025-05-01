@@ -1,140 +1,14 @@
-# version: "3.8"
-
-# services:
-#   backend:
-#     build: ./backend
-#     container_name: backend
-#     volumes:
-#       - ./backend:/app
-#       - /app/node_modules # Avoid overwriting node_modules with host
-#     ports:
-#       - "8080:8080"
-#     environment:
-#       - NODE_ENV=development
-
-#   frontend:
-#     build: ./frontend
-#     container_name: frontend
-#     depends_on:
-#       - backend
-#     volumes:
-#       - ./frontend:/app
-#       - /app/node_modules
-#     ports:
-#       - "5173:5173"
-#     env_file:
-#       - ./frontend/.env.docker
-#     environment:
-#       - NODE_ENV=development
-
-#   serveo:
-#     build:
-#       dockerfile_inline: |
-#         FROM alpine:latest
-#         RUN apk add --no-cache openssh-client
-
-#         # Create the .ssh directory and set appropriate permissions
-#         RUN mkdir -p /root/.ssh && chmod 700 /root/.ssh
-
-#     # Copy the pre-generated SSH keys into the container
-#     volumes:
-#       - ./frontend/ssh/id_rsa:/root/.ssh/id_rsa
-#       - ./frontend/ssh/id_rsa.pub:/root/.ssh/id_rsa.pub
-
-#     depends_on:
-#       - frontend
-
-#     command: |
-#       sh -c "
-#         chmod 600 /root/.ssh/id_rsa && 
-#         ssh -o StrictHostKeyChecking=no -R gang-gang-gang:80:frontend:5173 serveo.net
-#       "
-
-
-# version: "3.8"
-
-# services:
-#   backend:
-#     build: ./backend
-#     container_name: backend
-#     volumes:
-#       - ./backend:/app
-#       - /app/node_modules # Avoid overwriting node_modules with host
-#     ports:
-#       - "8080:8080"
-#     environment:
-#       - NODE_ENV=development
-
-#   frontend:
-#     build: ./frontend
-#     container_name: frontend
-#     depends_on:
-#       - backend
-#     volumes:
-#       - ./frontend:/app
-#       - /app/node_modules
-#     ports:
-#       - "5173:5173"
-#     env_file:
-#       - ./frontend/.env.docker
-#     environment:
-#       - NODE_ENV=development
-
-#   serveo:
-#     build:
-#       dockerfile_inline: |
-#         FROM alpine:latest
-
-#         RUN apk add openssh
-#     configs:
-#       - source: serveo_private_key
-#         target: /root/.ssh/id_rsa
-#       - source: serveo_public_key
-#         target: /root/.ssh/id_rsa.pub
-#     depends_on:
-#       - frontend
-#     command: |
-#       sh -c "chmod -R 600 /root/.ssh && ssh -o StrictHostKeyChecking=no -R gang-gang-gang:80:frontend:5173 serveo.net"
-
-# configs:
-#   serveo_private_key:
-#     content: |
-#       -----BEGIN OPENSSH PRIVATE KEY-----
-#       b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABFgAAAAdzc2gtcn
-#       NhAAAAAwEAAQAAAQAvhaQRhjB6AAFqQ71D/2ZdhfJ/ZqQPpig3t8hpwL4+2Gdci0aZzbKc
-#       UcmvCIR6w33ckd2ZCMKb+m+LOx6IiOdhTUawToIgIWGX/fTq1uTCbgg0oLLLV22lf9HyMk
-#       +o5Ggm4W+0BlaIJ2SmXSxbsKdZ7k6hl7fAYXfSA4WuvAxk3wcfAoAlw8vW2Pik/LEQdhvo
-#       NxGB/t2lxUCgB1S/Nm8wmO5EO3DQzlVf9CzdPl2qgqo/1GcbJ2nvS4liQa6xXUmL4Sk1w9
-#       lkPDWOpWMu6uFxhdwMZChrO4MgjmFhKrLf0KVwDw3kjyA9Ltp45N+o4AhtTzM7FDFYBxE/
-#       muL5YiPRAAADyEykrZ5MpK2eAAAAB3NzaC1yc2EAAAEAL4WkEYYwegABakO9Q/9mXYXyf2
-#       akD6YoN7fIacC+PthnXItGmc2ynFHJrwiEesN93JHdmQjCm/pvizseiIjnYU1GsE6CICFh
-#       l/306tbkwm4INKCyy1dtpX/R8jJPqORoJuFvtAZWiCdkpl0sW7CnWe5OoZe3wGF30gOFrr
-#       wMZN8HHwKAJcPL1tj4pPyxEHYb6DcRgf7dpcVAoAdUvzZvMJjuRDtw0M5VX/Qs3T5dqoKq
-#       P9RnGydp70uJYkGusV1Ji+EpNcPZZDw1jqVjLurhcYXcDGQoazuDII5hYSqy39ClcA8N5I
-#       8gPS7aeOTfqOAIbU8zOxQxWAcRP5ri+WIj0QAAAAMBAAEAAAEAFnQJWjJR80LPaFsLMPaa
-#       cjPYqPNhLvet5u2R5s2n1d+/ro0r1X3IF23ZYjcfCTYW4MGWtzjZYoNIcruDKLWuxV2Sub
-#       jOaMn856iZMOBKA8ejXuJSuBrd9qVXGB1HYCBTSZOYiLG57ujV+HjrfYMQ/z/GrTkXG/Gx
-#       gGwjnLTDEmGaKjjgglDpnHVM/+iuNJIb69ihPCavxrI6+YYydqWPI8V8hV4I8Xhl85VVd9
-#       4uDD5sRrqwVd7VCPog/PaaHkGCgwA17pVQbA1fqzWhs27nc1p5DGM1n2rKeBeRHmYfcCX5
-#       nfvB6wH/kMA5pkDo8s1YmOCnz9GjmzkA4mLK6advsQAAAIBIyX1xr255fSy+Y3E+PmnSEO
-#       GY2RCvac1Uc4cWdLqPXQ88YwgKrzymxGj5kXZrMYB38bYIrxAKZr61au/mS4ML1y5YJ98f
-#       mcYZwfsgWhrN/hucQLSmHsWokhI1ZgB79RiPmBHRb3EeSpPdYiK6H/si5Tyty6GHN9OTRF
-#       Fp0tTYzgAAAIBvnxTOfqgwuFwNjH9qWqywNYSmbh0FOyhDgk3JEEUGYhza3xN/EW+Opw2t
-#       MTM363Rgt7gV3/PsOghEL3Wn2bqHD663ct9UGm+oCFynNUeOt8AAnTr2S5az2/BV8c3BB+
-#       lQvDyZfktosWTRfv+7d5JzNHMFm1xUUKbJRuq0pYEwNQAAAIBs/X5PPG4bXkFQm/wnsFHH
-#       czLifEq1rHaIEXzUeIj6Nfqjkk7XAbA/e/vceu4J49NHTFiLdlHmOeD2hE8DxJ2WE6Q8xv
-#       mHL87afTyym47pck1GGfJbqX/OQqhecKJeDZjTWd6kQunvwhdZNRGJH5VmA28eBPcfPDuZ
-#       CdAKgnRQrQAAABFyb290QGE4ZTUzOTkxNzdmNgECAwQF
-#       -----END OPENSSH PRIVATE KEY-----
-#   serveo_public_key:
-#     content: |
-#       ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAC+FpBGGMHoAAWpDvUP/Zl2F8n9mpA+mKDe3yGnAvj7YZ1yLRpnNspxRya8IhHrDfdyR3ZkIwpv6b4s7HoiI52FNRrBOgiAhYZf99OrW5MJuCDSgsstXbaV/0fIyT6jkaCbhb7QGVognZKZdLFuwp1nuTqGXt8Bhd9IDha68DGTfBx8CgCXDy9bY+KT8sRB2G+g3EYH+3aXFQKAHVL82bzCY7kQ7cNDOVV/0LN0+XaqCqj/UZxsnae9LiWJBrrFdSYvhKTXD2WQ8NY6lYy7q4XGF3AxkKGs7gyCOYWEqst/QpXAPDeSPID0u2njk36jgCG1PMzsUMVgHET+a4vliI9E= root@a8e5399177f6
-
 version: "3.8"
+
+networks:
+    internal_network:
+        name: gangNet
+        driver: bridge
 
 services:
   backend:
     build: ./backend
+    image: backend:4.2
     container_name: backend
     volumes:
       - ./backend:/app
@@ -143,9 +17,13 @@ services:
       - "8080:8080"
     environment:
       - NODE_ENV=development
+    restart: always
+    networks:
+      - internal_network
 
   frontend:
     build: ./frontend
+    image: frontend:4.2
     container_name: frontend
     depends_on:
       - backend
@@ -158,18 +36,26 @@ services:
       - ./frontend/.env.docker
     environment:
       - NODE_ENV=development
+    restart: always
+    networks:
+      - internal_network
 
   serveo:
     build:
       dockerfile_inline: |
-        FROM alpine:latest
+        FROM alpine:3.20.5
         RUN apk add openssh
-        COPY entrypoint.sh /entrypoint.sh
-        RUN chmod +x /entrypoint.sh
-        ENTRYPOINT ["/entrypoint.sh"]
+        COPY serveo.sh /serveo.sh
+        RUN chmod +x /serveo.sh
+        ENTRYPOINT ["/serveo.sh"]
+    image: serveo:4.2
+    container_name: serveo
     environment:
       - SERVEO_PRIVATE_KEY=${SERVEO_PRIVATE_KEY}
       - SERVEO_PUBLIC_KEY=${SERVEO_PUBLIC_KEY}
     depends_on:
       - frontend
+    restart: always
+    networks:
+      - internal_network
  

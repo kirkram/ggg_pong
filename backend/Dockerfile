@@ -1,5 +1,5 @@
 # backend/Dockerfile
-FROM node:18
+FROM node:18-bookworm
 
 WORKDIR /app
 

@@ -16,15 +16,6 @@ up:
 down:
 	docker compose -f ./docker-compose.yml down
 
-# ssl:
-# 	mkdir -p frontend/ssh
-# 	@if [ ! -f frontend/ssh/id_rsa ] || [ ! -f frontend/ssh/id_rsa.pub ]; then \
-# 		echo "🔐 Creating SSL key and public key..."; \
-# 		ssh-keygen -t rsa -b 4096 -f frontend/ssh/id_rsa -N ""; \
-# 	else \
-# 		echo "✅ SSL certificate and key already exist. Skipping generation."; \
-# 	fi
-
 
 clean: 
 	docker compose -f ./docker-compose.yml down --rmi all -v
