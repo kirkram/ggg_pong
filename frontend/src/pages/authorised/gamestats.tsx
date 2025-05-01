@@ -137,12 +137,10 @@ export const GameStats: React.FC = () => {
 
   return (
     <div
-      className="w-full h-full min-h-screen text-black relative p-8"
-      style={
-        {
-          // backgroundImage: "url('/background/gray_background.jpg')",
-        }
-      }
+      className="w-full h-full min-h-screen text-black min-w-700px  relative p-8"
+      style={{
+        minWidth: "900px", // Adjust the value as needed
+      }}
     >
       <button
         onClick={() => navigate("/menu")}

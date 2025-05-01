@@ -111,27 +111,27 @@ export const initializeDatabase = async () => {
       VALUES ('3', '[ [ { "p1_username": "stabbyboy", "p2_username": "pingqueen", "p1_avatar": "StabIlity", "p2_avatar": "QueenOfTheSpoons", "p1_wins": 0, "p2_wins": 1 }, { "p1_username": "maslinator", "p2_username": "stabbyboy", "p1_avatar": "Maslina", "p2_avatar": "StabIlity", "p1_wins": 1, "p2_wins": 0 } ], [ { "p1_username": "pingqueen", "p2_username": "maslinator", "p1_avatar": "QueenOfTheSpoons", "p2_avatar": "Maslina", "p1_wins": 1, "p2_wins": 0 }, { "p1_username": "stabbyboy", "p2_username": "pingqueen", "p1_avatar": "StabIlity", "p2_avatar": "QueenOfTheSpoons", "p1_wins": 0, "p2_wins": 1 } ] ]', 'ping-pong')`
     );
 
-    await database.db.exec(`
-      CREATE TABLE IF NOT EXISTS game_sessions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user TEXT NOT NULL,
-        user_avatar TEXT NOT NULL,
-        guest TEXT NOT NULL,
-        guest_avatar TEXT NOT NULL,
-        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-        user_wins INTEGER DEFAULT 0,
-        guest_wins INTEGER DEFAULT 0
-      )
-    `);
+    // await database.db.exec(`
+    //   CREATE TABLE IF NOT EXISTS game_sessions (
+    //     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    //     user TEXT NOT NULL,
+    //     user_avatar TEXT NOT NULL,
+    //     guest TEXT NOT NULL,
+    //     guest_avatar TEXT NOT NULL,
+    //     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    //     user_wins INTEGER DEFAULT 0,
+    //     guest_wins INTEGER DEFAULT 0
+    //   )
+    // `);
 
-    await database.db.exec(`
-      CREATE TABLE IF NOT EXISTS tournament_sessions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user TEXT NOT NULL,
-        user_avatar TEXT NOT NULL,
-        guests_json TEXT NOT NULL
-      )
-    `);
+    // await database.db.exec(`
+    //   CREATE TABLE IF NOT EXISTS tournament_sessions (
+    //     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    //     user TEXT NOT NULL,
+    //     user_avatar TEXT NOT NULL,
+    //     guests_json TEXT NOT NULL
+    //   )
+    // `);
 
     console.log("Database and tables are ready");
   } catch (error) {

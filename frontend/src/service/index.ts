@@ -66,8 +66,12 @@ export const appChangePass = (data: AppChangePassword) =>
 export const startGame = (data: GameData) =>
   appClient.post("/start-tournament-game", data).then((res) => res.data);
 
-export const startDuelGame = (data: DuelGameData) =>
-  appClient.post("/start-duel-game", data).then((res) => res.data);
+export const startDuelGame = (data: DuelGameData) => {
+  console.debug("startDuelGame frontend here");
+  return appClient
+    .post("/start-duel-ping-pong-game", data)
+    .then((res) => res.data);
+};
 
 export const googleLoginAuth = (code: string) =>
   appClient.get(`/auth/google/callback?code=${code}`).then((res) => res.data);

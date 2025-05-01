@@ -9,6 +9,7 @@ import {
 } from "../emailService";
 import { Env } from "../env";
 import axios from "axios";
+import validator from "validator";
 
 interface RegisterInput {
   username: string;
@@ -40,6 +41,18 @@ export const authRoutes = async (app: FastifyInstance) => {
   app.post("/register", async (request, reply) => {
     try {
       const { username, password, email } = request.body as RegisterInput;
+
+      if (!validator.isAlphanumeric(username)) {
+        return reply.status(400).send({ error: "Invalid username format." });
+      }
+      if (!validator.isEmail(email)) {
+        return reply.status(400).send({ error: "Invalid email format." });
+      }
+      if (password.length < 6) {
+        return reply
+          .status(400)
+          .send({ error: "Password must be at least 6 characters long." });
+      }
 
       const existingUser = await database.db.get(
         "SELECT * FROM users WHERE username = ? OR email = ?",
@@ -107,6 +120,10 @@ export const authRoutes = async (app: FastifyInstance) => {
   app.post("/login", async (request, reply) => {
     const { username, password } = request.body as LoginInput;
 
+    if (!validator.isAlphanumeric(username)) {
+      return reply.status(400).send({ error: "Invalid username format." });
+    }
+
     // Find user by username
     const user = await database.db.get(
       "SELECT * FROM users WHERE username = ?",
@@ -144,6 +161,9 @@ export const authRoutes = async (app: FastifyInstance) => {
   app.post("/verify-2fa", async (request, reply) => {
     const { username, code } = request.body as VerifyInput;
 
+    if (!validator.isAlphanumeric(username)) {
+      return reply.status(400).send({ error: "Invalid username format." });
+    }
     // Find user by username
     const user = await database.db.get(
       "SELECT * FROM users WHERE username = ?",
@@ -178,6 +198,9 @@ export const authRoutes = async (app: FastifyInstance) => {
   app.post("/reset-password", async (request, reply) => {
     const { email } = request.body as ResetPasswordInput;
 
+    if (!validator.isEmail(email)) {
+      return reply.status(400).send({ error: "Invalid email format." });
+    }
     // Find the user by email
     const user = await database.db.get("SELECT * FROM users WHERE email = ?", [
       email,
@@ -212,6 +235,11 @@ export const authRoutes = async (app: FastifyInstance) => {
   app.post("/update-password", async (request, reply) => {
     const { token, password } = request.body as ChangePasswordInput;
 
+    if (password.length < 6) {
+      return reply
+        .status(400)
+        .send({ error: "Password must be at least 6 characters long." });
+    }
     // Find user by reset token
     const user = await database.db.get(
       "SELECT * FROM users WHERE reset_token = ? AND reset_token IS NOT NULL",

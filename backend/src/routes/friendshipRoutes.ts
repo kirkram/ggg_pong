@@ -43,15 +43,17 @@ export async function friendshipRoutes(app: FastifyInstance) {
           `SELECT * 
          FROM friendships 
          WHERE receiver_id = ? AND status = 'Pending'`, // Only look for 'Pending' requests for the current user
-        [userId] // Pass the userId as the query parameter
-      );
-  
-      return reply.send(requests); // Return the list of friend requests
-    } catch (error) {
-      console.error("Error fetching friend requests:", error);
-      return reply.status(500).send({ error: "Failed to fetch friend requests" });
+          [userId] // Pass the userId as the query parameter
+        );
+
+        return reply.send(requests); // Return the list of friend requests
+      } catch (error) {
+        console.error("Error fetching friend requests:", error);
+        return reply
+          .status(500)
+          .send({ error: "Failed to fetch friend requests" });
+      }
     }
-  }
   );
 
   app.get(

@@ -8,7 +8,6 @@ export const TicTacToeDuel = () => {
   const { gameNumber } = useParams(); // Get game number from URL
   const gameIndex = parseInt(gameNumber || "1", 10); // Determine the current game number
 
-  // Fetching necessary data from localStorage
   const [userName, setUserName] = useState(localStorage.getItem("userName") || "Player 1");
   const [guestName, setGuestName] = useState(localStorage.getItem("guestName") || "Guest");
   const [userAvatar, setUserAvatar] = useState(JSON.parse(localStorage.getItem("userAvatar")) || null);
@@ -16,7 +15,6 @@ export const TicTacToeDuel = () => {
   const [userColor, setUserColor] = useState(localStorage.getItem("userColor") || "#000000");
   const [guestColor, setGuestColor] = useState(localStorage.getItem("guestColor") || "#FFFFFF");
   
-  // Initializing the points for each game
   const [points, setPoints] = useState({
     player1: JSON.parse(localStorage.getItem(`points${gameIndex}`))?.player1 || 0,
     player2: JSON.parse(localStorage.getItem(`points${gameIndex}`))?.player2 || 0,
@@ -36,10 +34,9 @@ export const TicTacToeDuel = () => {
     }
     setCurrentPlayer("X");
     setWinner("None");
-    setIsGameOver(false); // Ensure the game isn't over when starting
+    setIsGameOver(false);
   }, [gameType]);
 
-  // Winning patterns for boring game (3x3)
   const boringWinPatterns = [
     [0, 1, 2],
     [3, 4, 5],
@@ -51,22 +48,18 @@ export const TicTacToeDuel = () => {
     [2, 4, 6],
   ];
 
-  // Winning patterns for madness game (4x5)
   const madnessWinPatterns = [
-    // Horizontal
     [0, 1, 2],
     [1, 2, 3],
     [7, 8, 9],
     [10, 11, 12],
     [11, 12, 13],
     [12, 13, 14],
-    // Vertical
     [0, 5, 10],
     [2, 7, 12],
     [7, 12, 17],
     [3, 8, 13],
     [9, 14, 19],
-    // Diagonal
     [1, 7, 13],
     [2, 8, 14],
     [5, 11, 17],
@@ -78,7 +71,7 @@ export const TicTacToeDuel = () => {
 
   const winPatterns = gameType === "boring" ? boringWinPatterns : madnessWinPatterns;
 
-  const blockedCells = gameType === "madness" ? [4, 6, 15, 18] : []; // Blocked cells for madness game
+  const blockedCells = gameType === "madness" ? [4, 6, 15, 18] : []; 
 
   const checkForWinner = () => {
     for (const pattern of winPatterns) {
@@ -109,13 +102,6 @@ export const TicTacToeDuel = () => {
     setCurrentPlayer(currentPlayer === "X" ? "O" : "X");
   };
 
-  const handleRestart = () => {
-    setBoard(gameType === "boring" ? Array(9).fill("") : Array(20).fill(""));
-    setCurrentPlayer("X");
-    setWinner("None");
-    setIsGameOver(false);
-  };
-
   useEffect(() => {
     checkForWinner();
   }, [board]);
@@ -127,14 +113,11 @@ export const TicTacToeDuel = () => {
   };
 
   const getCellStyle = (index: number) => {
-    // If the game type is "boring", apply a pink or darker background for empty cells
     if (gameType === "boring") {
-      return { backgroundColor: "#f8c1d4" }; // Light pink color for empty cells
+      return { backgroundColor: "#f8c1d4" }; 
     }
   
-    // If the game type is "madness", apply the selected player colors
     if (gameType === "madness") {
-      // Check if the current cell is a blocked cell
       if (blockedCells.includes(index)) {
         const imageUrl = getBlockedCellImage(index);
         return {
@@ -236,8 +219,8 @@ export const TicTacToeDuel = () => {
         {isGameOver
           ? winner === "None"
             ? t("ITS_A_TIE")
-            : `${winner} ${t("WINS")} 🎉`
-          : `${t("ITS_TURN", { player: currentPlayer === "X" ? t("PLAYER") + " 1" : t("GUEST_PLAYER") })}`}
+            : `${winner} ${t("WINNER")} 🎉`
+          : `${t("ITS_TURN", { player: currentPlayer === "X" ? "X" : "O" })}`}
       </div>
 
       {isGameOver && (

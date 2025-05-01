@@ -10,6 +10,7 @@ import fs from "fs";
 import { dirname } from "path";
 import { pipeline } from "stream/promises";
 import { sendGameAchievementEmail } from "../emailService";
+import validator from "validator";
 
 // change it completely when you start working on user stuff!!!
 interface UpdateField {
@@ -30,6 +31,9 @@ export const userRoutes = async (app: FastifyInstance) => {
       const { id } = request.params as { id: string };
       console.log("Fetching profile for ID:", id); // 👈 Add this line
 
+      if (!validator.isNumeric(id)) {
+        return reply.status(400).send({ error: "Invalid user ID format." });
+      }
       try {
         const profile = await database.db.get(
           `SELECT username, email, profilePic, firstName, lastName, gender, dateOfBirth, wins, losses, language, favAvatar 
@@ -83,6 +87,10 @@ export const userRoutes = async (app: FastifyInstance) => {
 
       console.log("🔧 PATCH /update-field called with:", { id, field, value });
 
+      if (!validator.isNumeric(id)) {
+        return reply.status(400).send({ error: "Invalid user ID format." });
+      }
+
       const allowedFields = [
         "firstName",
         "lastName",
@@ -95,6 +103,20 @@ export const userRoutes = async (app: FastifyInstance) => {
       if (!allowedFields.includes(field)) {
         console.warn("⛔ Blocked update to disallowed field:", field);
         return reply.code(400).send({ error: "Field not allowed to update" });
+      }
+
+      if (field === "firstName" || field === "lastName") {
+        if (!validator.isAlpha(value, "en-US", { ignore: " " })) {
+          return reply
+            .status(400)
+            .send({ error: "Name must contain only alphabetic characters." });
+        }
+      }
+
+      if (field === "dateOfBirth") {
+        if (!validator.isDate(value)) {
+          return reply.status(400).send({ error: "Invalid date format." });
+        }
       }
 
       try {
@@ -117,6 +139,11 @@ export const userRoutes = async (app: FastifyInstance) => {
     { preHandler: [app.authenticate] },
     async (request, reply) => {
       const { id } = request.params as { id: string };
+
+      if (!validator.isNumeric(id)) {
+        return reply.status(400).send({ error: "Invalid user ID format." });
+      }
+
       const data = await request.file({
         limits: {
           fileSize: 5 * 1024 * 1024,
@@ -126,7 +153,7 @@ export const userRoutes = async (app: FastifyInstance) => {
         return reply.code(400).send({ error: "No file uploaded" });
       }
 
-      const allowedTypes = ["image/jpeg", "image/png"];
+      const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
       if (!allowedTypes.includes(data.mimetype)) {
         return reply.code(400).send({ error: "Invalid file type" });
       }
@@ -159,6 +186,11 @@ export const userRoutes = async (app: FastifyInstance) => {
     { preHandler: [app.authenticate] },
     async (request, reply) => {
       const { username } = request.params as { username: string };
+
+      if (!validator.isAlphanumeric(username)) {
+        return reply.status(400).send({ error: "Invalid username format." });
+      }
+
       try {
         const profile = await database.db.get(
           `
@@ -190,6 +222,18 @@ export const userRoutes = async (app: FastifyInstance) => {
         email: string;
         position: number;
       };
+
+      if (!validator.isAlphanumeric(username)) {
+        return reply.status(400).send({ error: "Invalid username format." });
+      }
+
+      if (!validator.isEmail(email)) {
+        return reply.status(400).send({ error: "Invalid email format." });
+      }
+
+      if (!validator.isNumeric(position.toString())) {
+        return reply.status(400).send({ error: "Invalid position format." });
+      }
 
       if (position === 1) {
         // Send congratulatory email when user gets 1st place

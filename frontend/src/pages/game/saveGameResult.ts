@@ -3,36 +3,45 @@ import { appClient } from "../../service/index";
 
 export async function saveGameResult(params: {
   username: string;
-  guest_name: string;
+  guest_name: string | undefined;
   userAvatar: string;
   guestAvatar: string;
   userWins: number;
   guestWins: number;
   gameName: "ping-pong" | "tic-tac-toe";
+  rounds_json?: string;
 }) {
   const token = localStorage.getItem("ping-pong-jwt");
   if (!token) throw new Error("User not authenticated");
   try {
-    const roundsJson = JSON.stringify([
-      [
-        {
-          p1_username: params.username,
-          p2_username: params.guest_name,
-          p1_avatar: params.userAvatar,
-          p2_avatar: params.guestAvatar,
-          p1_wins: params.userWins,
-          p2_wins: params.guestWins,
-        },
-      ],
-    ]);
+    const rounds =
+      params.rounds_json ??
+      JSON.stringify([
+        [
+          {
+            p1_username: params.username,
+            p2_username: params.guest_name,
+            p1_avatar: params.userAvatar,
+            p2_avatar: params.guestAvatar,
+            p1_wins: params.userWins,
+            p2_wins: params.guestWins,
+          },
+        ],
+      ]);
 
     // Prepare the request body
     const requestBody = {
       username: params.username,
-      roundsJson,
+      rounds,
       gameName: params.gameName,
     };
 
+    console.debug(
+      "before post in saveGameResult. rounds is: ",
+      rounds,
+      ", gamename is ",
+      params.gameName
+    );
     const response = await appClient
       .post(
         `/api/save-game-session`,
@@ -43,10 +52,16 @@ export async function saveGameResult(params: {
           },
         }
       )
-      .then((res) => res.data);
+      .then((res) => res.data)
+      .catch((err) => {
+        console.debug("error with saving game sesh: ", err);
+        throw err;
+      });
 
-    if (!response.ok) {
-      throw new Error("Failed to save game session");
+    if (!response || response.error) {
+      throw new Error(
+        "Failed to save game session. Res: " + JSON.stringify(response)
+      );
     }
 
     console.log("✅ Game session saved successfully!");

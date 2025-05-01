@@ -1,4 +1,3 @@
-
 // gameLogic.ts
 "use client";
 
@@ -43,6 +42,7 @@ export function gameLogic(
   canvasRef: RefObject<HTMLCanvasElement>,
   mode?: string,
   sessionData?: any,
+  navigate?: (path: string, options?: any) => void
 ) {
   if (sessionData?.gameType === "madness") gameOptions.enableMadness = true;
   else gameOptions.enableMadness = false;
@@ -98,7 +98,7 @@ export function gameLogic(
       x: canvas.width / 2,
       y: canvas.height / 2,
       radius: 10,
-      dx: 2 * (Math.random() > 0.5 ? 1 : -1),
+      dx: 3 * (Math.random() > 0.5 ? 1 : -1), // ADJUST '3' TO MAKE BALL FASTER!
       dy: 1.5 * (Math.random() > 0.5 ? 1 : -1),
     };
 
@@ -107,24 +107,24 @@ export function gameLogic(
       ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-	function drawPaddles()
-	{
-		// Interpolation for paddle1
-		const x = minX + (maxX - minX) * paddleProgress;
-		const y = minY + (maxY - minY) * paddleProgress;
-		const scale = minScale + (maxScale - minScale) * paddleProgress;
-		const paddleWidth = 80 * scale;
-		const paddleHeight = 120 * scale;
+    function drawPaddles() {
+      // Interpolation for paddle1
+      const x = minX + (maxX - minX) * paddleProgress;
+      const y = minY + (maxY - minY) * paddleProgress;
+      const scale = minScale + (maxScale - minScale) * paddleProgress;
+      const paddleWidth = 80 * scale;
+      const paddleHeight = 120 * scale;
 
-		// paddle2
-		const scale2 = minScale + (maxScale - minScale) * paddle2Progress;
-		const x2 = canvas.width - (minX + (maxX - minX) * paddle2Progress + 80 * scale2);
-		const y2 = minY + (maxY - minY) * paddle2Progress;
-		const paddleWidth2 = 80 * scale2;
-		const paddleHeight2 = 120 * scale2;
+      // paddle2
+      const scale2 = minScale + (maxScale - minScale) * paddle2Progress;
+      const x2 =
+        canvas.width - (minX + (maxX - minX) * paddle2Progress + 80 * scale2);
+      const y2 = minY + (maxY - minY) * paddle2Progress;
+      const paddleWidth2 = 80 * scale2;
+      const paddleHeight2 = 120 * scale2;
 
-		ctx.drawImage(paddle1, x, y, paddleWidth, paddleHeight);
-		ctx.drawImage(paddle2, x2, y2, paddleWidth2, paddleHeight2);
+      ctx.drawImage(paddle1, x, y, paddleWidth, paddleHeight);
+      ctx.drawImage(paddle2, x2, y2, paddleWidth2, paddleHeight2);
 
       return {
         x,
@@ -325,26 +325,22 @@ export function gameLogic(
           else if (p2Score > p1Score) p2Wins++;
           gameState.round++;
 
-          if (gameState.round > 1 && gameOptions.enableMadness)
-		  {
-            forgottenItemsInit(ctx, canvas)
-			forgottenItemsInit(ctx, canvas)
-			if (gameState.round > 2)
-			{
-				forgottenItemsInit(ctx, canvas)
-				forgottenItemsInit(ctx, canvas)
-			}
-		  }
+          if (gameState.round > 1 && gameOptions.enableMadness) {
+            forgottenItemsInit(ctx, canvas);
+            forgottenItemsInit(ctx, canvas);
+            if (gameState.round > 2) {
+              forgottenItemsInit(ctx, canvas);
+              forgottenItemsInit(ctx, canvas);
+            }
+          }
 
-          if (gameState.round > 3) 
-		  {
+          if (gameState.round > 3) {
             gameState.phase = GamePhase.Final;
             gameState.winnerName =
               p1Wins > p2Wins ? gameState.pl1Name : gameState.pl2Name;
             gameState.winnerAvatar =
               p1Wins > p2Wins ? player1Avatar : player2Avatar;
-          } 
-		  else gameState.phase = GamePhase.Opening;
+          } else gameState.phase = GamePhase.Opening;
           p1Score = 0;
           p2Score = 0;
         } else if (gameState.phase === GamePhase.Final) {
@@ -364,7 +360,29 @@ export function gameLogic(
           p1Wins = 0;
           p2Wins = 0;
           clearForgottenItems();
-          window.location.href = "/menu";
+
+          if (navigate) {
+            if (navigate) {
+              navigate("/game/game-end-page", {
+                state: {
+                  winnerName:
+                    p1Wins > p2Wins ? sessionData.user : sessionData.guest,
+                  winnerAvatar:
+                    p1Wins > p2Wins
+                      ? sessionData.userAvatar.name
+                      : sessionData.guestAvatar.name,
+                  loserName:
+                    p1Wins > p2Wins ? sessionData.guest : sessionData.user,
+                  loserAvatar:
+                    p1Wins > p2Wins
+                      ? sessionData.guestAvatar.name
+                      : sessionData.userAvatar.name,
+                },
+              });
+            }
+          }
+
+          //  window.location.href = "/game/game-end-page";
         }
       }
     };

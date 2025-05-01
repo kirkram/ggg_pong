@@ -92,6 +92,11 @@ export const AvatarPage = () => {
     selectedAvatars.add(userAvatar.name);
   }
 
+  const guestAvatar = JSON.parse(localStorage.getItem("guestAvatar") || "null");
+  if (guestAvatar?.name && !(target === "guest")) {
+    selectedAvatars.add(guestAvatar.name);
+  }
+
   const guests = JSON.parse(
     localStorage.getItem("tournamentGuests") ||
       localStorage.getItem("guests") ||

@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 export const Env = {
   Host: process.env.BACKEND_HOST || "0.0.0.0",
   Port: parseInt(process.env.BACKEND_PORT || "8080", 10),

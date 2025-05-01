@@ -7,6 +7,7 @@ import { AppInfoContext } from "./context/app-info/context";
 import { authorised, unauthorised, general, tictactoe } from "./pages";
 import { useUserActivityTracker } from "./service/useUserActivityTracker";
 
+import GameEndingPage from "./pages/game/game-end-page";
 import PongGame from "./pages/game/PongGame";
 
 function App() {
@@ -66,7 +67,7 @@ function App() {
                 element={<tictactoe.TicTacToeDuel />}
               />
               <Route
-                path="/tic-tac-toe-tournament/:gameIndex"
+                path="/tic-tac-toe-tournament/:gameNumber"
                 element={<tictactoe.TournamentGamePage />}
               />
               <Route
@@ -81,8 +82,15 @@ function App() {
                 path="show_a_winner"
                 element={<tictactoe.ShowAWinner />}
               />
+              <Route
+                path="show_a_tournament_winner"
+                element={<tictactoe.ShowATournamentWinner />}
+              />
               // "/game/play?mode=duel"
-              <Route path="/game/play" element={<PongGame />} />
+              <Route path="/game/play" element={<PongGame />} 
+			  />
+			  //PONG ending page
+			  <Route path="/game/game-end-page" element={<GameEndingPage />} />
             </>
           ) : (
             <>
