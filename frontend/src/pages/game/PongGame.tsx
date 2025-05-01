@@ -261,7 +261,7 @@ export default function PongGame() {
           onClick={() => navigate("/customization-tournament")}
           className="absolute top-6 left-6 bg-blue-500 hover:bg-blue-600 px-2 py-1 text-sm rounded-md font-medium shadow"
         >
-          🔙 {t("BACK_TO_CUSTOM")}
+          🔙 {t("BACK_TO_MENU")}
         </button>
         {leftAvatarImage && (
           <img

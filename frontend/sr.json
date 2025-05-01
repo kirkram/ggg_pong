@@ -70,7 +70,7 @@
   "LOSSES": "Porazi",
   "GAME_LEADERBOARD": "Rang lista igre",
   "RANK": "Rang",
-  "POINTS": "Poeni",
+  "POINTS": "Poeni:",
   "GAME_HISTORY": "Istorija igara",
   "GAME_DETAILS": "Detalji igre",
   "ROUND": "Runda",
@@ -160,5 +160,14 @@
   "WINNER_TITLE": "🏆 POBEDNIK! 🏆",
   "PRESS_SPACE_TO_MENU": "Pritisni Space za povratak u meni",
   "SOMEONE": "Neko",
-  "GUEST_NAMES_MUST_BE_UNIQUE": "Korisnička imena gostiju moraju biti jedinstvena!"
+  "GUEST_NAMES_MUST_BE_UNIQUE": "Korisnička imena gostiju moraju biti jedinstvena!",
+  "START_GAME": "Započni igru",
+  "BACK_TO_SETUP": "Nazad na podešavanje",
+  "SHOW_THE_WINNER": "Prikaži pobednika",
+  "WINNER": "Pobednik",
+  "LOSER": "Gubitnik",
+  "GAME_OVER": "Kraj igre",
+  "IS_WINNER": "Pobeđuje!",
+  "LOSES": "Gubi!",
+  "NEXT_CIRCLE": "Sledeća runda"
 }

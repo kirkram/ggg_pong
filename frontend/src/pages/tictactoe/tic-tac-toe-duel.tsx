@@ -219,7 +219,7 @@ export const TicTacToeDuel = () => {
         {isGameOver
           ? winner === "None"
             ? t("ITS_A_TIE")
-            : `${winner} ${t("WINS")} 🎉`
+            : `${winner} ${t("WINNER")} 🎉`
           : `${t("ITS_TURN", { player: currentPlayer === "X" ? "X" : "O" })}`}
       </div>
 

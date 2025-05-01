@@ -70,7 +70,7 @@
   "LOSSES": "Losses",
   "GAME_LEADERBOARD": "Game Leaderboard",
   "RANK": "Rank",
-  "POINTS": "Points",
+  "POINTS": "Points:",
   "GAME_HISTORY": "Game History",
   "GAME_DETAILS": "Game Details",
   "ROUND": "Round",
@@ -95,7 +95,7 @@
   "LANDING_TITLE": "🏓 Smash, Spin, Win - Gang Gang Gang Style! 🏓",
   "LANDING_BODY": "Test your reflexes and skills 💪\nin the ultimate Ping Pong showdown! 🔥\nJoin the competition, 🏅\nrise through the ranks, ⬆️\nand become the ultimate champion. 🏆\nEnter the Ping-Pocalypse 🏓\nand show them who’s the boss! 👑",
   "LANDING_BUTTON": "🎟 Join the Gang Gang Gang!",
-  "ITS_A_TIE": "It's a Tie!",
+  "ITS_A_TIE": "It's a tie! No winner.",
   "ITS_TURN": "It's {{player}}'s Turn",
   "PLAY_AGAIN": "Play Again",
   "BACK": "Back",
@@ -162,5 +162,14 @@
   "WINNER_TITLE": "🏆 WINNER! 🏆",
   "PRESS_SPACE_TO_MENU": "Press Space to return to menu",
   "SOMEONE": "Someone",
-  "GUEST_NAMES_MUST_BE_UNIQUE": "Guest usernames must be unique!"
+  "GUEST_NAMES_MUST_BE_UNIQUE": "Guest usernames must be unique!",
+  "START_GAME": "Start Game",
+  "BACK_TO_SETUP": "Back to Setup",
+  "SHOW_THE_WINNER": "Show the Winner",
+  "WINNER": "Winner",
+  "LOSER": "Loser",
+  "GAME_OVER": "Game Over",
+  "IS_WINNER": "Wins!",
+  "LOSES": "Loses!",
+  "NEXT_CIRCLE": "Next Circle"
 }
