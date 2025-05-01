@@ -7,16 +7,16 @@ export const ShowAWinner = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const userAvatar = JSON.parse(localStorage.getItem("userAvatar"));
-  const guestAvatar = JSON.parse(localStorage.getItem("guestAvatar"));
-  const points1 = JSON.parse(localStorage.getItem("points1"));
-  const points2 = JSON.parse(localStorage.getItem("points2"));
-  const points3 = JSON.parse(localStorage.getItem("points3"));
-  const userName = localStorage.getItem("userName"); // Get logged-in username
-  const guestName = localStorage.getItem("guestName"); // Get guest's username
+  const userAvatar = JSON.parse(localStorage.getItem("userAvatar") ?? "null");
+  const guestAvatar = JSON.parse(localStorage.getItem("guestAvatar") ?? "null");
+  const points1 = JSON.parse(localStorage.getItem("points1") ?? "null");
+  const points2 = JSON.parse(localStorage.getItem("points2") ?? "null");
+  const points3 = JSON.parse(localStorage.getItem("points3") ?? "null");
+  const userName = localStorage.getItem("userName") ?? "null"; // Get logged-in username
+  const guestName = localStorage.getItem("guestName") ?? "null"; // Get guest's username
 
-  const [winner, setWinner] = useState(null);
-  const [loser, setLoser] = useState(null);
+  const [winner, setWinner] = useState<string | null>(null);
+  const [loser, setLoser] = useState<string | null>(null);
 
   useEffect(() => {
     if (!points1 || !points2 || !points3 || !userAvatar || !guestAvatar) {
@@ -56,7 +56,7 @@ export const ShowAWinner = () => {
   const fallbackAvatar =
     "/avatars/queen_of_spoons/6f6e1f9c-7ea1-4902-a844-a3292cc6954d.png";
 
-  const getAvatarPath = (player, status) => {
+  const getAvatarPath = (player: string, status: string) => {
     const avatarName =
       player === "player1" ? userAvatar?.name : guestAvatar?.name;
     // If avatarName is found, construct the path for winner/loser images
