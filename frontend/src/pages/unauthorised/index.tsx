@@ -15,21 +15,15 @@ export const LandingPage = () => {
         backgroundImage: "url(/background/front_page.jpg)",
         backgroundSize: "contain",
         backgroundPosition: "center",
-        // backgroundRepeat: "no-repeat",
       }}
     >
       <div className="relative h-screen w-full flex flex-col items-center justify-center text-gray-900">
-        {/* Title at the top of the page
-        <h1 className="text-5xl md:text-5xl text-orange-600 text-center font-extrabold mb-4 drop-shadow-lg absolute top-20">
-          🏓 Smash, Spin, Win - Gang Gang Gang Style! 🏓
-        </h1> */}
-
         <div className="relative z-10 text-center px-6 bg-white bg-opacity-50 backdrop-blur-md rounded-xl p-6 shadow-2xl flex flex-col justify-center items-center">
+          <h1 className="text-5xl md:text-5xl text-orange-600 text-center font-extrabold mb-4 drop-shadow-lg">
+              🏓 Smash, Spin, Win <br />
+              - Gang Gang Gang Style! 🏓
+          </h1>
           <p className="text-lg md:text-lg max-w-2xl mx-auto mb-6 text-gray-800 font-medium">
-            {/* Title at the top of the page */}
-            <h1 className="text-5xl md:text-5xl text-orange-600 text-center font-extrabold mb-4 drop-shadow-lg">
-              🏓 Smash, Spin, Win - Gang Gang Gang Style! 🏓
-            </h1>
             Test your reflexes and skills 💪
             <br />
             in the ultimate Ping Pong showdown! 🔥

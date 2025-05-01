@@ -90,8 +90,6 @@ export const ShowAWinner = () => {
       style={{
         backgroundImage:
           "url('/background/360_F_339060225_w8ob8LjMJzPdEqD9UFxbE6ibcKx8dFrP.jpg')",
-        backgroundImage:
-          "url('/background/360_F_339060225_w8ob8LjMJzPdEqD9UFxbE6ibcKx8dFrP.jpg')",
         backgroundSize: "cover",
       }}
     >
