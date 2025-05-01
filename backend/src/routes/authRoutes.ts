@@ -281,7 +281,8 @@ export const authRoutes = async (app: FastifyInstance) => {
 
     try {
       // Exchange the authorization code for an access token
-      const redirectUri = "http://localhost:5173/auth/google/callback";
+      const redirectUri =
+        "https://gang-gang-gang.serveo.net/auth/google/callback";
 
       const code = (request.query as { code: string }).code;
       console.debug("Token Request Params:", {

@@ -14,9 +14,6 @@ export const LogInPage = () => {
   const [code, setCode] = useState("");
   const navigate = useNavigate();
 
-  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID; // Add your Client ID here
-  const redirectUri = "http://localhost:5173/auth/google/callback"; // The redirect URI you defined in your backend
-
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validator.isAlphanumeric(username)) {
@@ -52,12 +49,13 @@ export const LogInPage = () => {
       .finally(() => setIsLoading(false));
   };
 
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID; // Add your Client ID here
+  const redirectUri = "https://gang-gang-gang.serveo.net/auth/google/callback"; // The redirect URI you defined in your backend
   // Google OAuth Client ID
   const googleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // setIsLoading(true);
-
     const baseUrl = "https://accounts.google.com/o/oauth2/v2/auth";
+
     const params = new URLSearchParams({
       client_id: clientId,
       redirect_uri: redirectUri,
