@@ -8,7 +8,7 @@ export const Env = {
   JwtSecret: process.env.JWT_SECRET || "supersecretkey",
   EmailUser: process.env.EMAIL_USER || "transcendenceft8@gmail.com",
   EmailPass: process.env.EMAIL_PASS || "emkt cebr acsv dpwe",
-  FrontendBaseUrl: "https://gang-gang-gang.serveo.net",
+  FrontendBaseUrl: "https://gang-gang-gang.serveo.net/",
   HashingSalt: "super-secret-hash-salt",
   googleClientId: process.env.GOOGLE_CLIENT_ID,
   googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
