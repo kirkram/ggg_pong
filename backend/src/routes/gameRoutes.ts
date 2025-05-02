@@ -157,6 +157,7 @@ export const gameRoutes = async (app: FastifyInstance) => {
 
         const userStats: Record<string, { wins: number; losses: number }> = {};
 
+        let ticTacUser: string = "";
         // Aggregate wins and losses for each p1_username that exists in the database
         for (const round of roundsParse) {
           for (const match of round) {
@@ -172,6 +173,7 @@ export const gameRoutes = async (app: FastifyInstance) => {
               );
               continue; // Skip if p1_username does not exist
             }
+            ticTacUser = match.p1_username;
 
             if (!userStats[match.p1_username]) {
               userStats[match.p1_username] = { wins: 0, losses: 0 };
@@ -179,6 +181,12 @@ export const gameRoutes = async (app: FastifyInstance) => {
 
             userStats[match.p1_username].wins += match.p1_wins;
             userStats[match.p1_username].losses += match.p2_wins;
+          }
+        }
+
+        if (gameName === "tic-tac-toe" && ticTacUser) {
+          if (roundsParse.at(-1)?.at(-1)?.p1_username !== ticTacUser) {
+            userStats[ticTacUser].losses += 1;
           }
         }
 
