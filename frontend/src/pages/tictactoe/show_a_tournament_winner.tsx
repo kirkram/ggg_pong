@@ -98,7 +98,9 @@ export const ShowATournamentWinner = () => {
         🔙 {t("BACK_TO_MENU")}
       </button>
 
-      <h1 className="text-5xl font-bold text-black mt-12 mb-8">🏆 {t("GAME_OVER")}</h1>
+      <h1 className="text-5xl font-bold text-black mt-12 mb-8">
+        🏆 {t("GAME_OVER")}
+      </h1>
 
       <div className="flex flex-col items-center bg-white bg-opacity-80 p-8 rounded-2xl shadow-xl">
         <h2 className="text-3xl font-semibold text-green-800 mb-4">
@@ -109,7 +111,9 @@ export const ShowATournamentWinner = () => {
           alt="Winner Avatar"
           className="w-72 h-72 object-contain mb-4"
         />
-        <p className="text-xl text-gray-800">{t("POINTS")} {winner.points}</p>
+        <p className="text-xl text-gray-800">
+          {t("POINTS")} {winner.points}
+        </p>
       </div>
     </div>
   );

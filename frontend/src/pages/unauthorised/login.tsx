@@ -75,7 +75,7 @@ export const LogInPage = () => {
   // console.log(error); // check if we need this
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-white">
       {backendMessage ? (
         <>
           <div className="w-5/13 flex flex-col justify-center p-12 bg-white max-w-2xl min-w-md mx-auto">
