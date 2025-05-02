@@ -41,13 +41,13 @@ export const DuelSetup = () => {
 
     setGuestName(localStorage.getItem("guestName") || "Guest");
 
-    setUserAvatar(JSON.parse(localStorage.getItem("userAvatar")) || null);
-    setGuestAvatar(JSON.parse(localStorage.getItem("guestAvatar")) || null);
+    setUserAvatar(JSON.parse(localStorage.getItem("userAvatar") ?? "null"));
+    setGuestAvatar(JSON.parse(localStorage.getItem("guestAvatar") ?? "null"));
 
     // Fetch points for each game and update them if available
-    const updatedPoints1 = JSON.parse(localStorage.getItem("points1"));
-    const updatedPoints2 = JSON.parse(localStorage.getItem("points2"));
-    const updatedPoints3 = JSON.parse(localStorage.getItem("points3"));
+    const updatedPoints1 = JSON.parse(localStorage.getItem("points1") ?? "null");
+    const updatedPoints2 = JSON.parse(localStorage.getItem("points2") ?? "null");
+    const updatedPoints3 = JSON.parse(localStorage.getItem("points3") ?? "null");
 
     if (updatedPoints1) {
       setPoints1(updatedPoints1);

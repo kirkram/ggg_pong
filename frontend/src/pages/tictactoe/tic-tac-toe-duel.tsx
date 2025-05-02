@@ -15,10 +15,10 @@ export const TicTacToeDuel = () => {
     localStorage.getItem("guestName") || "Guest"
   );
   const [userAvatar, setUserAvatar] = useState(
-    JSON.parse(localStorage.getItem("userAvatar")) || null
+    JSON.parse(localStorage.getItem("userAvatar") ?? "null")
   );
   const [guestAvatar, setGuestAvatar] = useState(
-    JSON.parse(localStorage.getItem("guestAvatar")) || null
+    JSON.parse(localStorage.getItem("guestAvatar") ?? "null")
   );
   const [userColor, setUserColor] = useState(
     localStorage.getItem("userColor") || "#000000"
@@ -29,9 +29,9 @@ export const TicTacToeDuel = () => {
 
   const [points, setPoints] = useState({
     player1:
-      JSON.parse(localStorage.getItem(`points${gameIndex}`))?.player1 || 0,
+      JSON.parse(localStorage.getItem(`points${gameIndex}`) ?? "0")?.player1 || 0,
     player2:
-      JSON.parse(localStorage.getItem(`points${gameIndex}`))?.player2 || 0,
+      JSON.parse(localStorage.getItem(`points${gameIndex}`)  ?? "0")?.player2 || 0,
   });
 
   const [gameType, setGameType] = useState(

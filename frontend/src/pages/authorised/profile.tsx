@@ -24,7 +24,7 @@ export const ProfilePage = () => {
   }, []);
 
   const handleUpdate = (field: string, value: string) => {
-    if (!validator.isAlphanumeric(value)) {
+    if (!validator.isAlphanumeric(value) && field !== "dateOfBirth") {
       alert(t("FIELD_NOT_ALLOWED"));
       return;
     }
