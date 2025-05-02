@@ -172,5 +172,6 @@
   "IS_WINNER": "Wins!",
   "LOSES": "Loses!",
   "NEXT_CIRCLE": "Next Circle",
-  "PICK_WINNER": "Pick winner"
+  "PICK_WINNER": "Pick winner",
+  "MOVE_KEYS_INFO": "Move: A  D                                      Move: ←  →"
 }

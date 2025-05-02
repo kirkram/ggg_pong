@@ -14,6 +14,21 @@ export const ChangePasswordPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+  
+    // Inline password validation (same rules as RegisterPage)
+    if (password.length < 6) {
+      setError({
+        response: { data: { error: "Password must be at least 6 characters long." } },
+      } as AxiosError);
+      return;
+    }
+    if (/\s/.test(password)) {
+      setError({
+        response: { data: { error: "Password must not contain spaces." } },
+      } as AxiosError);
+      return;
+    }
+  
     setIsLoading(true);
     appChangePass({ password, token: searchParams.get("token") })
       .then((response) => {
