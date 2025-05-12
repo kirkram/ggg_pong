@@ -1,39 +1,7 @@
-## ft_transcendence
+## ggg_pong
 
-hive school project
+![ggg_pong_main_screen](https://github.com/user-attachments/assets/5bc698c0-7c1d-4428-a874-a3bc498b5bb7)
 
-Modules that we wanna do:
-
-- Use framework as backend
-- Use a front-end framework or toolkit.
-- Use a database for the backend.
-- Standard user management, authentication, users across tournaments
-- Implementing a remote authentication.
-- Game Customization Options.
-- User and Game Stats Dashboards
-- Implement WAF/ModSecurity with Hardened Configuration and HashiCorp Vault for Secrets Management.
-- Implement Two-Factor Authentication (2FA) and JWT
-- Support on all devices.
-- Expanding Browser Compatibility.
-- Multiple language supports
-- Add accessibility for Visually Impaired Users.
-
-## How to run
-
-in first terminal
-
-````sh
-cd backend
-npm i
-npm run dev
-```sh
-
-in second terminal
-```sh
-cd frontend
-npm i
-npm run dev
-````
 
 # Run the app in Docker:
 
