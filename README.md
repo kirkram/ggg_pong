@@ -4,6 +4,7 @@
 
 # Run the app with Node:
 npm install
+
 npm run build
 
 # Run the app in Docker:
